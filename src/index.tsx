@@ -68,7 +68,7 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({}) => {
           layout="below"
           onClick={() => {
             Router.CloseSideMenus();
-            Router.Navigate("/decky-plugin-test");
+            Router.Navigate("/decky-plugin-custom-shortcuts");
           }}
         >
           Router
