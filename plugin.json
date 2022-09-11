@@ -1,10 +1,10 @@
 {
-  "name": "Example Plugin",
-  "author": "John Doe",
+  "name": "Custom Shortcuts",
+  "author": "Tormak",
   "flags": ["debug", "_root"],
   "publish": {
-    "tags": ["template", "root"],
-    "description": "Decky example plugin.",
-    "image": "https://opengraph.githubassets.com/1/SteamDeckHomebrew/PluginLoader"
+    "tags": ["QoL", "shortcuts"],
+    "description": "Manager for custom shortcuts in the Quick Access Menu",
+    "image": ""
   }
 }

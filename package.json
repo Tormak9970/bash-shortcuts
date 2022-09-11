@@ -1,7 +1,7 @@
 {
-  "name": "decky-plugin-template",
+  "name": "custom-shortcuts",
   "version": "0.0.1",
-  "description": "A template to quickly create decky plugins from scratch, based on TypeScript and webpack",
+  "description": "A plugin for creating and managing custom shortcuts that can be launched from the Quick Access Menu ",
   "scripts": {
     "build": "shx rm -rf dist && rollup -c",
     "watch": "rollup -c -w",
@@ -9,21 +9,25 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SteamDeckHomebrew/decky-plugin-template.git"
+    "url": "git+https://github.com/Tormak9970/Custom-Shortcuts.git"
   },
   "keywords": [
     "decky",
     "plugin",
-    "plugin-template",
     "steam-deck",
-    "deck"
+    "deck",
+    "QoL",
+    "shortcuts"
   ],
-  "author": "Jonas Dellinger <jonas@dellinger.dev>",
+  "author": {
+    "name": "Tormak",
+    "email": "Tormak9970@gmail.com"
+  },
   "license": "GPL-2.0-or-later",
   "bugs": {
-    "url": "https://github.com/SteamDeckHomebrew/decky-plugin-template/issues"
+    "url": "https://github.com/Tormak9970/Custom-Shortcuts/issues"
   },
-  "homepage": "https://github.com/SteamDeckHomebrew/decky-plugin-template#readme",
+  "homepage": "https://github.com/Tormak9970/Custom-Shortcuts#readme",
   "devDependencies": {
     "@rollup/plugin-commonjs": "^21.1.0",
     "@rollup/plugin-json": "^4.1.0",

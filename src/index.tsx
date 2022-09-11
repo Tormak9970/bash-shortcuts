@@ -90,16 +90,16 @@ const DeckyPluginRouterTest: VFC = () => {
 };
 
 export default definePlugin((serverApi: ServerAPI) => {
-  serverApi.routerHook.addRoute("/decky-plugin-test", DeckyPluginRouterTest, {
+  serverApi.routerHook.addRoute("/decky-plugin-custom-shortcuts", DeckyPluginRouterTest, {
     exact: true,
   });
 
   return {
-    title: <div className={staticClasses.Title}>Example Plugin</div>,
+    title: <div className={staticClasses.Title}>Custom Shortcuts</div>,
     content: <Content serverAPI={serverApi} />,
     icon: <FaShip />,
     onDismount() {
-      serverApi.routerHook.removeRoute("/decky-plugin-test");
+      serverApi.routerHook.removeRoute("/decky-plugin-custom-shortcuts");
     },
   };
 });
