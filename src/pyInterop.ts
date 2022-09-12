@@ -1,4 +1,4 @@
-import { ServerAPI } from "decky-frontend-lib";
+import { ServerAPI, ServerResponse } from "decky-frontend-lib";
 import { Shortcut } from "./Shortcut";
 
 type ShortcutsDictionary = {
@@ -16,11 +16,11 @@ export class PyInterop {
         this.serverAPI = serv;
     }
 
-    static async getShortcuts(): Promise<ShortcutsDictionary> {
+    static async getShortcuts(): Promise<ServerResponse<ShortcutsDictionary>> {
         return await this.serverAPI.callPluginMethod<{}, ShortcutsDictionary>("setShortcuts", {})
     }
 
-    static async setShortcuts(data:ShortcutsDictionary): Promise<ShortcutsDictionary> {
-        return await this.serverAPI.callPluginMethod<setShortcutsMethodArgs, ShortcutsDictionary>("setShortcuts", { data: data });
+    static async setShortcuts(data:ShortcutsDictionary): Promise<ServerResponse<ShortcutsDictionary>> {
+        return await this.serverAPI.callPluginMethod<setShortcutsMethodArgs, ShortcutsDictionary>("setShortcuts", { shortcutsDict: data });
     }
 }

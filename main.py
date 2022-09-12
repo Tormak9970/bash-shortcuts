@@ -36,7 +36,7 @@ class Plugin:
         pass
 
     async def _load(self):
-        self.shortcuts = []
+        self.shortcuts = {}
         self.shortcutsPath = "/home/deck/homebrew/plugins/Shortcuts/shortcuts.json"
         self.shortcutsDevPath = "/home/deck/homebrew/plugins/Shortcuts/defaults/shortcuts.json"
 
@@ -53,7 +53,7 @@ class Plugin:
                     shortcutsDict = json.load(fp)
                     
                 for itm in shortcutsDict.items():
-                    if (itm.id not in [x.name for x in self.shortcuts]):
+                    if (itm.id not in [x.name for x in self.shortcuts.items()]):
                         self.shortcuts.append(Shortcut(itm))
                         Log(f"Adding shortcut {itm.name}")
 
@@ -66,8 +66,8 @@ class Plugin:
                     shortcutsDict = json.load(fp)
                     
                 for itm in shortcutsDict.items():
-                    if (itm.id not in [x.name for x in self.shortcuts]):
-                        self.shortcuts.append(Shortcut(itm))
+                    if (itm.id not in [x.name for x in self.shortcuts.items()]):
+                        self.shortcuts[itm.id] = Shortcut(itm)
                         Log(f"Adding shortcut {itm.name}")
 
             except Exception as e:
@@ -80,7 +80,7 @@ class Plugin:
 
         for itm in data.items():
             if (itm.id not in [x.name for x in self.shortcuts]):
-                self.shortcuts.append(Shortcut(itm))
+                self.shortcuts[itm.id] = Shortcut(itm)
                 Log(f"Adding shortcut {itm.name}")
         
         with open(path, "w") as outfile:
