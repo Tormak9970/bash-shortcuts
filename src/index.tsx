@@ -68,7 +68,7 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({}) => {
           layout="below"
           onClick={() => {
             Router.CloseSideMenus();
-            Router.Navigate("/decky-plugin-custom-shortcuts");
+            Router.Navigate("/decky-plugin-shortcuts");
           }}
         >
           Router
@@ -90,16 +90,16 @@ const DeckyPluginRouterTest: VFC = () => {
 };
 
 export default definePlugin((serverApi: ServerAPI) => {
-  serverApi.routerHook.addRoute("/decky-plugin-custom-shortcuts", DeckyPluginRouterTest, {
+  serverApi.routerHook.addRoute("/decky-plugin-shortcuts", DeckyPluginRouterTest, {
     exact: true,
   });
 
   return {
-    title: <div className={staticClasses.Title}>Custom Shortcuts</div>,
+    title: <div className={staticClasses.Title}>Shortcuts</div>,
     content: <Content serverAPI={serverApi} />,
     icon: <IoApps />,
     onDismount() {
-      serverApi.routerHook.removeRoute("/decky-plugin-custom-shortcuts");
+      serverApi.routerHook.removeRoute("/decky-plugin-shortcuts");
     },
   };
 });

@@ -1,15 +1,16 @@
 {
-  "name": "custom-shortcuts",
+  "name": "shortcuts",
   "version": "0.0.1",
-  "description": "A plugin for creating and managing custom shortcuts that can be launched from the Quick Access Menu ",
+  "description": "A plugin for creating and managing shortcuts that can be launched from the Quick Access Menu",
   "scripts": {
     "build": "shx rm -rf dist && rollup -c",
     "watch": "rollup -c -w",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "createDist": "rsync -r --exclude \"src/\" --exclude \"__pycache__\" --exclude \"node_modules\" /plugin/ /out/"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Tormak9970/Custom-Shortcuts.git"
+    "url": "git+https://github.com/Tormak9970/Shortcuts.git"
   },
   "keywords": [
     "decky",
@@ -25,9 +26,9 @@
   },
   "license": "GPL-2.0-or-later",
   "bugs": {
-    "url": "https://github.com/Tormak9970/Custom-Shortcuts/issues"
+    "url": "https://github.com/Tormak9970/Shortcuts/issues"
   },
-  "homepage": "https://github.com/Tormak9970/Custom-Shortcuts#readme",
+  "homepage": "https://github.com/Tormak9970/Shortcuts#readme",
   "devDependencies": {
     "@rollup/plugin-commonjs": "^21.1.0",
     "@rollup/plugin-json": "^4.1.0",
