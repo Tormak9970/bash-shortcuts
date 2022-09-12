@@ -1,7 +1,6 @@
 from genericpath import exists
 import json
 import logging
-from os import write
 
 logging.basicConfig(filename="/tmp/shortcuts.log",
                     format='[Shortcuts] %(asctime)s %(levelname)s %(message)s',
@@ -26,31 +25,38 @@ class Plugin:
         return self.shortcuts
         
     async def setShortcuts(self, data):
-        await self._updateShortcuts(self.shortcutsPath, data)
+        await self._updateShortcuts(self, self.shortcutsPath, data)
         return self.shortcuts
+
+    async def launchApp(self, name, path):
+        Log(f"Launching {name}")
+        
+        pass
 
     # Asyncio-compatible long-running code, executed in a task when the plugin is loaded
     async def _main(self):
         logger.info("Hello World!")
-        self._load()
+        
+        self.shortcuts = {}
+        self.shortcutsDevPath = "/home/deck/homebrew/plugins/Shortcuts/defaults/shortcuts.json"
+        self.shortcutsPath = self.shortcutsDevPath # "/home/deck/homebrew/plugins/Shortcuts/shortcuts.json"
+
+        await self._load(self)
+
         pass
 
     async def _load(self):
-        self.shortcuts = {}
-        self.shortcutsPath = "/home/deck/homebrew/plugins/Shortcuts/shortcuts.json"
-        self.shortcutsDevPath = "/home/deck/homebrew/plugins/Shortcuts/defaults/shortcuts.json"
-
-        await self._parseShortcuts(self.shortcutsPath, self.shortcutsDevPath)
+        await self._parseShortcuts(self, self.shortcutsPath)
 
         pass
 
-    async def _parseShortcuts(self, path, devPath):
+    async def _parseShortcuts(self, path):
         Log("Analyzing Shortcuts JSON")
             
         if (exists(path)):
             try:
-                with open(path, "r") as fp:
-                    shortcutsDict = json.load(fp)
+                with open(path, "r") as file:
+                    shortcutsDict = json.load(file)
                     
                 for itm in shortcutsDict.items():
                     if (itm.id not in [x.name for x in self.shortcuts.items()]):
@@ -59,19 +65,6 @@ class Plugin:
 
             except Exception as e:
                 Log(f"Exception while parsing shortcuts: {e}") # error reading json
-
-        elif (exists(devPath)):
-            try:
-                with open(devPath, "r") as fp:
-                    shortcutsDict = json.load(fp)
-                    
-                for itm in shortcutsDict.items():
-                    if (itm.id not in [x.name for x in self.shortcuts.items()]):
-                        self.shortcuts[itm.id] = Shortcut(itm)
-                        Log(f"Adding shortcut {itm.name}")
-
-            except Exception as e:
-                Log(f"Exception while parsing dev shortcuts: {e}") # error reading json
 
         pass
 

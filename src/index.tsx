@@ -2,13 +2,10 @@ import {
   ButtonItem,
   definePlugin,
   DialogButton,
-  Menu,
-  MenuItem,
   PanelSection,
   PanelSectionRow,
   Router,
   ServerAPI,
-  showContextMenu,
   staticClasses,
 } from "decky-frontend-lib";
 import { useState, VFC } from "react";
@@ -24,8 +21,10 @@ type ShortcutsDictionary = {
 
 const Content: VFC<{ serverAPI: ServerAPI }> = ({}) => {
   const [shortcuts, setShortcuts] = useState<ShortcutsDictionary | undefined>();
+  let key = 0;
   PyInterop.getShortcuts().then((res) => {
     setShortcuts(res.result as ShortcutsDictionary);
+    key = key == 0 ? 1 : 0;
   });
 
   const onSave = async () => {
@@ -38,6 +37,7 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({}) => {
     const result = await PyInterop.setShortcuts(data);
     if (result.success) {
       setShortcuts(result.result);
+      key = key == 0 ? 1 : 0;
     }
   };
 
@@ -51,8 +51,8 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({}) => {
 
       <PanelSectionRow>
         {/* itterate over shortcuts and add them here */}
-        <div style={{ margin: "20px 0px", width: "100%" }}>
-          <ShorcutList shortcuts={shortcuts as ShortcutsDictionary} />
+        <div style={{ margin: "20px 0px", width: "100%", padding: "0" }}>
+          <ShorcutList key={key} shortcuts={shortcuts ? shortcuts : {}} />
         </div>
       </PanelSectionRow>
     </PanelSection>
@@ -71,6 +71,7 @@ const ManageShortcutsModal: VFC = () => {
 };
 
 export default definePlugin((serverApi: ServerAPI) => {
+  PyInterop.setServer(serverApi);
   serverApi.routerHook.addRoute("/decky-plugin-shortcuts-manage", ManageShortcutsModal, {
     exact: true,
   });

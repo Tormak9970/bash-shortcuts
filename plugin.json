@@ -1,10 +1,10 @@
 {
-  "name": "Custom Shortcuts",
+  "name": "Shortcuts",
   "author": "Tormak",
-  "flags": ["debug", "_root"],
+  "flags": [],
   "publish": {
-    "tags": ["QoL", "shortcuts"],
-    "description": "Manager for custom shortcuts in the Quick Access Menu",
+    "tags": ["shortcuts", "apps"],
+    "description": "Manager for shortcuts in the Quick Access Menu!",
     "image": ""
   }
 }

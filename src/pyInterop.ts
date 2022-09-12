@@ -9,6 +9,11 @@ interface setShortcutsMethodArgs {
     shortcutsDict: ShortcutsDictionary
 }
 
+interface launchAppArgs {
+    name:string,
+    path: string
+}
+
 export class PyInterop {
     private static serverAPI:ServerAPI;
 
@@ -22,5 +27,9 @@ export class PyInterop {
 
     static async setShortcuts(data:ShortcutsDictionary): Promise<ServerResponse<ShortcutsDictionary>> {
         return await this.serverAPI.callPluginMethod<setShortcutsMethodArgs, ShortcutsDictionary>("setShortcuts", { shortcutsDict: data });
+    }
+
+    static async launchApp(name:string, path:string) {
+        await this.serverAPI.callPluginMethod<launchAppArgs, void>("launchApp", { name: name, path: path });
     }
 }
