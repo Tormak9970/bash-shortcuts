@@ -1,0 +1,8 @@
+{
+    "fcba1cb4-4601-45d8-b919-515d152c56ef": {
+        "id": "fcba1cb4-4601-45d8-b919-515d152c56ef",
+        "name": "Konsole",
+        "icon": "usr/share/icons/breeze-dark/apps/utilities-terminal.svg",
+        "path": "usr/share/applications/org.kde.konsole.desktop"
+    }
+}

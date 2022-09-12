@@ -15,10 +15,12 @@ specifiers:
   shx: ^0.3.4
   tslib: ^2.4.0
   typescript: ^4.7.4
+  uuid: ^9.0.0
 
 dependencies:
   decky-frontend-lib: 3.0.0
   react-icons: 4.4.0
+  uuid: 9.0.0
 
 devDependencies:
   '@rollup/plugin-commonjs': 21.1.0_rollup@2.77.1
@@ -867,6 +869,11 @@ packages:
   /url-join/4.0.1:
     resolution: {integrity: sha512-jk1+QP6ZJqyOiuEI9AEWQfju/nB2Pw466kbA0LEZljHwKeMgd9WrAEgEGxjPDD2+TNbbb37rTyhEfrCXfuKXnA==}
     dev: true
+
+  /uuid/9.0.0:
+    resolution: {integrity: sha512-MXcSTerfPa4uqyzStbRoTgt5XIe3x5+42+q1sDuy3R5MDk66URdLMOZe5aPX/SQd+kuYAh0FdP/pO28IkQyTeg==}
+    hasBin: true
+    dev: false
 
   /watchpack/2.4.0:
     resolution: {integrity: sha512-Lcvm7MGST/4fup+ifyKi2hjyIAwcdI4HRgtvTpIUxBRhB+RFtUh8XtDOxUfctVCnhVi+QQj49i91OyvzkJl6cg==}

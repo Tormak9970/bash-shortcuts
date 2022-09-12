@@ -12,7 +12,7 @@ import {
   staticClasses,
 } from "decky-frontend-lib";
 import { VFC } from "react";
-import { FaShip } from "react-icons/fa";
+import { IoApps } from "react-icons/io5";
 
 import logo from "../assets/logo.png";
 
@@ -97,7 +97,7 @@ export default definePlugin((serverApi: ServerAPI) => {
   return {
     title: <div className={staticClasses.Title}>Custom Shortcuts</div>,
     content: <Content serverAPI={serverApi} />,
-    icon: <FaShip />,
+    icon: <IoApps />,
     onDismount() {
       serverApi.routerHook.removeRoute("/decky-plugin-custom-shortcuts");
     },
