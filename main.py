@@ -1,6 +1,7 @@
 from genericpath import exists
 import json
 import logging
+from os import write
 
 logging.basicConfig(filename="/tmp/shortcuts.log",
                     format='[Shortcuts] %(asctime)s %(levelname)s %(message)s',
@@ -10,7 +11,7 @@ logger=logging.getLogger()
 logger.setLevel(logging.INFO) # can be changed to logging.DEBUG for debugging issues
 
 def Log(txt):
-    logger.info(f"[SHorcuts] {txt}")
+    logger.info(f"[Shorcuts] {txt}")
 
 class Shortcut:
     def __init__(self, dict):
@@ -19,11 +20,14 @@ class Shortcut:
         self.path = dict.path
         self.id = dict.id
 
-
 class Plugin:
-    # A normal method. It can be called from JavaScript using call_plugin_function("method_1", argument1, argument2)
-    async def add(self, left, right):
-        return left + right
+    # Normal methods: can be called from JavaScript using call_plugin_function("signature", argument)
+    async def getShortcuts(self):
+        return self.shortcuts
+        
+    async def setShortcuts(self, data):
+        await self._updateShortcuts(self.shortcutsPath, data)
+        return self.shortcuts
 
     # Asyncio-compatible long-running code, executed in a task when the plugin is loaded
     async def _main(self):
@@ -33,13 +37,12 @@ class Plugin:
 
     async def _load(self):
         self.shortcuts = []
-        shortcutsPath = "/home/deck/homebrew/plugins/Shortcuts/shortcuts.json"
-        shortcutsDevPath = "/home/deck/homebrew/plugins/Shortcuts/defaults/shortcuts.json"
+        self.shortcutsPath = "/home/deck/homebrew/plugins/Shortcuts/shortcuts.json"
+        self.shortcutsDevPath = "/home/deck/homebrew/plugins/Shortcuts/defaults/shortcuts.json"
 
-        await self._parseShortcuts(shortcutsPath, shortcutsDevPath)
+        await self._parseShortcuts(self.shortcutsPath, self.shortcutsDevPath)
 
         pass
-
 
     async def _parseShortcuts(self, path, devPath):
         Log("Analyzing Shortcuts JSON")
@@ -56,6 +59,7 @@ class Plugin:
 
             except Exception as e:
                 Log(f"Exception while parsing shortcuts: {e}") # error reading json
+
         elif (exists(devPath)):
             try:
                 with open(devPath, "r") as fp:
@@ -69,5 +73,17 @@ class Plugin:
             except Exception as e:
                 Log(f"Exception while parsing dev shortcuts: {e}") # error reading json
 
-
         pass
+
+    async def _updateShortcuts(self, path, data):
+        jDat = json.dumps(data, indent=4)
+
+        for itm in data.items():
+            if (itm.id not in [x.name for x in self.shortcuts]):
+                self.shortcuts.append(Shortcut(itm))
+                Log(f"Adding shortcut {itm.name}")
+        
+        with open(path, "w") as outfile:
+            outfile.write(jDat)
+        
+        return True

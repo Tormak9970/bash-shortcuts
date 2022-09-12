@@ -11,38 +11,45 @@ import {
   showContextMenu,
   staticClasses,
 } from "decky-frontend-lib";
-import { VFC } from "react";
+import { useState, VFC } from "react";
 import { IoApps } from "react-icons/io5";
 
 import logo from "../assets/logo.png";
+import { PyInterop } from "./pyInterop";
+import { Shortcut } from "./Shortcut";
 
-// interface AddMethodArgs {
-//   left: number;
-//   right: number;
-// }
+type ShortcutsDictionary = {
+  [key:string]: Shortcut
+}
+
+interface setShortcutsMethodArgs {
+  shortcutsDict: ShortcutsDictionary
+}
 
 const Content: VFC<{ serverAPI: ServerAPI }> = ({}) => {
-  // const [result, setResult] = useState<number | undefined>();
+  const [shortcuts, setShortcuts] = useState<ShortcutsDictionary | undefined>();
+  let sCuts = await PyInterop.getShortcuts();
+  setShortcuts(sCuts);
 
-  // const onClick = async () => {
-  //   const result = await serverAPI.callPluginMethod<AddMethodArgs, number>(
-  //     "add",
-  //     {
-  //       left: 2,
-  //       right: 2,
-  //     }
-  //   );
-  //   if (result.success) {
-  //     setResult(result.result);
-  //   }
-  // };
+  const onSave = async () => {
+    const data = {...shortcuts};
+    
+    // add new shortcut to data
+    // TODO: impliment
+
+
+    const result = PyInterop.setShortcuts(data);
+    if (result.success) {
+      setShortcuts(result.result);
+    }
+  };
 
   return (
     <PanelSection title="Panel Section">
       <PanelSectionRow>
         <ButtonItem
           layout="below"
-          onClick={(e) =>
+          onClick={(e: MouseEvent) =>
             showContextMenu(
               <Menu label="Menu" cancelText="CAAAANCEL" onCancel={() => {}}>
                 <MenuItem onSelected={() => {}}>Item #1</MenuItem>
