@@ -1,16 +1,19 @@
 import {
   ButtonItem,
   definePlugin,
-  DialogButton,
   PanelSection,
   PanelSectionRow,
   Router,
   ServerAPI,
+  SidebarNavigation,
   staticClasses,
 } from "decky-frontend-lib";
 import { useState, VFC } from "react";
 import { IoApps } from "react-icons/io5";
+import { About } from "./About";
+import { AddShortcut } from "./AddShortcut";
 import { ShorcutList } from "./lib/ShortcutList";
+import { ManageShortcuts } from "./ManageShortcuts";
 
 import { PyInterop } from "./PyInterop";
 import { Shortcut } from "./Shortcut";
@@ -21,30 +24,16 @@ type ShortcutsDictionary = {
 
 const Content: VFC<{ serverAPI: ServerAPI }> = ({}) => {
   const [shortcuts, setShortcuts] = useState<ShortcutsDictionary | undefined>();
-  let key = 0;
+  
   PyInterop.getShortcuts().then((res) => {
     setShortcuts(res.result as ShortcutsDictionary);
-    key = key == 0 ? 1 : 0;
+    PyInterop.key = PyInterop.key == 0 ? 1 : 0;
   });
-
-  const onSave = async () => {
-    const data = {...shortcuts};
-    
-    // add new shortcut to data
-    // TODO: impliment
-
-
-    const result = await PyInterop.setShortcuts(data);
-    if (result.success) {
-      setShortcuts(result.result);
-      key = key == 0 ? 1 : 0;
-    }
-  };
 
   return (
     <PanelSection title="Shortcuts">
       <PanelSectionRow>
-        <ButtonItem layout="below" onClick={() => { Router.CloseSideMenus(); Router.Navigate("/decky-plugin-shortcuts-manage"); }} >
+        <ButtonItem layout="below" onClick={() => { Router.CloseSideMenus(); Router.Navigate("/shortcuts/nav"); }} >
           Manage Shortcuts
         </ButtonItem>
       </PanelSectionRow>
@@ -52,27 +41,42 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({}) => {
       <PanelSectionRow>
         {/* itterate over shortcuts and add them here */}
         <div style={{ margin: "20px 0px", width: "100%", padding: "0" }}>
-          <ShorcutList key={key} shortcuts={shortcuts ? shortcuts : {}} />
+          <ShorcutList key={PyInterop.key} shortcuts={shortcuts ? shortcuts : {}} />
         </div>
       </PanelSectionRow>
     </PanelSection>
   );
 };
 
-const ManageShortcutsModal: VFC = () => {
+const ShortcutsManagerRouter: VFC = () => {
   return (
-    <div style={{ marginTop: "50px", color: "white" }}>
-      Hello World!
-      <DialogButton onClick={() => Router.NavigateToStore()}>
-        Go to Store
-      </DialogButton>
-    </div>
+    <SidebarNavigation
+      title="Shortcuts Manager"
+      showTitle
+      pages={[
+        {
+          title: "Add a Shortcut",
+          content: <AddShortcut />,
+          route: "/shortcuts/add",
+        },
+        {
+          title: "Manage Shortcuts",
+          content: <ManageShortcuts />,
+          route: "/shortcuts/manage",
+        },
+        {
+          title: "About Shortcuts",
+          content: <About />,
+          route: "/shortcuts/about",
+        },
+      ]}
+    />
   );
 };
 
 export default definePlugin((serverApi: ServerAPI) => {
   PyInterop.setServer(serverApi);
-  serverApi.routerHook.addRoute("/decky-plugin-shortcuts-manage", ManageShortcutsModal, {
+  serverApi.routerHook.addRoute("/shortcuts/nav", ShortcutsManagerRouter, {
     exact: true,
   });
 
@@ -81,7 +85,7 @@ export default definePlugin((serverApi: ServerAPI) => {
     content: <Content serverAPI={serverApi} />,
     icon: <IoApps />,
     onDismount() {
-      serverApi.routerHook.removeRoute("/decky-plugin-shortcuts-manage");
+      serverApi.routerHook.removeRoute("/shortcuts/nav");
     },
   };
 });
