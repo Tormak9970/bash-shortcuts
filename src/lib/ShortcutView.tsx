@@ -1,4 +1,4 @@
-import { Focusable } from "decky-frontend-lib";
+import { Button, Focusable } from "decky-frontend-lib";
 import { PyInterop } from "../PyInterop";
 import { Shortcut } from "../Shortcut"
 
@@ -7,11 +7,13 @@ export type ShortcutViewProps = {
 }
 export function ShortcutView(props: ShortcutViewProps) {
     return (
-        <div style={{ width: "100%", height: "66px", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
-            <Focusable style={{borderRadius: "2px"}} onClick={() => { PyInterop.launchApp(props.shortcut.name, props.shortcut.path)}}>
-                <div style={{ width: "50px", height: "50px", padding: "4px" }}>
-                    <img src={props.shortcut.icon} style={{ width: "50px", height: "50px" }} />
-                </div>
+        <div style={{ width: "66px", height: "66px", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+            <Focusable style={{borderRadius: "2px", width: "50px", height: "50px", padding: "5px", margin: "0"}} onClick={() => { PyInterop.launchApp(props.shortcut.name, props.shortcut.path)}}>
+                <Button style={{borderRadius: "2px", width: "50px", height: "50px", backgroundColor: "transparent"}}>
+                    <div style={{ width: "50px", height: "50px", padding: "4px" }}>
+                        <img src={props.shortcut.icon} style={{ width: "50px", height: "50px" }} />
+                    </div>
+                </Button>
             </Focusable>
         </div>
     );

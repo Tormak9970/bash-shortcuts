@@ -7,7 +7,7 @@ export type ShortcutListProps = {
     }
 }
 export function ShorcutList(props: ShortcutListProps) {
-    const comps = Object.values(props.shortcuts).map((itm) => <ShortcutView shortcut={itm} />)
+    const comps = Object.values(props.shortcuts).map((itm) => <ShortcutView shortcut={itm} />);
     return (
         <div style={{ width: "100%", display: "grid", gridTemplateColumns: "repeat(4, 1fr)" }}>{comps}</div>
     );

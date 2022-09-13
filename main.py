@@ -10,10 +10,7 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
-logging.basicConfig(filename="/tmp/shortcuts.log",
-                    format='[Shortcuts] %(asctime)s %(levelname)s %(message)s',
-                    filemode='w+',
-                    force=True)
+logging.basicConfig(filename=path.join(path.expanduser('~'), "Desktop/plugin-dev/Shortcuts/shortcuts.log"), format='[Shortcuts] %(asctime)s %(levelname)s %(message)s', filemode='w+', force=True)
 logger=logging.getLogger()
 logger.setLevel(logging.INFO) # can be changed to logging.DEBUG for debugging issues
 
@@ -46,7 +43,7 @@ class Application:
             else:
                 self.type = "No Icon"
 
-        self.path = Config.get("Desktop Entry", "Exec")
+        self.path = path
 
 class Plugin:
     # Normal methods: can be called from JavaScript using call_plugin_function("signature", argument)
@@ -112,36 +109,40 @@ class Plugin:
 
     # Asyncio-compatible long-running code, executed in a task when the plugin is loaded
     async def _main(self):
-        logger.info("Hello World!")
+        global Initialized
+        if Initialized:
+            return
         
+        Initialized = True
+
+        Log("Initializing Shorcuts Plugin")
+
         self.shortcuts = {}
-        self.shortcutsDevPath = path.join(path.expanduser('~'), "homebrew/plugins/Shortcuts/defaults/shortcuts.json")
-        self.shortcutsPath = self.shortcutsDevPath # path.join(path.expanduser('~'), "homebrew/plugins/Shortcuts/shortcuts.json")
+        self.shortcutsPath = "/home/deck/homebrew/plugins/Shortcuts/shortcuts.json"
 
-        await self._load(self)
-
-        pass
-
-    async def _load(self):
-        await self._parseShortcuts(self, self.shortcutsPath)
+        self.loadingPromise = self._load(self, self.shortcutsPath)
+        await self.loadingPromise
 
         pass
 
-    async def _parseShortcuts(self, path):
+    async def _load(self, path):
         Log("Analyzing Shortcuts JSON")
             
         if (exists(path)):
             try:
                 with open(path, "r") as file:
                     shortcutsDict = json.load(file)
-                    
-                for itm in shortcutsDict.items():
-                    if (itm.id not in [x.id for x in self.shortcuts.items()]):
-                        self.shortcuts.append(Shortcut(itm))
-                        Log(f"Adding shortcut {itm.name}")
+
+                    for itm in shortcutsDict.items():
+                        if (itm.id not in [x.id for x in self.shortcuts.items()]):
+                            self.shortcuts.append(Shortcut(itm))
+                            Log(f"Adding shortcut {itm.name}")
 
             except Exception as e:
                 Log(f"Exception while parsing shortcuts: {e}") # error reading json
+        else:
+            exception = Exception("Unabled to locate shortcuts.json: file does not exist")
+            raise exception
 
         pass
 
