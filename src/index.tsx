@@ -26,13 +26,13 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({}) => {
   const [shortcuts, setShortcuts] = useState<ShortcutsDictionary | undefined>();
 
   async function reload() {
-    await PyInterop.getShortcuts().then((res) => {
-      setShortcuts(res.result as ShortcutsDictionary);
-      PyInterop.key = PyInterop.key == 0 ? 1 : 0;
-    });
+    // await PyInterop.getShortcuts().then((res) => {
+    //   setShortcuts(res.result as ShortcutsDictionary);
+    //   PyInterop.key = PyInterop.key == 0 ? 1 : 0;
+    // });
   }
   
-  reload();
+  // reload();
 
   return (
     <PanelSection title="Shortcuts">

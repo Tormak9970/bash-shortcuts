@@ -1,21 +1,23 @@
-from configparser import ConfigParser
-from genericpath import exists
-from glob import glob
-import json
 import logging
+import json
 from os import path, system
+from glob import glob
 from posixpath import isabs
+from genericpath import exists
+from configparser import ConfigParser
 
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
-logging.basicConfig(filename=path.join(path.expanduser('~'), "Desktop/plugin-dev/Shortcuts/shortcuts.log"), format='[Shortcuts] %(asctime)s %(levelname)s %(message)s', filemode='w+', force=True)
+logging.basicConfig(filename="/home/deck/Desktop/dev-plugins/Shortcuts/shortcuts.log", format='[Shortcuts] %(asctime)s %(levelname)s %(message)s', filemode='w+', force=True)
 logger=logging.getLogger()
 logger.setLevel(logging.INFO) # can be changed to logging.DEBUG for debugging issues
 
-def Log(txt):
+def log(txt):
     logger.info(f"[Shorcuts] {txt}")
+
+Initialized = False
 
 class Shortcut:
     def __init__(self, dict):
@@ -67,7 +69,7 @@ class Plugin:
         return self.shortcuts
 
     async def launchApp(self, name, path):
-        Log(f"Launching {name}")
+        log(f"Launching {name}")
         
         system(path)
 
@@ -115,7 +117,7 @@ class Plugin:
         
         Initialized = True
 
-        Log("Initializing Shorcuts Plugin")
+        log("Initializing Shorcuts Plugin")
 
         self.shortcuts = {}
         self.shortcutsPath = "/home/deck/homebrew/plugins/Shortcuts/shortcuts.json"
@@ -126,7 +128,7 @@ class Plugin:
         pass
 
     async def _load(self, path):
-        Log("Analyzing Shortcuts JSON")
+        log("Analyzing Shortcuts JSON")
             
         if (exists(path)):
             try:
@@ -136,10 +138,10 @@ class Plugin:
                     for itm in shortcutsDict.items():
                         if (itm.id not in [x.id for x in self.shortcuts.items()]):
                             self.shortcuts.append(Shortcut(itm))
-                            Log(f"Adding shortcut {itm.name}")
+                            log(f"Adding shortcut {itm.name}")
 
             except Exception as e:
-                Log(f"Exception while parsing shortcuts: {e}") # error reading json
+                log(f"Exception while parsing shortcuts: {e}") # error reading json
         else:
             exception = Exception("Unabled to locate shortcuts.json: file does not exist")
             raise exception
@@ -152,7 +154,7 @@ class Plugin:
         for itm in data.items():
             if (itm.id not in [x.id for x in self.shortcuts]):
                 self.shortcuts[itm.id] = Shortcut(itm)
-                Log(f"Adding shortcut {itm.name}")
+                log(f"Adding shortcut {itm.name}")
         
         with open(path, "w") as outfile:
             outfile.write(jDat)
@@ -162,13 +164,13 @@ class Plugin:
     async def _addShortcut(self, path, shortcut):
         if (shortcut.id not in [x.id for x in self.shortcuts]):
             self.shortcuts[shortcut.id] = shortcut
-            Log(f"Adding shortcut {shortcut.name}")
+            log(f"Adding shortcut {shortcut.name}")
             jDat = json.dumps(self.shortcuts, indent=4)
 
             with open(path, "w") as outfile:
                 outfile.write(jDat)
         else:
-            Log(f"Shortcut {shortcut.name} already exists")
+            log(f"Shortcut {shortcut.name} already exists")
         
         pass
 
@@ -183,25 +185,25 @@ class Plugin:
     async def _modShortcut(self, path, shortcut):
         if (shortcut.id in [x.id for x in self.shortcuts]):
             self.shortcuts[shortcut.id] = shortcut
-            Log(f"Modifying shortcut {shortcut.name}")
+            log(f"Modifying shortcut {shortcut.name}")
             jDat = json.dumps(self.shortcuts, indent=4)
 
             with open(path, "w") as outfile:
                 outfile.write(jDat)
         else:
-            Log(f"Shortcut {shortcut.name} does not exist")
+            log(f"Shortcut {shortcut.name} does not exist")
         
         pass
 
     async def _remShortcut(self, path, shortcut):
         if (shortcut.id in [x.id for x in self.shortcuts]):
             del self.shortcuts[shortcut.id]
-            Log(f"removing shortcut {shortcut.name}")
+            log(f"removing shortcut {shortcut.name}")
             jDat = json.dumps(self.shortcuts, indent=4)
 
             with open(path, "w") as outfile:
                 outfile.write(jDat)
         else:
-            Log(f"Shortcut {shortcut.name} does not exist")
+            log(f"Shortcut {shortcut.name} does not exist")
         
         pass
