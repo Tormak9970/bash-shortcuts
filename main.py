@@ -86,20 +86,23 @@ class Plugin:
         locADirApps = glob(f"{locAppsDir}/*.desktop")
         deskDirApps = glob(f"{desktopDir}/*.desktop")
 
-        for file in aDirApps:
-            app = Application(file)
-            if (app.type == "Application"):
-                apps.append(app)
+        if (exists(aDirApps)):
+            for file in aDirApps:
+                app = Application(file)
+                if (app.type == "Application"):
+                    apps.append(app)
         
-        for file in locADirApps:
-            app = Application(file)
-            if (app.type == "Application"):
-                apps.append(app)
+        if (exists(locADirApps)):
+            for file in locADirApps:
+                app = Application(file)
+                if (app.type == "Application"):
+                    apps.append(app)
         
-        for file in deskDirApps:
-            app = Application(file)
-            if (app.type == "Application"):
-                apps.append(app)
+        if (exists(deskDirApps)):
+            for file in deskDirApps:
+                app = Application(file)
+                if (app.type == "Application"):
+                    apps.append(app)
 
         return apps
 
