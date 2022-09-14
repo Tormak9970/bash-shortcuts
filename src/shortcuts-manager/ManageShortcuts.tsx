@@ -1,4 +1,4 @@
-import { ButtonItem, ConfirmModal, Menu, MenuItem, PanelSection, PanelSectionRow, showContextMenu, showModal, Spinner } from "decky-frontend-lib";
+import { Button, ButtonItem, ConfirmModal, Menu, MenuItem, PanelSection, PanelSectionRow, showContextMenu, showModal, Spinner } from "decky-frontend-lib";
 import { Fragment, useState } from "react";
 import { PyInterop } from "../PyInterop";
 import { Shortcut } from "../Shortcut";
@@ -34,10 +34,27 @@ function showMenu(e: MouseEvent, shortcut: Shortcut) {
 function ShortcutMod(props: ShortcutModProps) {
     return (
         <>
+            <style>
+                {`
+                    .custom-buttons {
+                        width: inherit;
+                        height: inherit;
+                        display: inherit;
+                    }
+                    .custom-buttons .DialogButton._DialogLayout.Secondary.gamepaddialog_Button_1kn70.Focusable {
+                        min-width: 30px;
+                        display: flex;
+                        justify-content: center,
+                        align-items: center
+                    }
+                `}
+            </style>
             <PanelSectionRow>
-                <ButtonItem onClick={ (e) => showMenu(e, props.shortcut) } >
-                    <FaEllipsisH />
-                </ButtonItem>
+                <div className="custom-buttons">
+                    <ButtonItem label={props.shortcut.name} onClick={ (e) => showMenu(e, props.shortcut) } >
+                        <FaEllipsisH />
+                    </ButtonItem>
+                </div>
             </PanelSectionRow>
         </>
     );
@@ -64,7 +81,9 @@ export function ManageShortcuts() {
     
     return (
         <>
-            <div>Here you can re-order or remove existing shortcuts</div>
+            <div style={{
+                marginBottom: "5px"
+            }}>Here you can re-order or remove existing shortcuts</div>
             <PanelSection title="Your Shortcuts">
                 {loading ? 
                     <div style={{width: "100%", display: "flex", justifyContent: "center", alignItems: "center", padding: "5px"}}>
