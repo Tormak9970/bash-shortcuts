@@ -12,9 +12,9 @@ import {
 import { useState, VFC } from "react";
 import { IoApps } from "react-icons/io5";
 import { About } from "./About";
-import { AddShortcut } from "./AddShortcut";
-import { ShorcutList } from "./lib/ShortcutList";
-import { ManageShortcuts } from "./ManageShortcuts";
+import { AddShortcut } from "./add-shortcut/AddShortcut";
+import { ShortcutLauncher } from "./components/ShortcutLanucher";
+import { ManageShortcuts } from "./shortcuts-manager/ManageShortcuts";
 
 import { PyInterop } from "./PyInterop";
 import { Shortcut } from "./Shortcut";
@@ -32,7 +32,6 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({}) => {
     loaded = false;
     await PyInterop.getShortcuts().then((res) => {
       setShortcuts(res.result as ShortcutsDictionary);
-      console.log(shortcuts);
       PyInterop.key = PyInterop.key == 0 ? 1 : 0;
       loaded = true;
     });
@@ -50,7 +49,11 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({}) => {
         </ButtonItem>
       </PanelSectionRow>
 
-      <ShorcutList key={PyInterop.key} shortcuts={shortcuts ? shortcuts : {}} />
+      {Object.values(shortcuts ? shortcuts : {})
+          .map((itm: Shortcut) => (
+          <ShortcutLauncher shortcut={itm} />
+      ))}
+      {/* <ShorcutList key={PyInterop.key} shortcuts={shortcuts ? shortcuts : {}} /> */}
 
       <PanelSectionRow>
         <ButtonItem layout="below" onClick={reload} >

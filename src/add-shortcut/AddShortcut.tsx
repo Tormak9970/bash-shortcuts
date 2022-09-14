@@ -1,5 +1,5 @@
-import { PyInterop } from "./PyInterop";
-import { Shortcut } from "./Shortcut";
+import { PyInterop } from "../PyInterop";
+import { Shortcut } from "../Shortcut";
 
 export function AddShortcut() {
     const onSave = async () => {
