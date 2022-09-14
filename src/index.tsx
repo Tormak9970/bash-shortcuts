@@ -6,7 +6,6 @@ import {
   Router,
   ServerAPI,
   SidebarNavigation,
-  Spinner,
   staticClasses,
 } from "decky-frontend-lib";
 import { useState, VFC } from "react";

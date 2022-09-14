@@ -15,18 +15,20 @@ type ShortcutsDictionary = {
 }
 
 function showMenu(e: MouseEvent, shortcut: Shortcut) {
-        return showContextMenu(
-          <Menu label="Menu" cancelText="CAAAANCEL" onCancel={() => {}}>
-            <MenuItem onSelected={() => {}}>Edit</MenuItem>
-            <MenuItem onSelected={() => {showModal(
-                <ConfirmModal onOK={() => {PyInterop.remShortcut(shortcut)}} bDestructiveWarning={true}>
-                    Are you sure you want to delete this shortcut?
-                </ConfirmModal>
-            )}}>Delete</MenuItem>
-          </Menu>,
-          e.currentTarget ?? window
-        )
-      }
+    return showContextMenu(
+        <Menu label="Menu" cancelText="CAAAANCEL" onCancel={() => {}}>
+        <MenuItem onSelected={() => {showModal(
+            // @ts-ignore
+            <EditModal onConfirm={(updated:Shortcut) => {PyInterop.modShortcut(updated)}} />
+        )}}>Edit</MenuItem>
+        <MenuItem onSelected={() => {showModal(
+            <ConfirmModal onOK={() => {PyInterop.remShortcut(shortcut)}} bDestructiveWarning={true}>
+                Are you sure you want to delete this shortcut?
+            </ConfirmModal>
+        )}}>Delete</MenuItem>
+        </Menu>,
+        e.currentTarget ?? window
+    );
 }
 
 function ShortcutMod(props: ShortcutModProps) {
@@ -86,5 +88,5 @@ export function ManageShortcuts() {
                 </PanelSectionRow>
             </PanelSection>
         </>
-    )
+    );
 }
