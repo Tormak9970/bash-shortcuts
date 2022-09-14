@@ -21,10 +21,11 @@ Initialized = False
 
 class Shortcut:
     def __init__(self, dict):
-        self.name = dict.name
-        self.icon = dict.icon
-        self.path = dict.path
-        self.id = dict.id
+        print(dict)
+        self.name = dict['name']
+        self.icon = dict['icon']
+        self.path = dict['path']
+        self.id = dict['id']
 
 # class Application:
 #     def __init__(self, path):
@@ -56,23 +57,27 @@ class Plugin:
         self._load(self)
         return self.shortcuts
         
-    # async def addShortcut(self, shortcut):
-    #     await self._addShortcut(self, self.shortcutsPath, shortcut)
-    #     return self.shortcuts
+    async def addManualShortcut(self, path):
+        await self._addManualShortcut(self, path)
+        return self.shortcuts
+        
+    async def addShortcut(self, shortcut):
+        self._addShortcut(self, self.shortcutsPath, shortcut)
+        return self.shortcuts
 
-    # async def modShortcut(self, shortcut):
-    #     await self._modShortcut(self, self.shortcutsPath, shortcut)
-    #     return self.shortcuts
+    async def modShortcut(self, shortcut):
+        self._modShortcut(self, self.shortcutsPath, shortcut)
+        return self.shortcuts
 
-    # async def remShortcut(self, shortcut):
-    #     await self._remShortcut(self, self.shortcutsPath, shortcut)
-    #     return self.shortcuts
+    async def remShortcut(self, shortcut):
+        self._remShortcut(self, self.shortcutsPath, shortcut)
+        return self.shortcuts
 
     # async def launchApp(self, name, path):
     #     log(f"Launching {name}")
         
     #     system(path)
-
+    #     pass
 
     # async def getInstalledApps(self):
     #     apps = []
@@ -104,10 +109,6 @@ class Plugin:
 
     #     return apps
 
-    # async def addManualShortcut(self, path):
-    #     await self._addManualShortcut(self, path)
-    #     return self.shortcuts
-
     # Asyncio-compatible long-running code, executed in a task when the plugin is loaded
     async def _main(self):
         global Initialized
@@ -128,9 +129,10 @@ class Plugin:
                 with open(self.shortcutsPath, "r") as file:
                     shortcutsDict = json.load(file)
 
-                    for itm in shortcutsDict.items():
-                        self.shortcuts[itm.id] = Shortcut(itm)
-                        log(f"Adding shortcut {itm.name}")
+                    for key in shortcutsDict.keys():
+                        itm = shortcutsDict[key]
+                        log(f"Adding shortcut {itm['name']}")
+                        self.shortcuts[itm['id']] = Shortcut(itm)
 
             except Exception as e:
                 log(f"Exception while parsing shortcuts: {e}") # error reading json
@@ -140,58 +142,46 @@ class Plugin:
 
         pass
 
+    async def _addManualShortcut(self, path):
+        # generate uuid6
+        # get icon from .desktop file
+        # create shortcut
+        # add to self.shortcuts
+        pass
 
-    # async def _updateShortcuts(self, path, data):
-    #     jDat = json.dumps(data, indent=4)
+    def _addShortcut(self, path, shortcut):
+        if (shortcut['id'] not in [x.id for x in self.shortcuts]):
+            self.shortcuts[shortcut['id']] = shortcut
+            log(f"Adding shortcut {shortcut['name']}")
+            jDat = json.dumps(self.shortcuts, indent=4)
 
-    #     for itm in data.items():
-    #         if (itm.id not in [x.id for x in self.shortcuts]):
-    #             self.shortcuts[itm.id] = Shortcut(itm)
-    #             log(f"Adding shortcut {itm.name}")
-        
-    #     with open(path, "w") as outfile:
-    #         outfile.write(jDat)
+            with open(path, "w") as outfile:
+                outfile.write(jDat)
+        else:
+            log(f"Shortcut {shortcut['name']} already exists")
 
+        pass
 
-    # async def _addShortcut(self, path, shortcut):
-    #     if (shortcut.id not in [x.id for x in self.shortcuts]):
-    #         self.shortcuts[shortcut.id] = shortcut
-    #         log(f"Adding shortcut {shortcut.name}")
-    #         jDat = json.dumps(self.shortcuts, indent=4)
+    def _modShortcut(self, path, shortcut):
+        if (shortcut['id'] in [x.id for x in self.shortcuts]):
+            self.shortcuts[shortcut['id']] = shortcut
+            log(f"Modifying shortcut {shortcut['name']}")
+            jDat = json.dumps(self.shortcuts, indent=4)
 
-    #         with open(path, "w") as outfile:
-    #             outfile.write(jDat)
-    #     else:
-    #         log(f"Shortcut {shortcut.name} already exists")
+            with open(path, "w") as outfile:
+                outfile.write(jDat)
+        else:
+            log(f"Shortcut {shortcut['name']} does not exist")
+        pass
 
+    def _remShortcut(self, path, shortcut):
+        if (shortcut['id'] in [x.id for x in self.shortcuts]):
+            del self.shortcuts[shortcut['id']]
+            log(f"removing shortcut {shortcut['name']}")
+            jDat = json.dumps(self.shortcuts, indent=4)
 
-    # async def _addManualShortcut(self, path):
-    #     # generate uuid6
-    #     # get icon from .desktop file
-    #     # create shortcut
-    #     # add to self.shortcuts
-
-
-    # async def _modShortcut(self, path, shortcut):
-    #     if (shortcut.id in [x.id for x in self.shortcuts]):
-    #         self.shortcuts[shortcut.id] = shortcut
-    #         log(f"Modifying shortcut {shortcut.name}")
-    #         jDat = json.dumps(self.shortcuts, indent=4)
-
-    #         with open(path, "w") as outfile:
-    #             outfile.write(jDat)
-    #     else:
-    #         log(f"Shortcut {shortcut.name} does not exist")
-
-
-    # async def _remShortcut(self, path, shortcut):
-    #     if (shortcut.id in [x.id for x in self.shortcuts]):
-    #         del self.shortcuts[shortcut.id]
-    #         log(f"removing shortcut {shortcut.name}")
-    #         jDat = json.dumps(self.shortcuts, indent=4)
-
-    #         with open(path, "w") as outfile:
-    #             outfile.write(jDat)
-    #     else:
-    #         log(f"Shortcut {shortcut.name} does not exist")
-
+            with open(path, "w") as outfile:
+                outfile.write(jDat)
+        else:
+            log(f"Shortcut {shortcut['name']} does not exist")
+        pass
