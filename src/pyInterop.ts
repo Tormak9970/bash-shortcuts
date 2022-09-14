@@ -1,4 +1,5 @@
 import { ServerAPI, ServerResponse } from "decky-frontend-lib";
+import { v4 as uuidv4 } from 'uuid';
 import { Shortcut } from "./Shortcut";
 
 type ShortcutsDictionary = {
@@ -44,6 +45,7 @@ export class PyInterop {
         return apps;
     }
     static async addManualShortcut(path:string): Promise<ServerResponse<ShortcutsDictionary>> {
-        return await this.serverAPI.callPluginMethod<{ path: string }, ShortcutsDictionary>("addManualShortcut", { path: path });
+        const id = uuidv4();
+        return await this.serverAPI.callPluginMethod<{ id:string, path: string }, ShortcutsDictionary>("addManualShortcut", { id: id, path: path });
     }
 }
