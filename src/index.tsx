@@ -23,22 +23,24 @@ type ShortcutsDictionary = {
   [key:string]: Shortcut
 }
 
+let loaded = false;
+
 const Content: VFC<{ serverAPI: ServerAPI }> = ({}) => {
   const [shortcuts, setShortcuts] = useState<ShortcutsDictionary | undefined>();
-  const [loading, setLoading] = useState<boolean>();
-  setLoading(true);
 
-  function reload() {
-    setLoading(true);
-    PyInterop.getShortcuts().then((res) => {
+  async function reload() {
+    loaded = false;
+    await PyInterop.getShortcuts().then((res) => {
       setShortcuts(res.result as ShortcutsDictionary);
+      console.log(shortcuts);
       PyInterop.key = PyInterop.key == 0 ? 1 : 0;
-      setLoading(false);
+      loaded = true;
     });
-    //setShortcuts({"fcba1cb4-4601-45d8-b919-515d152c56ef": new Shortcut("fcba1cb4-4601-45d8-b919-515d152c56ef", "Konsole", "/home/deck/share/icons/breeze-dark/apps/utilities-terminal.svg", "/home/deck/share/applications/org.kde.konsole.desktop")})
   }
   
-  reload();
+  if (!loaded) {
+    reload();
+  }
 
   return (
     <PanelSection title="Shortcuts">
@@ -49,13 +51,9 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({}) => {
       </PanelSectionRow>
 
       <PanelSectionRow>
-        {
-        loading ? 
-          <Spinner style={{height: "60px", width: "60px"}} /> : 
-          <div style={{ margin: "20px 0px", width: "100%", padding: "0" }}>
-            <ShorcutList key={PyInterop.key} shortcuts={shortcuts ? shortcuts : {}} />
-          </div>
-        }
+        <div style={{ margin: "20px 0px", width: "100%", padding: "0" }}>
+          <ShorcutList key={PyInterop.key} shortcuts={shortcuts ? shortcuts : {}} />
+        </div>
       </PanelSectionRow>
 
       <PanelSectionRow>
