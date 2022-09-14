@@ -50,11 +50,7 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({}) => {
         </ButtonItem>
       </PanelSectionRow>
 
-      <PanelSectionRow>
-        <div style={{ margin: "20px 0px", width: "100%", padding: "0" }}>
-          <ShorcutList key={PyInterop.key} shortcuts={shortcuts ? shortcuts : {}} />
-        </div>
-      </PanelSectionRow>
+      <ShorcutList key={PyInterop.key} shortcuts={shortcuts ? shortcuts : {}} />
 
       <PanelSectionRow>
         <ButtonItem layout="below" onClick={reload} >

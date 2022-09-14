@@ -1,5 +1,9 @@
+import { ButtonItem, PanelSectionRow } from "decky-frontend-lib";
+import { Fragment } from "react";
+import { PyInterop } from "../PyInterop";
 import { Shortcut } from "../Shortcut";
-import { ShortcutView } from "./ShortcutView";
+
+import { FaShip } from "react-icons/fa";
 
 export type ShortcutListProps = {
     shortcuts: {
@@ -7,8 +11,16 @@ export type ShortcutListProps = {
     }
 }
 export function ShorcutList(props: ShortcutListProps) {
-    const comps = Object.values(props.shortcuts).map((itm) => <ShortcutView shortcut={itm} />);
     return (
-        <div style={{ width: "100%", display: "grid", gridTemplateColumns: "repeat(4, 1fr)" }}>{comps}</div>
+        <Fragment>
+            {Object.values(props.shortcuts)
+                .map((itm: Shortcut) => (
+                <PanelSectionRow>
+                    <ButtonItem label={itm.name} onClick={() => PyInterop.launchApp(itm.name, itm.path)} >
+                        <FaShip />
+                    </ButtonItem>
+                </PanelSectionRow>
+            ))}
+        </Fragment>
     );
 }

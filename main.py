@@ -6,10 +6,6 @@ import json
 from genericpath import exists
 # from configparser import ConfigParser
 
-# import gi
-# gi.require_version('Gtk', '3.0')
-# from gi.repository import Gtk
-
 logging.basicConfig(filename="/home/deck/Desktop/dev-plugins/Shortcuts/shortcuts.log", format='[Shortcuts] %(asctime)s %(levelname)s %(message)s', filemode='w+', force=True)
 logger=logging.getLogger()
 logger.setLevel(logging.INFO) # can be changed to logging.DEBUG for debugging issues
@@ -23,7 +19,6 @@ class Shortcut:
     def __init__(self, dict):
         print(dict)
         self.name = dict['name']
-        self.icon = dict['icon']
         self.path = dict['path']
         self.id = dict['id']
 
@@ -34,17 +29,6 @@ class Shortcut:
 
 #         self.type = Config.get("Desktop Entry", "Type")
 #         self.name = Config.get("Desktop Entry", "Name")
-
-#         icon = Config.get("Desktop Entry", "Icon")
-#         if (isabs(icon)):
-#             self.icon = icon
-#         else:
-#             theme = Gtk.IconTheme.get_default()
-#             icn = theme.lookup_icon(icon, 64, 0)
-#             if (icn):
-#                 self.icon = icn.get_filename()
-#             else:
-#                 self.type = "No Icon"
 
 #         self.path = path
 
