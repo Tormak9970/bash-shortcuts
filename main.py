@@ -50,15 +50,12 @@ class Shortcut:
 class Plugin:
     shortcuts = {}
     shortcutsPath = "/home/deck/homebrew/plugins/Shortcuts/shortcuts.json"
+
     # Normal methods: can be called from JavaScript using call_plugin_function("signature", argument)
     async def getShortcuts(self):
         self._load(self)
         return self.shortcuts
         
-    # async def setShortcuts(self, data):
-    #     await self._updateShortcuts(self, self.shortcutsPath, data)
-    #     return self.shortcuts
-    
     # async def addShortcut(self, shortcut):
     #     await self._addShortcut(self, self.shortcutsPath, shortcut)
     #     return self.shortcuts

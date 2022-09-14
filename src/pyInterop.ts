@@ -4,10 +4,6 @@ import { Shortcut } from "./Shortcut";
 type ShortcutsDictionary = {
     [key:string]: Shortcut
 }
-  
-interface setShortcutsMethodArgs {
-    shortcutsDict: ShortcutsDictionary
-}
 
 interface launchAppArgs {
     name:string,
@@ -28,9 +24,6 @@ export class PyInterop {
 
     static async getShortcuts(): Promise<ServerResponse<ShortcutsDictionary>> {
         return await this.serverAPI.callPluginMethod<{}, ShortcutsDictionary>("setShortcuts", {})
-    }
-    static async setShortcuts(data:ShortcutsDictionary): Promise<ServerResponse<ShortcutsDictionary>> {
-        return await this.serverAPI.callPluginMethod<setShortcutsMethodArgs, ShortcutsDictionary>("setShortcuts", { shortcutsDict: data });
     }
     static async addShortcut(shortcut:Shortcut): Promise<ServerResponse<ShortcutsDictionary>> {
         return await this.serverAPI.callPluginMethod<{shortcut:Shortcut}, ShortcutsDictionary>("addShortcuts", { shortcut: shortcut });
