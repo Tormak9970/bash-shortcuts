@@ -22,6 +22,9 @@ class Shortcut:
         self.path = dict['path']
         self.id = dict['id']
 
+    def toJSON(self):
+        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+
 # class Application:
 #     def __init__(self, path):
 #         Config = ConfigParser()
