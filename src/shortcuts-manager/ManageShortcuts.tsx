@@ -16,7 +16,7 @@ type ShortcutsDictionary = {
 
 function showMenu(e: MouseEvent, shortcut: Shortcut) {
     return showContextMenu(
-        <Menu label="Menu" cancelText="CAAAANCEL" onCancel={() => {}}>
+        <Menu label="Menu" cancelText="Cancel" onCancel={() => {}}>
         <MenuItem onSelected={() => {showModal(
             // @ts-ignore
             <EditModal onConfirm={(updated:Shortcut) => {PyInterop.modShortcut(updated)}} />

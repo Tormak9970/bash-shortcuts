@@ -4,7 +4,7 @@ import json
 # from glob import glob
 # from posixpath import isabs
 from genericpath import exists
-# from configparser import ConfigParser
+from configparser import ConfigParser
 
 logging.basicConfig(filename="/home/deck/Desktop/dev-plugins/Shortcuts/shortcuts.log", format='[Shortcuts] %(asctime)s %(levelname)s %(message)s', filemode='w+', force=True)
 logger=logging.getLogger()
@@ -21,19 +21,19 @@ class Shortcut:
         self.name = dict['name']
         self.path = dict['path']
         self.id = dict['id']
-
+    
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
 
-# class Application:
-#     def __init__(self, path):
-#         Config = ConfigParser()
-#         Config.read(path)
+class Application:
+    def __init__(self, path):
+        Config = ConfigParser()
+        Config.read(path)
 
-#         self.type = Config.get("Desktop Entry", "Type")
-#         self.name = Config.get("Desktop Entry", "Name")
+        self.type = Config.get("Desktop Entry", "Type")
+        self.name = Config.get("Desktop Entry", "Name")
 
-#         self.path = path
+        self.path = path
 
 class Plugin:
     shortcuts = {}
@@ -44,8 +44,8 @@ class Plugin:
         self._load(self)
         return self.shortcuts
         
-    async def addManualShortcut(self, path):
-        await self._addManualShortcut(self, path)
+    async def addManualShortcut(self, id, path):
+        await self._addManualShortcut(self, id, path)
         return self.shortcuts
         
     async def addShortcut(self, shortcut):
@@ -129,11 +129,19 @@ class Plugin:
 
         pass
 
-    async def _addManualShortcut(self, path):
-        # generate uuid6
-        # get icon from .desktop file
-        # create shortcut
-        # add to self.shortcuts
+    async def _addManualShortcut(self, id, path):
+        Config = ConfigParser()
+        Config.read(path)
+
+        nShortDict = {
+            "id": id,
+            "name": Config.get("Desktop Entry", "Name"),
+            "path": path
+        }
+        nShort = Shortcut(nShortDict)
+
+        self.shortcuts[id] = nShort
+
         pass
 
     def _addShortcut(self, path, shortcut):

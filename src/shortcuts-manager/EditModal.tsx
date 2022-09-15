@@ -1,4 +1,4 @@
-import { Field, ModalRoot, TextField } from "decky-frontend-lib"
+import { Field, ModalRoot, PanelSection, PanelSectionRow, TextField } from "decky-frontend-lib"
 import { VFC, Fragment, useState } from "react"
 import { Shortcut } from "../Shortcut"
 
@@ -23,21 +23,36 @@ export const EditModal: VFC<EditModalProps> = ({
             <ModalRoot
             bAllowFullSize
             onCancel={closeModal}
+            onEscKeypress={closeModal}
+            
             onOK={() => {
                 const updated = new Shortcut(shortcut.id, name, path);
                 onConfirm(updated);
+                closeModal();
             }}>
-                <div style={{ display: "flex", justifyContent: "center", alignItems: "center", marginBottom: "1em", marginTop: "-2.5em" }} >
-                    <div>
-                        <span style={{ fontSize: "1.5em" }}>
-                        <b>{title}</b>
-                        </span>
-                    </div>
-                </div>
-                <div>
-                    <Field label="Shortcut Name" description={<TextField label={'Name'} value={name} onChange={(e) => setName(e?.target.value)} />} />
-                    <Field label="Shortcut Path" description={<TextField label={'Path'} value={path} onChange={(e) => setPath(e?.target.value)} />} />
-                </div>
+                <PanelSection title={title}>
+                    <PanelSectionRow>
+                        <Field
+                            label="Shortcut Name"
+                            description={
+                                <TextField label={'Name'}
+                                    value={name}
+                                    onChange={(e) => setName(e?.target.value)}
+                                />}
+                            />
+                    </PanelSectionRow>
+                    <PanelSectionRow>
+                        <Field
+                            label="Shortcut Path"
+                            description={
+                                <TextField
+                                    label={'Path'}
+                                    value={path}
+                                    onChange={(e) => setPath(e?.target.value)}
+                                />}
+                            />
+                    </PanelSectionRow>
+                </PanelSection>
             </ModalRoot>
         </>
     )
