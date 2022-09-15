@@ -25,13 +25,12 @@ type ShortcutsDictionary = {
 let loaded = false;
 
 const Content: VFC<{ serverAPI: ServerAPI }> = ({}) => {
-  const [shortcuts, setShortcuts] = useState<ShortcutsDictionary | undefined>();
+  const [shortcuts, setShortcuts] = useState<ShortcutsDictionary>({});
 
   async function reload() {
     loaded = false;
     await PyInterop.getShortcuts().then((res) => {
       setShortcuts(res.result as ShortcutsDictionary);
-      PyInterop.key = PyInterop.key == 0 ? 1 : 0;
       loaded = true;
     });
   }
@@ -48,11 +47,10 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({}) => {
         </ButtonItem>
       </PanelSectionRow>
 
-      {Object.values(shortcuts ? shortcuts : {})
+      {Object.values(shortcuts)
           .map((itm: Shortcut) => (
           <ShortcutLauncher shortcut={itm} />
       ))}
-      {/* <ShorcutList key={PyInterop.key} shortcuts={shortcuts ? shortcuts : {}} /> */}
 
       <PanelSectionRow>
         <ButtonItem layout="below" onClick={reload} >

@@ -11,7 +11,7 @@ logger=logging.getLogger()
 logger.setLevel(logging.INFO) # can be changed to logging.DEBUG for debugging issues
 
 def log(txt):
-    logger.info(f"[Shorcuts] {txt}")
+    logger.info(txt)
 
 Initialized = False
 
@@ -23,7 +23,7 @@ class Shortcut:
         self.id = dict['id']
     
     def toJSON(self):
-        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+        return json.dumps({ "id": self.id, "name": self.name, "path": self.path }, sort_keys=True, indent=4)
 
 class Application:
     def __init__(self, path):
@@ -39,26 +39,36 @@ class Plugin:
     shortcuts = {}
     shortcutsPath = "/home/deck/homebrew/plugins/Shortcuts/shortcuts.json"
 
+    def serializeShortcuts(self):
+        res = {}
+
+        for k,v in self.shortcuts.items():
+            res[k] = { "id": v.id, "name": v.name, "path": v.path }
+
+        log(json.dumps(res))
+
+        return res
+
     # Normal methods: can be called from JavaScript using call_plugin_function("signature", argument)
     async def getShortcuts(self):
         self._load(self)
-        return self.shortcuts
+        return self.serializeShortcuts(self)
         
     async def addManualShortcut(self, id, path):
         await self._addManualShortcut(self, id, path)
-        return self.shortcuts
+        return self.serializeShortcuts(self)
         
     async def addShortcut(self, shortcut):
         self._addShortcut(self, self.shortcutsPath, shortcut)
-        return self.shortcuts
+        return self.serializeShortcuts(self)
 
     async def modShortcut(self, shortcut):
         self._modShortcut(self, self.shortcutsPath, shortcut)
-        return self.shortcuts
+        return self.serializeShortcuts(self)
 
     async def remShortcut(self, shortcut):
         self._remShortcut(self, self.shortcutsPath, shortcut)
-        return self.shortcuts
+        return self.serializeShortcuts(self)
 
     # async def launchApp(self, name, path):
     #     log(f"Launching {name}")
@@ -116,10 +126,10 @@ class Plugin:
                 with open(self.shortcutsPath, "r") as file:
                     shortcutsDict = json.load(file)
 
-                    for key in shortcutsDict.keys():
-                        itm = shortcutsDict[key]
-                        log(f"Adding shortcut {itm['name']}")
-                        self.shortcuts[itm['id']] = Shortcut(itm)
+                    for k,v in shortcutsDict.items():
+                        log(f"Adding shortcut {v['name']}")
+                        self.shortcuts[v['id']] = Shortcut(v)
+                        log(f"Added shortcut {v['name']}")
 
             except Exception as e:
                 log(f"Exception while parsing shortcuts: {e}") # error reading json
@@ -129,7 +139,7 @@ class Plugin:
 
         pass
 
-    async def _addManualShortcut(self, id, path):
+    def _addManualShortcut(self, id, path):
         Config = ConfigParser()
         Config.read(path)
 
@@ -142,13 +152,21 @@ class Plugin:
 
         self.shortcuts[id] = nShort
 
+        log(f"Adding manual shortcut {nShort.name}")
+        res = self.serializeShortcuts(self)
+        jDat = json.dumps(res, indent=4)
+
+        with open(path, "w") as outfile:
+            outfile.write(jDat)
+
         pass
 
     def _addShortcut(self, path, shortcut):
         if (shortcut['id'] not in [x.id for x in self.shortcuts]):
             self.shortcuts[shortcut['id']] = shortcut
             log(f"Adding shortcut {shortcut['name']}")
-            jDat = json.dumps(self.shortcuts, indent=4)
+            res = self.serializeShortcuts(self)
+            jDat = json.dumps(res, indent=4)
 
             with open(path, "w") as outfile:
                 outfile.write(jDat)
@@ -161,7 +179,8 @@ class Plugin:
         if (shortcut['id'] in [x.id for x in self.shortcuts]):
             self.shortcuts[shortcut['id']] = shortcut
             log(f"Modifying shortcut {shortcut['name']}")
-            jDat = json.dumps(self.shortcuts, indent=4)
+            res = self.serializeShortcuts(self)
+            jDat = json.dumps(res, indent=4)
 
             with open(path, "w") as outfile:
                 outfile.write(jDat)
@@ -173,7 +192,8 @@ class Plugin:
         if (shortcut['id'] in [x.id for x in self.shortcuts]):
             del self.shortcuts[shortcut['id']]
             log(f"removing shortcut {shortcut['name']}")
-            jDat = json.dumps(self.shortcuts, indent=4)
+            res = self.serializeShortcuts(self)
+            jDat = json.dumps(res, indent=4)
 
             with open(path, "w") as outfile:
                 outfile.write(jDat)

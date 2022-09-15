@@ -1,4 +1,4 @@
-import { Button, ButtonItem, ConfirmModal, Menu, MenuItem, PanelSection, PanelSectionRow, showContextMenu, showModal, Spinner } from "decky-frontend-lib";
+import { ButtonItem, ConfirmModal, Menu, MenuItem, PanelSection, PanelSectionRow, showContextMenu, showModal, Spinner } from "decky-frontend-lib";
 import { Fragment, useState } from "react";
 import { PyInterop } from "../PyInterop";
 import { Shortcut } from "../Shortcut";
@@ -69,7 +69,6 @@ export function ManageShortcuts() {
         loaded = false;
         await PyInterop.getShortcuts().then((res) => {
             setShortcuts(res.result as ShortcutsDictionary);
-            PyInterop.key = PyInterop.key == 0 ? 1 : 0;
             setLoading(false);
             loaded = true;
         });

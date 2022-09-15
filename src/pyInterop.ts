@@ -12,7 +12,6 @@ interface launchAppArgs {
 }
 
 export class PyInterop {
-    public static key = 0;
     private static serverAPI:ServerAPI;
 
     static setServer(serv:ServerAPI) {
@@ -24,7 +23,7 @@ export class PyInterop {
     }
 
     static async getShortcuts(): Promise<ServerResponse<ShortcutsDictionary>> {
-        return await this.serverAPI.callPluginMethod<{}, ShortcutsDictionary>("getShortcuts", {})
+        return await this.serverAPI.callPluginMethod<{}, ShortcutsDictionary>("getShortcuts", {});
     }
     static async addShortcut(shortcut:Shortcut): Promise<ServerResponse<ShortcutsDictionary>> {
         return await this.serverAPI.callPluginMethod<{shortcut:Shortcut}, ShortcutsDictionary>("addShortcuts", { shortcut: shortcut });
