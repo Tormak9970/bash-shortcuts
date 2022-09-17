@@ -17,13 +17,12 @@ Initialized = False
 
 class Shortcut:
     def __init__(self, dict):
-        print(dict)
         self.name = dict['name']
-        self.path = dict['path']
+        self.cmd = dict['cmd']
         self.id = dict['id']
     
     def toJSON(self):
-        return json.dumps({ "id": self.id, "name": self.name, "path": self.path }, sort_keys=True, indent=4)
+        return json.dumps({ "id": self.id, "name": self.name, "cmd": self.cmd }, sort_keys=True, indent=4)
 
 class Application:
     def __init__(self, path):
@@ -43,9 +42,9 @@ class Plugin:
         res = {}
 
         for k,v in self.shortcuts.items():
-            res[k] = { "id": v.id, "name": v.name, "path": v.path }
+            res[k] = { "id": v.id, "name": v.name, "cmd": v.cmd }
 
-        log(json.dumps(res))
+        # log(json.dumps(res)) # for debug of json
 
         return res
 
@@ -54,19 +53,18 @@ class Plugin:
         self._load(self)
         return self.serializeShortcuts(self)
         
-    async def addManualShortcut(self, id, path):
-        await self._addManualShortcut(self, id, path)
-        return self.serializeShortcuts(self)
-        
     async def addShortcut(self, shortcut):
+        log("addShortcut triggered")
         self._addShortcut(self, self.shortcutsPath, shortcut)
         return self.serializeShortcuts(self)
 
     async def modShortcut(self, shortcut):
+        log("modShortcut triggered")
         self._modShortcut(self, self.shortcutsPath, shortcut)
         return self.serializeShortcuts(self)
 
     async def remShortcut(self, shortcut):
+        log("remShortcut triggered")
         self._remShortcut(self, self.shortcutsPath, shortcut)
         return self.serializeShortcuts(self)
 
@@ -139,30 +137,9 @@ class Plugin:
 
         pass
 
-    def _addManualShortcut(self, id, path):
-        Config = ConfigParser()
-        Config.read(path)
-
-        nShortDict = {
-            "id": id,
-            "name": Config.get("Desktop Entry", "Name"),
-            "path": path
-        }
-        nShort = Shortcut(nShortDict)
-
-        self.shortcuts[id] = nShort
-
-        log(f"Adding manual shortcut {nShort.name}")
-        res = self.serializeShortcuts(self)
-        jDat = json.dumps(res, indent=4)
-
-        with open(path, "w") as outfile:
-            outfile.write(jDat)
-
-        pass
-
     def _addShortcut(self, path, shortcut):
-        if (shortcut['id'] not in [x.id for x in self.shortcuts]):
+        log("_addShortcut triggered")
+        if (shortcut['id'] not in self.shortcuts):
             self.shortcuts[shortcut['id']] = shortcut
             log(f"Adding shortcut {shortcut['name']}")
             res = self.serializeShortcuts(self)
@@ -176,7 +153,9 @@ class Plugin:
         pass
 
     def _modShortcut(self, path, shortcut):
-        if (shortcut['id'] in [x.id for x in self.shortcuts]):
+        log("_modShortcut triggered")
+        log(shortcut['id'] in self.shortcuts)
+        if (shortcut['id'] in self.shortcuts):
             self.shortcuts[shortcut['id']] = shortcut
             log(f"Modifying shortcut {shortcut['name']}")
             res = self.serializeShortcuts(self)
@@ -186,10 +165,12 @@ class Plugin:
                 outfile.write(jDat)
         else:
             log(f"Shortcut {shortcut['name']} does not exist")
+
         pass
 
     def _remShortcut(self, path, shortcut):
-        if (shortcut['id'] in [x.id for x in self.shortcuts]):
+        log("_remShortcut triggered")
+        if (shortcut['id'] in self.shortcuts):
             del self.shortcuts[shortcut['id']]
             log(f"removing shortcut {shortcut['name']}")
             res = self.serializeShortcuts(self)
@@ -199,4 +180,5 @@ class Plugin:
                 outfile.write(jDat)
         else:
             log(f"Shortcut {shortcut['name']} does not exist")
+
         pass

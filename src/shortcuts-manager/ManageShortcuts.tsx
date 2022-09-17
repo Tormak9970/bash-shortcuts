@@ -14,56 +14,66 @@ type ShortcutsDictionary = {
     [key:string]: Shortcut
 }
 
-function showMenu(e: MouseEvent, shortcut: Shortcut) {
-    return showContextMenu(
-        <Menu label="Actions" cancelText="Cancel" onCancel={() => {}}>
-        <MenuItem onSelected={() => {showModal(
-            // @ts-ignore
-            <EditModal onConfirm={(updated:Shortcut) => {PyInterop.modShortcut(updated)}} />
-        )}}>Edit</MenuItem>
-        <MenuItem onSelected={() => {showModal(
-            <ConfirmModal onOK={() => {PyInterop.remShortcut(shortcut)}} bDestructiveWarning={true}>
-                Are you sure you want to delete this shortcut?
-            </ConfirmModal>
-        )}}>Delete</MenuItem>
-        </Menu>,
-        e.currentTarget ?? window
-    );
-}
-
-function ShortcutMod(props: ShortcutModProps) {
-    return (
-        <>
-            <style>
-                {`
-                    .custom-buttons {
-                        width: inherit;
-                        height: inherit;
-                        display: inherit;
-                    }
-                    .custom-buttons .DialogButton._DialogLayout.Secondary.gamepaddialog_Button_1kn70.Focusable {
-                        min-width: 30px;
-                        display: flex;
-                        justify-content: center,
-                        align-items: center
-                    }
-                `}
-            </style>
-            <PanelSectionRow>
-                <div className="custom-buttons">
-                    <ButtonItem label={props.shortcut.name} onClick={ (e) => showMenu(e, props.shortcut) } >
-                        <FaEllipsisH />
-                    </ButtonItem>
-                </div>
-            </PanelSectionRow>
-        </>
-    );
-}
-
 let loaded = false;
 export function ManageShortcuts() {
-    const [shortcuts, setShortcuts] = useState<ShortcutsDictionary | undefined>();
+    const [shortcuts, setShortcuts] = useState<ShortcutsDictionary>({});
     const [loading, setLoading] = useState<boolean>(true);
+
+    function showMenu(e: MouseEvent, shortcut: Shortcut) {
+        return showContextMenu(
+            <Menu label="Actions" cancelText="Cancel" onCancel={() => {}}>
+            <MenuItem onSelected={() => {showModal(
+                // @ts-ignore
+                <EditModal onConfirm={(updated:Shortcut) => {
+                    PyInterop.modShortcut(updated);
+                    let shorts = shortcuts;
+                    shorts[shortcut.id] = updated;
+                    setShortcuts(shorts);
+                }} shortcut={shortcut} />
+            )}}>Edit</MenuItem>
+            <MenuItem onSelected={() => {showModal(
+                <ConfirmModal onOK={() => {
+                    PyInterop.remShortcut(shortcut);
+                    let shorts = shortcuts;
+                    delete shorts[shortcut.id];
+                    setShortcuts(shorts);
+                }} bDestructiveWarning={true}>
+                    Are you sure you want to delete this shortcut?
+                </ConfirmModal>
+            )}}>Delete</MenuItem>
+            </Menu>,
+            e.currentTarget ?? window
+        );
+    }
+    
+    function ShortcutMod(props: ShortcutModProps) {
+        return (
+            <>
+                <style>
+                    {`
+                        .custom-buttons {
+                            width: inherit;
+                            height: inherit;
+                            display: inherit;
+                        }
+                        .custom-buttons .DialogButton._DialogLayout.Secondary.gamepaddialog_Button_1kn70.Focusable {
+                            min-width: 30px;
+                            display: flex;
+                            justify-content: center,
+                            align-items: center
+                        }
+                    `}
+                </style>
+                <PanelSectionRow>
+                    <div className="custom-buttons">
+                        <ButtonItem label={props.shortcut.name} onClick={ (e) => showMenu(e, props.shortcut) } >
+                            <FaEllipsisH />
+                        </ButtonItem>
+                    </div>
+                </PanelSectionRow>
+            </>
+        );
+    }
 
     async function reload() {
         loaded = false;

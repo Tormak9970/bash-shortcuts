@@ -1,5 +1,4 @@
 import { ServerAPI, ServerResponse } from "decky-frontend-lib";
-import { v4 as uuidv4 } from 'uuid';
 import { Shortcut } from "./Shortcut";
 
 type ShortcutsDictionary = {
@@ -26,13 +25,13 @@ export class PyInterop {
         return await this.serverAPI.callPluginMethod<{}, ShortcutsDictionary>("getShortcuts", {});
     }
     static async addShortcut(shortcut:Shortcut): Promise<ServerResponse<ShortcutsDictionary>> {
-        return await this.serverAPI.callPluginMethod<{shortcut:Shortcut}, ShortcutsDictionary>("addShortcuts", { shortcut: shortcut });
+        return await this.serverAPI.callPluginMethod<{shortcut:Shortcut}, ShortcutsDictionary>("addShortcut", { shortcut: shortcut });
     }
     static async modShortcut(shortcut:Shortcut): Promise<ServerResponse<ShortcutsDictionary>> {
-        return await this.serverAPI.callPluginMethod<{shortcut:Shortcut}, ShortcutsDictionary>("modShortcuts", { shortcut: shortcut });
+        return await this.serverAPI.callPluginMethod<{shortcut:Shortcut}, ShortcutsDictionary>("modShortcut", { shortcut: shortcut });
     }
     static async remShortcut(shortcut:Shortcut): Promise<ServerResponse<ShortcutsDictionary>> {
-        return await this.serverAPI.callPluginMethod<{shortcut:Shortcut}, ShortcutsDictionary>("remShortcuts", { shortcut: shortcut });
+        return await this.serverAPI.callPluginMethod<{shortcut:Shortcut}, ShortcutsDictionary>("remShortcut", { shortcut: shortcut });
     }
 
 
@@ -42,9 +41,5 @@ export class PyInterop {
     static async getInstalledApps(): Promise<ServerResponse<Application[]>> {
         const apps = await this.serverAPI.callPluginMethod<{}, Application[]>("getInstalledApps", {});
         return apps;
-    }
-    static async addManualShortcut(path:string): Promise<ServerResponse<ShortcutsDictionary>> {
-        const id = uuidv4();
-        return await this.serverAPI.callPluginMethod<{ id:string, path: string }, ShortcutsDictionary>("addManualShortcut", { id: id, path: path });
     }
 }
