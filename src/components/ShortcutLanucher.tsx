@@ -28,7 +28,7 @@ export function ShortcutLauncher(props: ShortcutLauncherProps) {
         </style>
             <PanelSectionRow>
                 <div className="custom-buttons">
-                    <ButtonItem label={props.shortcut.name} onClick={() => PyInterop.launchApp(props.shortcut.name, props.shortcut.path)} >
+                    <ButtonItem label={props.shortcut.name} onClick={() => PyInterop.launchApp(props.shortcut.name, props.shortcut.cmd)} >
                         <IoRocketSharp />
                     </ButtonItem>
                 </div>

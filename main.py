@@ -1,8 +1,8 @@
 import logging
 import json
-# from os import path, system
-# from glob import glob
-# from posixpath import isabs
+from os import path, system
+from glob import glob
+from posixpath import isabs
 from genericpath import exists
 from configparser import ConfigParser
 
@@ -70,11 +70,11 @@ class Plugin:
         self._remShortcut(self, self.shortcutsPath, shortcut)
         return self.serializeShortcuts(self)
 
-    # async def launchApp(self, name, path):
-    #     log(f"Launching {name}")
+    async def launchApp(self, name, cmd):
+        log(f"Launching {name}")
         
-    #     system(path)
-    #     pass
+        system(cmd)
+        pass
 
     # async def getInstalledApps(self):
     #     apps = []

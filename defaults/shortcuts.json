@@ -2,6 +2,6 @@
     "fcba1cb4-4601-45d8-b919-515d152c56ef": {
         "id": "fcba1cb4-4601-45d8-b919-515d152c56ef",
         "name": "Konsole",
-        "path": "/home/deck/share/applications/org.kde.konsole.desktop"
+        "cmd": "konsole"
     }
 }

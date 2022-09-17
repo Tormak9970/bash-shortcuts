@@ -1,4 +1,4 @@
-import { Field, ModalRoot, PanelSection, PanelSectionRow, TextField } from "decky-frontend-lib"
+import { Field, ConfirmModal, PanelSection, PanelSectionRow, TextField } from "decky-frontend-lib"
 import { VFC, Fragment, useState } from "react"
 import { Shortcut } from "../Shortcut"
 
@@ -16,17 +16,17 @@ export const EditModal: VFC<EditModalProps> = ({
     title = `Modifying: ${shortcut.name}`,
 }) => {
     const [name, setName] = useState<string>(shortcut.name);
-    const [path, setPath] = useState<string>(shortcut.path);
+    const [cmd, setCmd] = useState<string>(shortcut.cmd);
     
     return (
         <>
-            <ModalRoot
+            <ConfirmModal
             bAllowFullSize
             onCancel={closeModal}
             onEscKeypress={closeModal}
             
             onOK={() => {
-                const updated = new Shortcut(shortcut.id, name, path);
+                const updated = new Shortcut(shortcut.id, name, cmd);
                 onConfirm(updated);
                 closeModal();
             }}>
@@ -43,17 +43,17 @@ export const EditModal: VFC<EditModalProps> = ({
                     </PanelSectionRow>
                     <PanelSectionRow>
                         <Field
-                            label="Shortcut Path"
+                            label="Shortcut Command"
                             description={
                                 <TextField
-                                    label={'Path'}
-                                    value={path}
-                                    onChange={(e) => setPath(e?.target.value)}
+                                    label={'Command'}
+                                    value={cmd}
+                                    onChange={(e) => setCmd(e?.target.value)}
                                 />}
                             />
                     </PanelSectionRow>
                 </PanelSection>
-            </ModalRoot>
+            </ConfirmModal>
         </>
     )
 }
