@@ -35,7 +35,8 @@ export const EditModal: VFC<EditModalProps> = ({
                         <Field
                             label="Shortcut Name"
                             description={
-                                <TextField label={'Name'}
+                                <TextField
+                                    label={'Name'}
                                     value={name}
                                     onChange={(e) => setName(e?.target.value)}
                                 />}

@@ -44,8 +44,6 @@ class Plugin:
         for k,v in self.shortcuts.items():
             res[k] = { "id": v.id, "name": v.name, "cmd": v.cmd }
 
-        # log(json.dumps(res)) # for debug of json
-
         return res
 
     # Normal methods: can be called from JavaScript using call_plugin_function("signature", argument)
@@ -59,12 +57,10 @@ class Plugin:
         return self.serializeShortcuts(self)
 
     async def modShortcut(self, shortcut):
-        log("modShortcut triggered")
         self._modShortcut(self, self.shortcutsPath, shortcut)
         return self.serializeShortcuts(self)
 
     async def remShortcut(self, shortcut):
-        log("remShortcut triggered")
         self._remShortcut(self, self.shortcutsPath, shortcut)
         return self.serializeShortcuts(self)
 
@@ -140,7 +136,7 @@ class Plugin:
     def _addShortcut(self, path, shortcut):
         log("_addShortcut triggered")
         if (shortcut['id'] not in self.shortcuts):
-            self.shortcuts[shortcut['id']] = shortcut
+            self.shortcuts[shortcut['id']] = Shortcut(shortcut)
             log(f"Adding shortcut {shortcut['name']}")
             res = self.serializeShortcuts(self)
             jDat = json.dumps(res, indent=4)
@@ -153,12 +149,8 @@ class Plugin:
         pass
 
     def _modShortcut(self, path, shortcut):
-        log(shortcut)
-        log("_modShortcut triggered")
-        log(shortcut['id'] in self.shortcuts)
         if (shortcut['id'] in self.shortcuts):
-            self.shortcuts[shortcut['id']] = shortcut
-            log(f"Modifying shortcut {shortcut['name']}")
+            self.shortcuts[shortcut['id']] = Shortcut(shortcut)
             res = self.serializeShortcuts(self)
             jDat = json.dumps(res, indent=4)
 
@@ -170,7 +162,6 @@ class Plugin:
         pass
 
     def _remShortcut(self, path, shortcut):
-        log("_remShortcut triggered")
         if (shortcut['id'] in self.shortcuts):
             del self.shortcuts[shortcut['id']]
             log(f"removing shortcut {shortcut['name']}")
