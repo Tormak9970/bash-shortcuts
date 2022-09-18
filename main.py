@@ -153,6 +153,7 @@ class Plugin:
         pass
 
     def _modShortcut(self, path, shortcut):
+        log(shortcut)
         log("_modShortcut triggered")
         log(shortcut['id'] in self.shortcuts)
         if (shortcut['id'] in self.shortcuts):
