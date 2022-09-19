@@ -1,91 +1,68 @@
-import { Field, ConfirmModal, PanelSection, PanelSectionRow, TextField } from "decky-frontend-lib"
-import { VFC, Fragment, useState } from "react"
+import { Field, PanelSection, PanelSectionRow, TextField, ButtonItem } from "decky-frontend-lib"
+import { Fragment, useState, useEffect } from "react"
 import { PyInterop } from "../PyInterop";
 import { Shortcut } from "../Shortcut";
 
+import {v4 as uuidv4} from "uuid";
+import { showToast } from "../general/Toast";
+
 export function AddShortcut() {
-    
+	const [ableToSave, setAbleToSave] = useState(false);
+	const [name, setName] = useState<string>("");
+	const [cmd, setCmd] = useState<string>("");
 
-  return (
-      <>
-          <div style={{
-              marginBottom: "5px"
-          }}>Here you can re-order or remove existing shortcuts</div>
-          {/* @ts-ignore */}
-          <PanelSection title="Your Shortcuts" style={{padding: "0px 0px"}}>
-              {Object.values(shortcuts as ShortcutsDictionary).length > 0 ?
-                  Object.values(shortcuts ? shortcuts : {})
-                      .map((itm: Shortcut) => (
-                      <ShortcutMod shortcut={itm} />
-                  )) : (
-                      <div style={{width: "100%", display: "flex", justifyContent: "center", alignItems: "center", padding: "5px"}}>
-                          You don't have any shortcuts right now! You can create new shortcuts from the add menu to the left.
-                      </div>
-                  )
-              }
-              <PanelSectionRow>
-                  <ButtonItem layout="below" onClick={reload} >
-                      Reload Shortcuts
-                  </ButtonItem>
-              </PanelSectionRow>
-          </PanelSection>
-      </>
-  );
-}
+	function saveShortcut() {
+		const newShort = new Shortcut(uuidv4(), name, cmd);
+		PyInterop.addShortcut(newShort);
+		setName("");
+		setCmd("");
+		showToast("Shortcut Saved!");
+	}
 
-type EditModalProps = {
-    closeModal: () => void,
-    onConfirm?(shortcut:Shortcut): any,
-    title?: string,
-    shortcut: Shortcut,
-}
+	useEffect(() => {
+		setAbleToSave(name != "" && cmd != "");
+	}, [name, cmd])
 
-export const EditModal: VFC<EditModalProps> = ({
-    closeModal,
-    onConfirm = () => {},
-    shortcut,
-    title = `Modifying: ${shortcut.name}`,
-}) => {
-    const [name, setName] = useState<string>(shortcut.name);
-    const [cmd, setCmd] = useState<string>(shortcut.cmd);
-    
-    return (
-        <>
-            <ConfirmModal
-            bAllowFullSize
-            onCancel={closeModal}
-            onEscKeypress={closeModal}
-            
-            onOK={() => {
-                const updated = new Shortcut(shortcut.id, name, cmd);
-                onConfirm(updated);
-                closeModal();
-            }}>
-                <PanelSection title={title}>
-                    <PanelSectionRow>
-                        <Field
-                            label="Shortcut Name"
-                            description={
-                                <TextField
-                                    label={'Name'}
-                                    value={name}
-                                    onChange={(e) => setName(e?.target.value)}
-                                />}
-                            />
-                    </PanelSectionRow>
-                    <PanelSectionRow>
-                        <Field
-                            label="Shortcut Command"
-                            description={
-                                <TextField
-                                    label={'Command'}
-                                    value={cmd}
-                                    onChange={(e) => setCmd(e?.target.value)}
-                                />}
-                            />
-                    </PanelSectionRow>
-                </PanelSection>
-            </ConfirmModal>
-        </>
-    )
+	return (
+		<>
+			<style>{`
+            .scoper .quickaccesscontrols_PanelSection_2C0g0 {
+                width: inherit;
+                height: inherit;
+                padding: 0px;
+            }
+        `}</style>
+			<div className="scoper">
+				<PanelSection>
+					<PanelSectionRow>
+						<Field
+							label="Shortcut Name"
+							description={
+								<TextField
+									label={'Name'}
+									value={name}
+									onChange={(e) => setName(e?.target.value)}
+								/>}
+						/>
+					</PanelSectionRow>
+					<PanelSectionRow>
+						<Field
+							label="Shortcut Command"
+							description={
+								<TextField
+									label={'Command'}
+									value={cmd}
+									onChange={(e) => setCmd(e?.target.value)}
+								/>}
+						/>
+					</PanelSectionRow>
+					<PanelSectionRow>
+						<ButtonItem layout="below" onClick={saveShortcut} disabled={!ableToSave}>
+							Save
+						</ButtonItem>
+					</PanelSectionRow>
+				</PanelSection>
+			</div>
+		</>
+	);
 }

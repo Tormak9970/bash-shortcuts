@@ -87,27 +87,35 @@ export function ManageShortcuts() {
     
     return (
         <>
+            <style>{`
+                .scoper .quickaccesscontrols_PanelSection_2C0g0 {
+                    width: inherit;
+                    height: inherit;
+                    padding: 0px;
+                }
+            `}</style>
             <div style={{
                 marginBottom: "5px"
             }}>Here you can re-order or remove existing shortcuts</div>
-            {/* @ts-ignore */}
-            <PanelSection title="Your Shortcuts" style={{padding: "0px 0px"}}>
-                {Object.values(shortcuts as ShortcutsDictionary).length > 0 ?
-                    Object.values(shortcuts ? shortcuts : {})
-                        .map((itm: Shortcut) => (
-                        <ShortcutMod shortcut={itm} />
-                    )) : (
-                        <div style={{width: "100%", display: "flex", justifyContent: "center", alignItems: "center", padding: "5px"}}>
-                            You don't have any shortcuts right now! You can create new shortcuts from the add menu to the left.
-                        </div>
-                    )
-                }
-                <PanelSectionRow>
-                    <ButtonItem layout="below" onClick={reload} >
-                        Reload Shortcuts
-                    </ButtonItem>
-                </PanelSectionRow>
-            </PanelSection>
+            <div className="scoper">
+                <PanelSection title="Your Shortcuts">
+                    {Object.values(shortcuts as ShortcutsDictionary).length > 0 ?
+                        Object.values(shortcuts ? shortcuts : {})
+                            .map((itm: Shortcut) => (
+                            <ShortcutMod shortcut={itm} />
+                        )) : (
+                            <div style={{width: "100%", display: "flex", justifyContent: "center", alignItems: "center", padding: "5px"}}>
+                                You don't have any shortcuts right now! You can create new shortcuts from the add menu to the left.
+                            </div>
+                        )
+                    }
+                    <PanelSectionRow>
+                        <ButtonItem layout="below" onClick={reload} >
+                            Reload Shortcuts
+                        </ButtonItem>
+                    </PanelSectionRow>
+                </PanelSection>
+            </div>
         </>
     );
 }

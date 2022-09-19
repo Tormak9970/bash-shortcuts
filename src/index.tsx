@@ -36,7 +36,7 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({}) => {
   }
 
   return (
-    <PanelSection title="Shortcuts">
+    <PanelSection> {/* title="Shortcuts" */}
       <PanelSectionRow>
         <ButtonItem layout="below" onClick={() => { Router.CloseSideMenus(); Router.Navigate("/shortcuts-nav"); }} >
           Manage Shortcuts
