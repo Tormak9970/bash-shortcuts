@@ -22,20 +22,16 @@ type ShortcutsDictionary = {
   [key:string]: Shortcut
 }
 
-let loaded = false;
-
 const Content: VFC<{ serverAPI: ServerAPI }> = ({}) => {
   const [shortcuts, setShortcuts] = useState<ShortcutsDictionary>({});
 
   async function reload() {
-    loaded = false;
     await PyInterop.getShortcuts().then((res) => {
       setShortcuts(res.result as ShortcutsDictionary);
-      loaded = true;
     });
   }
   
-  if (!loaded) {
+  if (Object.values(shortcuts as ShortcutsDictionary).length == 0) {
     reload();
   }
 

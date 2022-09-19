@@ -14,7 +14,6 @@ type ShortcutsDictionary = {
     [key:string]: Shortcut
 }
 
-let loaded = false;
 export function ManageShortcuts() {
     const [shortcuts, setShortcuts] = useState<ShortcutsDictionary>({});
 
@@ -77,14 +76,12 @@ export function ManageShortcuts() {
     }
 
     async function reload() {
-        loaded = false;
         await PyInterop.getShortcuts().then((res) => {
             setShortcuts(res.result as ShortcutsDictionary);
-            loaded = true;
         });
     }
       
-    if (!loaded) {
+    if (Object.values(shortcuts as ShortcutsDictionary).length == 0) {
         reload();
     }
     
@@ -93,7 +90,8 @@ export function ManageShortcuts() {
             <div style={{
                 marginBottom: "5px"
             }}>Here you can re-order or remove existing shortcuts</div>
-            <PanelSection title="Your Shortcuts">
+            {/* @ts-ignore */}
+            <PanelSection title="Your Shortcuts" style={{padding: "0px 0px"}}>
                 {Object.values(shortcuts as ShortcutsDictionary).length > 0 ?
                     Object.values(shortcuts ? shortcuts : {})
                         .map((itm: Shortcut) => (
