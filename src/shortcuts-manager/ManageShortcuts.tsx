@@ -158,7 +158,7 @@ export function ManageShortcuts() {
                     padding: 0px;
                 }
                 
-                .scoper .DialogButton._DialogLayout.Secondary.gamepaddialog_Button_1kn70.Focusable {
+                .custom-btns .DialogButton._DialogLayout.Secondary.gamepaddialog_Button_1kn70.Focusable {
                     min-width: 30px;
                     max-width: 60px;
                     display: flex;
@@ -166,12 +166,18 @@ export function ManageShortcuts() {
                     align-items: center
                 }
 
-                .cols {
+                .custom-btns {
+                    margin-bottom: 7px;
+                }
 
+                .cols {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
                 }
 
                 .col {
-
+                    flex-grow: 2;
                 }
             `}</style>
             <div style={{
@@ -182,14 +188,22 @@ export function ManageShortcuts() {
                     {Object.values(shortcuts as ShortcutsDictionary).length > 0 ?
                         (
                             <PanelSectionRow>
-                                <div className="cols">
+                                <Focusable style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center"
+                                }}>
                                     <Focusable>
                                         {Object.values(shortcuts ? shortcuts : {})
                                             .map((itm: Shortcut) => (
-                                            // @ts-ignore
-                                            <DialogButton onClick={(e) => {}}>
-                                                <FaArrowsAltV />
-                                            </DialogButton>
+                                            <Focusable>
+                                                <div className="custom-btns">
+                                                    {/* @ts-ignore */}
+                                                    <DialogButton onClick={(e) => {}}>
+                                                        <FaArrowsAltV />
+                                                    </DialogButton>
+                                                </div>
+                                            </Focusable>
                                         ))}
                                     </Focusable>
 
@@ -198,7 +212,10 @@ export function ManageShortcuts() {
                                             .map((itm: Shortcut) => (
                                                 <div style={{
                                                     flexGrow: "2",
-                                                    marginLeft: "14px"
+                                                    marginLeft: "14px",
+                                                    marginBottom: "7px",
+                                                    height: "36px",
+                                                    lineHeight: "36px"
                                                 }}>{itm.name}</div>
                                         ))}
                                     </div>
@@ -206,13 +223,17 @@ export function ManageShortcuts() {
                                     <Focusable>
                                         {Object.values(shortcuts ? shortcuts : {})
                                             .map((itm: Shortcut) => (
-                                            // @ts-ignore
-                                            <DialogButton onClick={ (e) => showMenu(e, itm) }>
-                                                <FaEllipsisH />
-                                            </DialogButton>
+                                            <Focusable>
+                                                <div className="custom-btns">
+                                                    {/* @ts-ignore */}
+                                                    <DialogButton onClick={ (e) => showMenu(e, itm) }>
+                                                        <FaEllipsisH />
+                                                    </DialogButton>
+                                                </div>
+                                            </Focusable>
                                         ))}
                                     </Focusable>
-                                </div>
+                                </Focusable>
                             </PanelSectionRow>
                         ) : (
                             <div style={{width: "100%", display: "flex", justifyContent: "center", alignItems: "center", padding: "5px"}}>
