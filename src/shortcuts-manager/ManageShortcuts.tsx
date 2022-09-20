@@ -1,9 +1,9 @@
-import { ButtonItem, ConfirmModal, Menu, MenuItem, PanelSection, PanelSectionRow, showContextMenu, showModal } from "decky-frontend-lib";
+import { Button, ButtonItem, ConfirmModal, DialogButton, Focusable, Menu, MenuItem, PanelSection, PanelSectionRow, showContextMenu, showModal } from "decky-frontend-lib";
 import { Fragment, useState } from "react";
 import { PyInterop } from "../PyInterop";
 import { Shortcut } from "../Shortcut";
 
-import { FaEllipsisH } from "react-icons/fa";
+import { FaEllipsisH, FaArrowsAltV } from "react-icons/fa";
 import { EditModal } from "./EditModal";
 
 type ShortcutModProps = {
@@ -58,6 +58,7 @@ export function ManageShortcuts() {
                         }
                         .custom-buttons .DialogButton._DialogLayout.Secondary.gamepaddialog_Button_1kn70.Focusable {
                             min-width: 30px;
+                            max-width: 60px;
                             display: flex;
                             justify-content: center,
                             align-items: center
@@ -66,9 +67,29 @@ export function ManageShortcuts() {
                 </style>
                 <PanelSectionRow>
                     <div className="custom-buttons">
-                        <ButtonItem label={props.shortcut.name} onClick={ (e) => showMenu(e, props.shortcut) } >
+                        <Focusable style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center"
+                        }}>
+						    {/* @ts-ignore */}
+                            <DialogButton onClick={(e) => {}}>
+                                <FaArrowsAltV />
+                            </DialogButton>
+
+                            <div style={{
+                                flexGrow: "2",
+                                marginLeft: "14px"
+                            }}>{props.shortcut.name}</div>
+
+                            {/* @ts-ignore */}
+                            <DialogButton onClick={ (e) => showMenu(e, props.shortcut) }>
+                                <FaEllipsisH />
+                            </DialogButton>
+                        </Focusable>
+                        {/* <ButtonItem label={props.shortcut.name} onClick={ (e) => showMenu(e, props.shortcut) } >
                             <FaEllipsisH />
-                        </ButtonItem>
+                        </ButtonItem> */}
                     </div>
                 </PanelSectionRow>
             </>
@@ -110,7 +131,8 @@ export function ManageShortcuts() {
                         )
                     }
                     <PanelSectionRow>
-                        <ButtonItem layout="below" onClick={reload} >
+						{/* @ts-ignore */}
+                        <ButtonItem layout="below" onClick={reload} bottomSeparator='none'>
                             Reload Shortcuts
                         </ButtonItem>
                     </PanelSectionRow>

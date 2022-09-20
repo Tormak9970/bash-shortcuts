@@ -57,7 +57,8 @@ export function AddShortcut() {
 						/>
 					</PanelSectionRow>
 					<PanelSectionRow>
-						<ButtonItem layout="below" onClick={saveShortcut} disabled={!ableToSave}>
+						{/* @ts-ignore */}
+						<ButtonItem layout="below" onClick={saveShortcut} disabled={!ableToSave} bottomSeparator='none'>
 							Save
 						</ButtonItem>
 					</PanelSectionRow>
