@@ -46,7 +46,7 @@ export function ManageShortcuts() {
         );
     }
     
-    function ShortcutMod(props: ShortcutModProps) {
+    function ShortcutArrow(props: ShortcutModProps) {
         return (
             <>
                 <style>
@@ -87,9 +87,52 @@ export function ManageShortcuts() {
                                 <FaEllipsisH />
                             </DialogButton>
                         </Focusable>
-                        {/* <ButtonItem label={props.shortcut.name} onClick={ (e) => showMenu(e, props.shortcut) } >
-                            <FaEllipsisH />
-                        </ButtonItem> */}
+                    </div>
+                </PanelSectionRow>
+            </>
+        );
+    }
+    function ShortcutElipsis(props: ShortcutModProps) {
+        return (
+            <>
+                <style>
+                    {`
+                        .custom-buttons {
+                            width: inherit;
+                            height: inherit;
+                            display: inherit;
+                        }
+                        .custom-buttons .DialogButton._DialogLayout.Secondary.gamepaddialog_Button_1kn70.Focusable {
+                            min-width: 30px;
+                            max-width: 60px;
+                            display: flex;
+                            justify-content: center,
+                            align-items: center
+                        }
+                    `}
+                </style>
+                <PanelSectionRow>
+                    <div className="custom-buttons">
+                        <Focusable style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center"
+                        }}>
+						    {/* @ts-ignore */}
+                            <DialogButton onClick={(e) => {}}>
+                                <FaArrowsAltV />
+                            </DialogButton>
+
+                            <div style={{
+                                flexGrow: "2",
+                                marginLeft: "14px"
+                            }}>{props.shortcut.name}</div>
+
+                            {/* @ts-ignore */}
+                            <DialogButton onClick={ (e) => showMenu(e, props.shortcut) }>
+                                <FaEllipsisH />
+                            </DialogButton>
+                        </Focusable>
                     </div>
                 </PanelSectionRow>
             </>
@@ -114,6 +157,22 @@ export function ManageShortcuts() {
                     height: inherit;
                     padding: 0px;
                 }
+                
+                .scoper .DialogButton._DialogLayout.Secondary.gamepaddialog_Button_1kn70.Focusable {
+                    min-width: 30px;
+                    max-width: 60px;
+                    display: flex;
+                    justify-content: center,
+                    align-items: center
+                }
+
+                .cols {
+
+                }
+
+                .col {
+
+                }
             `}</style>
             <div style={{
                 marginBottom: "5px"
@@ -121,15 +180,47 @@ export function ManageShortcuts() {
             <div className="scoper">
                 <PanelSection title="Your Shortcuts">
                     {Object.values(shortcuts as ShortcutsDictionary).length > 0 ?
-                        Object.values(shortcuts ? shortcuts : {})
-                            .map((itm: Shortcut) => (
-                            <ShortcutMod shortcut={itm} />
-                        )) : (
+                        (
+                            <PanelSectionRow>
+                                <div className="cols">
+                                    <Focusable>
+                                        {Object.values(shortcuts ? shortcuts : {})
+                                            .map((itm: Shortcut) => (
+                                            // @ts-ignore
+                                            <DialogButton onClick={(e) => {}}>
+                                                <FaArrowsAltV />
+                                            </DialogButton>
+                                        ))}
+                                    </Focusable>
+
+                                    <div className="col">
+                                        {Object.values(shortcuts ? shortcuts : {})
+                                            .map((itm: Shortcut) => (
+                                                <div style={{
+                                                    flexGrow: "2",
+                                                    marginLeft: "14px"
+                                                }}>{itm.name}</div>
+                                        ))}
+                                    </div>
+
+                                    <Focusable>
+                                        {Object.values(shortcuts ? shortcuts : {})
+                                            .map((itm: Shortcut) => (
+                                            // @ts-ignore
+                                            <DialogButton onClick={ (e) => showMenu(e, itm) }>
+                                                <FaEllipsisH />
+                                            </DialogButton>
+                                        ))}
+                                    </Focusable>
+                                </div>
+                            </PanelSectionRow>
+                        ) : (
                             <div style={{width: "100%", display: "flex", justifyContent: "center", alignItems: "center", padding: "5px"}}>
                                 You don't have any shortcuts right now! You can create new shortcuts from the add menu to the left.
                             </div>
                         )
                     }
+
                     <PanelSectionRow>
 						{/* @ts-ignore */}
                         <ButtonItem layout="below" onClick={reload} bottomSeparator='none'>
