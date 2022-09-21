@@ -8,7 +8,7 @@ import {
   SidebarNavigation,
   staticClasses,
 } from "decky-frontend-lib";
-import { useState, VFC } from "react";
+import { VFC, Fragment } from "react";
 import { IoApps } from "react-icons/io5";
 import { About } from "./shortcuts-manager/About";
 import { AddShortcut } from "./shortcuts-manager/AddShortcut";
@@ -37,25 +37,55 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({}) => {
   }
 
   return (
-    <PanelSection> {/* title="Shortcuts" */}
-      <PanelSectionRow>
-        <ButtonItem layout="below" onClick={() => { Router.CloseSideMenus(); Router.Navigate("/shortcuts-nav"); }} >
-          Manage Shortcuts
-        </ButtonItem>
-      </PanelSectionRow>
+    <>
+      <style>{`
+        .scope {
+          width: inherit;
+          height: inherit;
+          display: inherit;
 
-      {Object.values(shortcuts)
-          .sort((a, b) => a.position - b.position)
-          .map((itm: Shortcut) => (
-          <ShortcutLauncher shortcut={itm} />
-      ))}
+          flex: 1 1 1px;
+          min-height: 1px;
+          scroll-padding: 48px 0px;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-start;
+          align-content: stretch;
+        }
+        .scope .quickaccesscontrols_PanelSection_2C0g0 {
+          padding: 0px;
+        }
 
-      <PanelSectionRow>
-        <ButtonItem layout="below" onClick={reload} >
-          Reload
-        </ButtonItem>
-      </PanelSectionRow>
-    </PanelSection>
+        .scope .gamepaddialog_FieldChildren_14_HB {
+          margin: 0px 16px;
+        }
+        
+        .scope .gamepaddialog_FieldLabel_3b0U- {
+          margin-left: 16px;
+        }
+      `}</style>
+      <div className="scope">
+        <PanelSection>
+          <PanelSectionRow>
+            <ButtonItem layout="below" onClick={() => { Router.CloseSideMenus(); Router.Navigate("/shortcuts-nav"); }} >
+              Manage Shortcuts
+            </ButtonItem>
+          </PanelSectionRow>
+    
+          {Object.values(shortcuts)
+              .sort((a, b) => a.position - b.position)
+              .map((itm: Shortcut) => (
+              <ShortcutLauncher shortcut={itm} />
+          ))}
+    
+          <PanelSectionRow>
+            <ButtonItem layout="below" onClick={reload} >
+              Reload
+            </ButtonItem>
+          </PanelSectionRow>
+        </PanelSection>
+      </div>
+    </>
   );
 };
 

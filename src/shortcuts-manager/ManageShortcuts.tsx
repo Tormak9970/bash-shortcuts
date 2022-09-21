@@ -70,10 +70,15 @@ export function ManageShortcuts() {
                     `}
                 </style>
                 <div className="custom-buttons">
-                    <Field label={props.shortcut.name}>
+                    <Field label={props.shortcut.name} onFocus={(e) => {
+                        // set the focused child based on the last selected
+                    }}>
                         <Focusable style={{ display: "flex" }}>
                             {/* @ts-ignore */}
-                            <DialogButton onClick={(e) => {}} style={{ marginRight: "14px" }}>
+                            <DialogButton onClick={(e) => {}} style={{ marginRight: "14px" }} onGamepadDirection={(e) => {
+                                // set the direction
+                                // initially will be left bc that is selected by defualt
+                            }}>
                                 <FaArrowsAltV />
                             </DialogButton>
                             {/* @ts-ignore */}
@@ -96,6 +101,11 @@ export function ManageShortcuts() {
     if (Object.values(shortcuts as ShortcutsDictionary).length == 0) {
         reload();
     }
+
+    console.log(Focusable)
+    console.log(DialogButton)
+    console.log(Menu)
+    console.log(MenuItem)
     
     return (
         <>
