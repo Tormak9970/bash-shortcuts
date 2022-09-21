@@ -69,26 +69,16 @@ export function ManageShortcuts() {
                     `}
                 </style>
                 <div className="custom-buttons">
-                    <Field label={props.shortcut.name} style={{
-                        width: "100%"
-                    }}>
-                        <Focusable style={{
-                            display: "flex"
-                        }}>
-                            <Focusable style={{
-                                marginRight: "14px"
-                            }}>
-                                {/* @ts-ignore */}
-                                <DialogButton onClick={(e) => {}}>
-                                    <FaArrowsAltV />
-                                </DialogButton>
-                            </Focusable>
-                            <Focusable>
-                                {/* @ts-ignore */}
-                                <DialogButton onClick={ (e) => showMenu(e, props.shortcut) }>
-                                    <FaEllipsisH />
-                                </DialogButton>
-                            </Focusable>
+                    <Field label={props.shortcut.name}>
+                        <Focusable style={{ display: "flex" }}>
+                            {/* @ts-ignore */}
+                            <DialogButton onClick={(e) => {}} style={{ marginRight: "14px" }}>
+                                <FaArrowsAltV />
+                            </DialogButton>
+                            {/* @ts-ignore */}
+                            <DialogButton onClick={ (e) => showMenu(e, props.shortcut) }>
+                                <FaEllipsisH />
+                            </DialogButton>
                         </Focusable>
                     </Field>
                 </div>
@@ -121,6 +111,7 @@ export function ManageShortcuts() {
             <div className="scoper">
             {Object.values(shortcuts as ShortcutsDictionary).length > 0 ?
                         Object.values(shortcuts ? shortcuts : {})
+                            .sort((a, b) => a.position - b.position)
                             .map((itm: Shortcut) => (
                             <ShortcutMod shortcut={itm} />
                         )) : (

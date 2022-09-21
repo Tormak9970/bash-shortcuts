@@ -44,6 +44,7 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({}) => {
       </PanelSectionRow>
 
       {Object.values(shortcuts)
+          .sort((a, b) => a.position - b.position)
           .map((itm: Shortcut) => (
           <ShortcutLauncher shortcut={itm} />
       ))}
