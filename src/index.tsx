@@ -10,20 +10,21 @@ import {
 } from "decky-frontend-lib";
 import { useState, VFC } from "react";
 import { IoApps } from "react-icons/io5";
-import { About } from "./About";
-import { AddShortcut } from "./add-shortcut/AddShortcut";
+import { About } from "./shortcuts-manager/About";
+import { AddShortcut } from "./shortcuts-manager/AddShortcut";
 import { ShortcutLauncher } from "./components/ShortcutLanucher";
 import { ManageShortcuts } from "./shortcuts-manager/ManageShortcuts";
 
 import { PyInterop } from "./PyInterop";
 import { Shortcut } from "./Shortcut";
+import { ShortcutsContextProvider, ShortcutsState, useShortcutsState } from "./state/ShortcutsState";
 
 type ShortcutsDictionary = {
   [key:string]: Shortcut
 }
 
 const Content: VFC<{ serverAPI: ServerAPI }> = ({}) => {
-  const [shortcuts, setShortcuts] = useState<ShortcutsDictionary>({});
+  const {shortcuts, setShortcuts} = useShortcutsState();
 
   async function reload() {
     await PyInterop.getShortcuts().then((res) => {
@@ -86,20 +87,31 @@ const ShortcutsManagerRouter: VFC = () => {
 
 export default definePlugin((serverApi: ServerAPI) => {
   PyInterop.setServer(serverApi);
-  serverApi.routerHook.addRoute("/shortcuts-nav", ShortcutsManagerRouter);
-  serverApi.routerHook.addRoute("/shortcuts-nav/add", AddShortcut);
-  serverApi.routerHook.addRoute("/shortcuts-nav/manage", ManageShortcuts);
-  serverApi.routerHook.addRoute("/shortcuts-nav/about", About);
+
+  const state = new ShortcutsState();
+
+  serverApi.routerHook.addRoute("/shortcuts-nav", () => (
+    <ShortcutsContextProvider shortcutsStateClass={state}>
+      <ShortcutsManagerRouter />
+    </ShortcutsContextProvider>
+  ));
+  // serverApi.routerHook.addRoute("/shortcuts-nav/add", AddShortcut);
+  // serverApi.routerHook.addRoute("/shortcuts-nav/manage", ManageShortcuts);
+  // serverApi.routerHook.addRoute("/shortcuts-nav/about", About);
 
   return {
     title: <div className={staticClasses.Title}>Shortcuts</div>,
-    content: <Content serverAPI={serverApi} />,
+    content: (
+      <ShortcutsContextProvider shortcutsStateClass={state}>
+        <Content serverAPI={serverApi} />
+      </ShortcutsContextProvider>
+    ),
     icon: <IoApps />,
     onDismount() {
       serverApi.routerHook.removeRoute("/shortcuts-nav");
-      serverApi.routerHook.removeRoute("/shortcuts-nav/add");
-      serverApi.routerHook.removeRoute("/shortcuts-nav/manage");
-      serverApi.routerHook.removeRoute("/shortcuts-nav/about");
+      // serverApi.routerHook.removeRoute("/shortcuts-nav/add");
+      // serverApi.routerHook.removeRoute("/shortcuts-nav/manage");
+      // serverApi.routerHook.removeRoute("/shortcuts-nav/about");
     },
   };
 });

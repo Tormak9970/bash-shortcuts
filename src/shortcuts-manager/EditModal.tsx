@@ -26,7 +26,7 @@ export const EditModal: VFC<EditModalProps> = ({
             onEscKeypress={closeModal}
             
             onOK={() => {
-                const updated = new Shortcut(shortcut.id, name, cmd);
+                const updated = new Shortcut(shortcut.id, name, cmd, shortcut.position);
                 onConfirm(updated);
                 closeModal();
             }}>

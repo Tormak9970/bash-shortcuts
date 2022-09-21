@@ -1,10 +1,11 @@
-import { ButtonItem, ConfirmModal, DialogButton, Field, Focusable, Menu, MenuItem, PanelSection, PanelSectionRow, showContextMenu, showModal } from "decky-frontend-lib";
-import { Fragment, useState } from "react";
+import { ButtonItem, ConfirmModal, DialogButton, Field, Focusable, Menu, MenuItem, showContextMenu, showModal } from "decky-frontend-lib";
+import { Fragment } from "react";
 import { PyInterop } from "../PyInterop";
 import { Shortcut } from "../Shortcut";
 
 import { FaEllipsisH, FaArrowsAltV } from "react-icons/fa";
 import { EditModal } from "./EditModal";
+import { useShortcutsState } from "../state/ShortcutsState";
 
 type ShortcutModProps = {
     shortcut: Shortcut
@@ -15,7 +16,7 @@ type ShortcutsDictionary = {
 }
 
 export function ManageShortcuts() {
-    const [shortcuts, setShortcuts] = useState<ShortcutsDictionary>({});
+    const {shortcuts, setShortcuts} = useShortcutsState();
 
     function showMenu(e: MouseEvent, shortcut: Shortcut) {
         return showContextMenu(

@@ -5,8 +5,10 @@ import { Shortcut } from "../Shortcut";
 
 import {v4 as uuidv4} from "uuid";
 import { showToast } from "../general/Toast";
+import { useShortcutsState } from "../state/ShortcutsState";
 
 export function AddShortcut() {
+	const {shortcuts, setShortcuts} = useShortcutsState();
 	const [ableToSave, setAbleToSave] = useState(false);
 	const [name, setName] = useState<string>("");
 	const [cmd, setCmd] = useState<string>("");
@@ -17,6 +19,10 @@ export function AddShortcut() {
 		setName("");
 		setCmd("");
 		showToast("Shortcut Saved!");
+
+		const ref = {...shortcuts};
+		ref[newShort.id]= newShort;
+		setShortcuts(ref);
 	}
 
 	useEffect(() => {
