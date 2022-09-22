@@ -18,7 +18,7 @@ type ShortcutsDictionary = {
 
 export function ManageShortcuts() {
     let reorderEnabled = useRef(false);
-    let direction = false; //false = left, true = right
+    let focusedSide = useRef(false); //false = left, true = right
 
     let focusIdx = useRef(0);
 
@@ -96,7 +96,10 @@ export function ManageShortcuts() {
                                 case DeckyGamepadButton.DIR_DOWN: {
                                     console.log("gamepad down");
                                     
-                                    if (reorderEnabled.current) e.preventDefault();
+                                    if (reorderEnabled.current && props.shortcut.position == shortcutsList.length) {
+                                        e.preventDefault();
+                                        e.stopImmediatePropagation();
+                                    }
 
                                     if (reorderEnabled.current && props.shortcut.position != shortcutsList.length) {
                                         const thisShortcut = props.shortcut;
@@ -110,16 +113,19 @@ export function ManageShortcuts() {
                                         refs[previous.id] = previous;
 
                                         setShortcuts(refs);
-                                        // PyInterop.setShortcuts([thisShortcut, previous]);
+                                        PyInterop.setShortcuts([thisShortcut, previous]);
                                     }
                                     break;
                                 }
                                 case DeckyGamepadButton.DIR_UP: {
                                     console.log("gamepad up");
 
-                                    if (reorderEnabled) e.preventDefault();
+                                    if (reorderEnabled.current && props.shortcut.position == 1) {
+                                        e.preventDefault();
+                                        e.stopImmediatePropagation();
+                                    }
 
-                                    if (reorderEnabled && props.shortcut.position != 1) {
+                                    if (reorderEnabled.current && props.shortcut.position != 1) {
                                         const thisShortcut = props.shortcut;
                                         const previous = shortcutsList[props.index-1];
                                         const tmp = thisShortcut.position;
@@ -131,17 +137,23 @@ export function ManageShortcuts() {
                                         refs[previous.id] = previous;
 
                                         setShortcuts(refs);
-                                        // PyInterop.setShortcuts([thisShortcut, previous]);
+                                        PyInterop.setShortcuts([thisShortcut, previous]);
                                     }
                                     break;
                                 }
                                 case DeckyGamepadButton.DIR_LEFT: {
                                     console.log("gamepad left");
                                     lastEvent = true;
+                                    if (focusedSide.current) {
+                                        focusedSide.current = false;
+                                    }
                                 }
                                 case DeckyGamepadButton.DIR_RIGHT: {
                                     if (!lastEvent) {
                                         console.log("gamepad right");
+                                        if (!focusedSide.current) {
+                                            focusedSide.current = true;
+                                        }
                                     } else {
                                         lastEvent = false;
                                     }
@@ -152,21 +164,22 @@ export function ManageShortcuts() {
                             switch(e.detail.button) {
                                 case DeckyGamepadButton.OK: {
                                     console.log(e);
-                                    if (!direction) {
+                                    if (!focusedSide.current) {
                                         reorderEnabled.current = true;
                                     }
-                                    console.log(direction, reorderEnabled);
+                                    console.log(focusedSide.current, reorderEnabled);
                                 }
                             }
                         }} onButtonUp={(e:DeckyGamepadEvent) => {
                             switch(e.detail.button) {
                                 case DeckyGamepadButton.OK: {
                                     reorderEnabled.current = false;
-                                    console.log(direction, reorderEnabled);
+                                    console.log(focusedSide.current, reorderEnabled);
                                 }
                             }
                         }}>
-                            <DialogButton style={{ marginRight: "14px" }} ref={reorderBtn}> {/* onOKActionDescription={"Hold to reorder shortcuts"} */}
+                            {/* @ts-ignore */}
+                            <DialogButton style={{ marginRight: "14px" }} ref={reorderBtn} onOKActionDescription={"Hold to reorder shortcuts"}> {/* onOKActionDescription={"Hold to reorder shortcuts"} */}
                                 <FaArrowsAltV />
                             </DialogButton>
                             <DialogButton onClick={(e) => showMenu(e, props.shortcut)} ref={optionsBtn}>
@@ -202,7 +215,9 @@ export function ManageShortcuts() {
             <div style={{
                 marginBottom: "5px"
             }}>Here you can re-order or remove existing shortcuts</div>
-            <div className="scoper">
+            <div className="scoper" onBlur={(e) => {
+                // reorderEnabled.current = false;
+            }}>
                 {shortcutsList.length > 0 ?
                     shortcutsList.map((itm: Shortcut, i:number) => (
                         <ShortcutMod shortcut={itm} index={i} />
