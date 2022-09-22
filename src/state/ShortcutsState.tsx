@@ -7,6 +7,7 @@ type ShortcutsDictionary = {
 
 interface PublicShortcutsState {
     shortcuts: ShortcutsDictionary;
+    shortcutsList: Shortcut[]
 }
 
 interface PublicShortcutsContext extends PublicShortcutsState {
@@ -15,17 +16,20 @@ interface PublicShortcutsContext extends PublicShortcutsState {
 
 export class ShortcutsState {
     private shortcuts: ShortcutsDictionary = {};
+    private shortcutsList: Shortcut[] = []
 
     public eventBus = new EventTarget();
 
     getPublicState() {
         return {
-            "shortcuts": this.shortcuts
+            "shortcuts": this.shortcuts,
+            "shortcutsList": this.shortcutsList
         }
     }
 
     setShortcuts(shortcuts: ShortcutsDictionary) {
         this.shortcuts = shortcuts;
+        this.shortcutsList = Object.values(this.shortcuts).sort((a, b) => a.position - b.position);
         this.forceUpdate();
     }
 

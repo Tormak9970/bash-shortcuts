@@ -24,7 +24,7 @@ type ShortcutsDictionary = {
 }
 
 const Content: VFC<{ serverAPI: ServerAPI }> = ({}) => {
-  const {shortcuts, setShortcuts} = useShortcutsState();
+  const {shortcuts, setShortcuts, shortcutsList} = useShortcutsState();
 
   async function reload() {
     await PyInterop.getShortcuts().then((res) => {
@@ -72,9 +72,7 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({}) => {
             </ButtonItem>
           </PanelSectionRow>
     
-          {Object.values(shortcuts)
-              .sort((a, b) => a.position - b.position)
-              .map((itm: Shortcut) => (
+          {shortcutsList.map((itm: Shortcut) => (
               <ShortcutLauncher shortcut={itm} />
           ))}
     
