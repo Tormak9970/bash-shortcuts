@@ -99,7 +99,6 @@ export function ManageShortcuts() {
                                     if (reorderEnabled.current) e.preventDefault();
 
                                     if (reorderEnabled.current && props.shortcut.position != shortcutsList.length) {
-                                        // e.preventDefault();
                                         const thisShortcut = props.shortcut;
                                         const previous = shortcutsList[props.index+1];
                                         const tmp = thisShortcut.position;
@@ -167,7 +166,7 @@ export function ManageShortcuts() {
                                 }
                             }
                         }}>
-                            <DialogButton style={{ marginRight: "14px" }} ref={reorderBtn}>
+                            <DialogButton style={{ marginRight: "14px" }} ref={reorderBtn}> {/* onOKActionDescription={"Hold to reorder shortcuts"} */}
                                 <FaArrowsAltV />
                             </DialogButton>
                             <DialogButton onClick={(e) => showMenu(e, props.shortcut)} ref={optionsBtn}>
