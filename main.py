@@ -56,6 +56,10 @@ class Plugin:
         self._addShortcut(self, self.shortcutsPath, shortcut)
         return self.serializeShortcuts(self)
 
+    async def modShortcut(self, shortcuts):
+        self._setShortcuts(self, self.shortcutsPath, shortcuts)
+        return self.serializeShortcuts(self)
+
     async def modShortcut(self, shortcut):
         self._modShortcut(self, self.shortcutsPath, shortcut)
         return self.serializeShortcuts(self)
@@ -144,6 +148,21 @@ class Plugin:
                 outfile.write(jDat)
         else:
             log(f"Shortcut {shortcut['name']} already exists")
+
+        pass
+
+    def _setShortcuts(self, path, shortcuts):
+        for shortcut in shortcuts:
+            if (shortcut['id'] in self.shortcuts):
+                self.shortcuts[shortcut['id']] = Shortcut(shortcut)
+            else:
+                log(f"Shortcut {shortcut['name']} does not exist")
+            
+        res = self.serializeShortcuts(self)
+        jDat = json.dumps(res, indent=4)
+
+        with open(path, "w") as outfile:
+            outfile.write(jDat)
 
         pass
 

@@ -123,9 +123,6 @@ export default definePlugin((serverApi: ServerAPI) => {
       <ShortcutsManagerRouter />
     </ShortcutsContextProvider>
   ));
-  // serverApi.routerHook.addRoute("/shortcuts-nav/add", AddShortcut);
-  // serverApi.routerHook.addRoute("/shortcuts-nav/manage", ManageShortcuts);
-  // serverApi.routerHook.addRoute("/shortcuts-nav/about", About);
 
   return {
     title: <div className={staticClasses.Title}>Shortcuts</div>,
@@ -137,9 +134,6 @@ export default definePlugin((serverApi: ServerAPI) => {
     icon: <IoApps />,
     onDismount() {
       serverApi.routerHook.removeRoute("/shortcuts-nav");
-      // serverApi.routerHook.removeRoute("/shortcuts-nav/add");
-      // serverApi.routerHook.removeRoute("/shortcuts-nav/manage");
-      // serverApi.routerHook.removeRoute("/shortcuts-nav/about");
     },
   };
 });

@@ -1,5 +1,5 @@
 import { ButtonItem, ConfirmModal, DialogButton, Field, Focusable, Menu, MenuItem, showContextMenu, showModal, GamepadButton as DeckyGamepadButton, GamepadEvent as DeckyGamepadEvent } from "decky-frontend-lib";
-import { Fragment } from "react";
+import { Fragment, useEffect, useRef } from "react";
 import { PyInterop } from "../PyInterop";
 import { Shortcut } from "../Shortcut";
 
@@ -17,8 +17,11 @@ type ShortcutsDictionary = {
 }
 
 export function ManageShortcuts() {
-    let reorderEnabled = false;
+    let reorderEnabled = useRef(false);
     let direction = false; //false = left, true = right
+
+    let focusIdx = useRef(0);
+
     const {shortcuts, setShortcuts, shortcutsList} = useShortcutsState();
 
     function showMenu(e: MouseEvent, shortcut: Shortcut) {
@@ -51,6 +54,18 @@ export function ManageShortcuts() {
     }
     
     function ShortcutMod(props: ShortcutModProps) {
+        const wrapperFocusable = useRef<HTMLDivElement>(null);
+        const reorderBtn = useRef<HTMLDivElement>(null);
+        const optionsBtn = useRef<HTMLDivElement>(null);
+
+        let lastEvent = false;
+
+        useEffect(() => {
+            if (focusIdx.current == props.index) {
+                reorderBtn.current?.focus();
+            }
+        });
+
         return (
             <>
                 <style>
@@ -73,13 +88,18 @@ export function ManageShortcuts() {
                     `}
                 </style>
                 <div className="custom-buttons">
-                    <Field label={props.shortcut.name} onFocus={(e) => {
-                        // set the focused child based on the last selected
-                    }}>
+                    <Field label={props.shortcut.name} onFocus={(e:React.FocusEvent<HTMLDivElement>) => {
+                        focusIdx.current = props.index;
+                    }} ref={wrapperFocusable}> {/* onFocus={(e:React.FocusEvent<HTMLDivElement>) => {}} onBlur={(e) => {}} */}
                         <Focusable style={{ display: "flex" }} onGamepadDirection={(e:DeckyGamepadEvent) => {
                             switch(e.detail.button) {
                                 case DeckyGamepadButton.DIR_DOWN: {
-                                    if (reorderEnabled && props.shortcut.position != shortcutsList.length-1) {
+                                    console.log("gamepad down");
+                                    
+                                    if (reorderEnabled.current) e.preventDefault();
+
+                                    if (reorderEnabled.current && props.shortcut.position != shortcutsList.length) {
+                                        // e.preventDefault();
                                         const thisShortcut = props.shortcut;
                                         const previous = shortcutsList[props.index+1];
                                         const tmp = thisShortcut.position;
@@ -91,11 +111,16 @@ export function ManageShortcuts() {
                                         refs[previous.id] = previous;
 
                                         setShortcuts(refs);
+                                        // PyInterop.setShortcuts([thisShortcut, previous]);
                                     }
                                     break;
                                 }
                                 case DeckyGamepadButton.DIR_UP: {
-                                    if (reorderEnabled && props.shortcut.position != 0) {
+                                    console.log("gamepad up");
+
+                                    if (reorderEnabled) e.preventDefault();
+
+                                    if (reorderEnabled && props.shortcut.position != 1) {
                                         const thisShortcut = props.shortcut;
                                         const previous = shortcutsList[props.index-1];
                                         const tmp = thisShortcut.position;
@@ -107,37 +132,45 @@ export function ManageShortcuts() {
                                         refs[previous.id] = previous;
 
                                         setShortcuts(refs);
+                                        // PyInterop.setShortcuts([thisShortcut, previous]);
                                     }
                                     break;
                                 }
                                 case DeckyGamepadButton.DIR_LEFT: {
-                                    if (direction) direction = false;
-                                    break;
+                                    console.log("gamepad left");
+                                    lastEvent = true;
                                 }
                                 case DeckyGamepadButton.DIR_RIGHT: {
-                                    if (!direction) direction = true;
-                                    break;
+                                    if (!lastEvent) {
+                                        console.log("gamepad right");
+                                    } else {
+                                        lastEvent = false;
+                                    }
                                 }
                             }
+                            return false;
                         }} onButtonDown={(e:DeckyGamepadEvent) => {
                             switch(e.detail.button) {
                                 case DeckyGamepadButton.OK: {
-                                    reorderEnabled = true;
-                                    break;
+                                    console.log(e);
+                                    if (!direction) {
+                                        reorderEnabled.current = true;
+                                    }
+                                    console.log(direction, reorderEnabled);
                                 }
                             }
                         }} onButtonUp={(e:DeckyGamepadEvent) => {
                             switch(e.detail.button) {
                                 case DeckyGamepadButton.OK: {
-                                    reorderEnabled = false;
-                                    break;
+                                    reorderEnabled.current = false;
+                                    console.log(direction, reorderEnabled);
                                 }
                             }
                         }}>
-                            <DialogButton onClick={(e) => {}} style={{ marginRight: "14px" }}>
+                            <DialogButton style={{ marginRight: "14px" }} ref={reorderBtn}>
                                 <FaArrowsAltV />
                             </DialogButton>
-                            <DialogButton onClick={(e) => showMenu(e, props.shortcut)}>
+                            <DialogButton onClick={(e) => showMenu(e, props.shortcut)} ref={optionsBtn}>
                                 <FaEllipsisH />
                             </DialogButton>
                         </Focusable>
@@ -148,19 +181,15 @@ export function ManageShortcuts() {
     }
 
     async function reload() {
-        await PyInterop.getShortcuts().then((res) => {
-            setShortcuts(res.result as ShortcutsDictionary);
-        });
+        await PyInterop.getShortcuts().then((res) => { setShortcuts(res.result as ShortcutsDictionary); });
     }
       
-    if (Object.values(shortcuts as ShortcutsDictionary).length == 0) {
-        reload();
-    }
+    if (Object.values(shortcuts as ShortcutsDictionary).length == 0) reload();
 
-    console.log(Focusable)
-    console.log(DialogButton)
-    console.log(Menu)
-    console.log(MenuItem)
+    // console.log(Focusable)
+    // console.log(DialogButton)
+    // console.log(Menu)
+    // console.log(MenuItem)
     
     return (
         <>
@@ -184,7 +213,6 @@ export function ManageShortcuts() {
                         </div>
                     )
                 }
-                {/* @ts-ignore */}
                 <ButtonItem layout="below" onClick={reload} bottomSeparator='none'>
                     Reload Shortcuts
                 </ButtonItem>
