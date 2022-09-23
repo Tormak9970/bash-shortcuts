@@ -32,12 +32,10 @@ export function ManageShortcuts() {
 
     function enableReorder() {
         reorderEnabled.current = true;
-        console.log(focusedSide.current, reorderEnabled);
     }
 
     function disabledReorder() {
         reorderEnabled.current = false;
-        console.log(focusedSide.current, reorderEnabled);
     }
 
     function showMenu(e: MouseEvent, shortcut: Shortcut) {
@@ -147,7 +145,6 @@ export function ManageShortcuts() {
                             onGamepadDirection={(e:DeckyGamepadEvent) => {
                                 switch(e.detail.button) {
                                     case DeckyGamepadButton.DIR_DOWN: {
-                                        console.log("gamepad down");
                                         
                                         if (reorderEnabled.current && props.shortcut.position == shortcutsList.length) {
                                             e.preventDefault();
@@ -163,8 +160,6 @@ export function ManageShortcuts() {
                                         break;
                                     }
                                     case DeckyGamepadButton.DIR_UP: {
-                                        console.log("gamepad up");
-
                                         if (reorderEnabled.current && props.shortcut.position == 1) {
                                             e.preventDefault();
                                             e.stopImmediatePropagation();
@@ -179,21 +174,17 @@ export function ManageShortcuts() {
                                         break;
                                     }
                                     case DeckyGamepadButton.DIR_LEFT: {
-                                        console.log("gamepad left");
                                         lastEvent = true;
                                         if (focusedSide.current) {
                                             focusedSide.current = false;
                                         }
-                                        console.log(focusedSide);
                                         reorderEnabled.current = false;
                                     }
                                     case DeckyGamepadButton.DIR_RIGHT: {
                                         if (!lastEvent) {
-                                            console.log("gamepad right");
                                             if (!focusedSide.current) {
                                                 focusedSide.current = true;
                                             }
-                                            console.log(focusedSide);
                                             reorderEnabled.current = false;
                                         } else {
                                             lastEvent = false;
@@ -296,20 +287,18 @@ export function ManageShortcuts() {
                 marginBottom: "5px"
             }}>Here you can re-order or remove existing shortcuts</div>
             <div className="scoper"
-            onMouseUp={(e:React.MouseEvent<HTMLDivElement>) => {
+            onMouseUp={() => {
                 mouseOrigin.current = {
                     "x": -1,
                     "y": -1,
                 }
-                console.log(e);
                 disabledReorder();
             }}
-            onTouchEnd={(e:React.TouchEvent<HTMLDivElement>) => {
+            onTouchEnd={() => {
                 touchOrigin.current = {
                     "x": -1,
                     "y": -1,
                 }
-                console.log(e);
                 disabledReorder();
             }}
             >
