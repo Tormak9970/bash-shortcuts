@@ -1,5 +1,5 @@
 import { ButtonItem, ConfirmModal, DialogButton, Field, Focusable, Menu, MenuItem, showContextMenu, showModal, GamepadButton as DeckyGamepadButton, GamepadEvent as DeckyGamepadEvent } from "decky-frontend-lib";
-import { Fragment, useEffect, useRef } from "react";
+import React, { Fragment, useEffect, useRef } from "react";
 import { PyInterop } from "../PyInterop";
 import { Shortcut } from "../Shortcut";
 
@@ -15,6 +15,8 @@ type ShortcutModProps = {
 type ShortcutsDictionary = {
     [key:string]: Shortcut
 }
+
+const ELEM_HEIGHT = 300; //find actual value
 
 export function ManageShortcuts() {
     let reorderEnabled = useRef(false);
@@ -58,6 +60,9 @@ export function ManageShortcuts() {
         const reorderBtn = useRef<HTMLDivElement>(null);
         const optionsBtn = useRef<HTMLDivElement>(null);
 
+        const touchOrigin = useRef({"x": -1, "y": -1});
+        const mouseOrigin = useRef({"x": -1, "y": -1});
+
         let lastEvent = false;
 
         useEffect(() => {
@@ -65,6 +70,31 @@ export function ManageShortcuts() {
                 reorderBtn.current?.focus();
             }
         });
+
+        function enableReorder() {
+            reorderEnabled.current = true;
+            console.log(focusedSide.current, reorderEnabled);
+        }
+
+        function disabledReorder() {
+            reorderEnabled.current = false;
+            console.log(focusedSide.current, reorderEnabled);
+        }
+
+        function reorder(down:boolean) {
+            const thisShortcut = props.shortcut;
+            const previous = shortcutsList[down ? props.index+1 : props.index-1];
+            const tmp = thisShortcut.position;
+            thisShortcut.position = previous.position;
+            previous.position = tmp;
+
+            const refs = shortcuts;
+            refs[thisShortcut.id] = thisShortcut;
+            refs[previous.id] = previous;
+
+            setShortcuts(refs);
+            PyInterop.setShortcuts([thisShortcut, previous]);
+        }
 
         return (
             <>
@@ -90,7 +120,7 @@ export function ManageShortcuts() {
                 <div className="custom-buttons">
                     <Field label={props.shortcut.name} onFocus={(e:React.FocusEvent<HTMLDivElement>) => {
                         focusIdx.current = props.index;
-                    }} ref={wrapperFocusable}> {/* onFocus={(e:React.FocusEvent<HTMLDivElement>) => {}} onBlur={(e) => {}} */}
+                    }} ref={wrapperFocusable}> {/* onBlur={(e) => {}} */}
                         <Focusable style={{ display: "flex" }} onGamepadDirection={(e:DeckyGamepadEvent) => {
                             switch(e.detail.button) {
                                 case DeckyGamepadButton.DIR_DOWN: {
@@ -102,18 +132,7 @@ export function ManageShortcuts() {
                                     }
 
                                     if (reorderEnabled.current && props.shortcut.position != shortcutsList.length) {
-                                        const thisShortcut = props.shortcut;
-                                        const previous = shortcutsList[props.index+1];
-                                        const tmp = thisShortcut.position;
-                                        thisShortcut.position = previous.position;
-                                        previous.position = tmp;
-
-                                        const refs = shortcuts;
-                                        refs[thisShortcut.id] = thisShortcut;
-                                        refs[previous.id] = previous;
-
-                                        setShortcuts(refs);
-                                        PyInterop.setShortcuts([thisShortcut, previous]);
+                                        reorder(true);
                                     }
                                     break;
                                 }
@@ -126,18 +145,7 @@ export function ManageShortcuts() {
                                     }
 
                                     if (reorderEnabled.current && props.shortcut.position != 1) {
-                                        const thisShortcut = props.shortcut;
-                                        const previous = shortcutsList[props.index-1];
-                                        const tmp = thisShortcut.position;
-                                        thisShortcut.position = previous.position;
-                                        previous.position = tmp;
-
-                                        const refs = shortcuts;
-                                        refs[thisShortcut.id] = thisShortcut;
-                                        refs[previous.id] = previous;
-
-                                        setShortcuts(refs);
-                                        PyInterop.setShortcuts([thisShortcut, previous]);
+                                        reorder(false);
                                     }
                                     break;
                                 }
@@ -160,29 +168,84 @@ export function ManageShortcuts() {
                                 }
                             }
                             return false;
-                        }} onButtonDown={(e:DeckyGamepadEvent) => {
-                            switch(e.detail.button) {
-                                case DeckyGamepadButton.OK: {
-                                    console.log(e);
-                                    if (!focusedSide.current) {
-                                        reorderEnabled.current = true;
+                        }} onMouseMove={(e:React.MouseEvent<HTMLDivElement>) => {
+                            // once user has moved height of an entry, swap
+                            if (reorderEnabled.current) {
+                                const dy = e.clientY - mouseOrigin.current.y;
+                                if (Math.abs(dy) >= ELEM_HEIGHT) {
+                                    reorder(dy > 0);
+                                    mouseOrigin.current = {
+                                        "x": e.clientX,
+                                        "y": e.clientY,
                                     }
-                                    console.log(focusedSide.current, reorderEnabled);
                                 }
                             }
-                        }} onButtonUp={(e:DeckyGamepadEvent) => {
-                            switch(e.detail.button) {
-                                case DeckyGamepadButton.OK: {
-                                    reorderEnabled.current = false;
-                                    console.log(focusedSide.current, reorderEnabled);
+                        }} onTouchMove={(e:React.TouchEvent<HTMLDivElement>) => {
+                            // once user has moved height of an entry, swap
+                            if (reorderEnabled.current) {
+                                const dy = e.touches[0].clientY - touchOrigin.current.y;
+                                if (Math.abs(dy) >= ELEM_HEIGHT) {
+                                    reorder(dy > 0);
+                                    touchOrigin.current = {
+                                        "x": e.touches[0].clientX,
+                                        "y": e.touches[0].clientY,
+                                    }
                                 }
                             }
                         }}>
-                            {/* @ts-ignore */}
-                            <DialogButton style={{ marginRight: "14px" }} ref={reorderBtn} onOKActionDescription={"Hold to reorder shortcuts"}> {/* onOKActionDescription={"Hold to reorder shortcuts"} */}
+                            <DialogButton
+                                style={{ marginRight: "14px" }}
+                                ref={reorderBtn}
+                                // @ts-ignore
+                                onOKActionDescription={"Hold to reorder shortcuts"}
+                                onButtonDown={(e:DeckyGamepadEvent) => {
+                                    switch(e.detail.button) {
+                                        case DeckyGamepadButton.OK: {
+                                            console.log(e);
+                                            enableReorder();
+                                        }
+                                    }
+                                }} onButtonUp={(e:DeckyGamepadEvent) => {
+                                    switch(e.detail.button) {
+                                        case DeckyGamepadButton.OK: {
+                                            console.log(e);
+                                            disabledReorder();
+                                        }
+                                    }
+                                }}
+                                onMouseDown={(e:React.MouseEvent<HTMLDivElement>) => {
+                                    mouseOrigin.current = {
+                                        "x": e.clientX,
+                                        "y": e.clientY,
+                                    }
+                                    console.log(e);
+                                    enableReorder();
+                                }} onMouseUp={(e:React.MouseEvent<HTMLDivElement>) => {
+                                    mouseOrigin.current = {
+                                        "x": -1,
+                                        "y": -1,
+                                    }
+                                    console.log(e);
+                                    disabledReorder();
+                                }} onTouchStart={(e:React.TouchEvent<HTMLDivElement>) => {
+                                    touchOrigin.current = {
+                                        "x": e.touches[0].clientX,
+                                        "y": e.touches[0].clientY,
+                                    }
+                                    console.log(e);
+                                    enableReorder();
+                                }} onTouchEnd={(e:React.TouchEvent<HTMLDivElement>) => {
+                                    touchOrigin.current = {
+                                        "x": -1,
+                                        "y": -1,
+                                    }
+                                    console.log(e);
+                                    disabledReorder();
+                                }}
+                            >
                                 <FaArrowsAltV />
                             </DialogButton>
-                            <DialogButton onClick={(e) => showMenu(e, props.shortcut)} ref={optionsBtn}>
+                            <DialogButton onClick={(e:MouseEvent) => showMenu(e, props.shortcut)} ref={optionsBtn}>
                                 <FaEllipsisH />
                             </DialogButton>
                         </Focusable>
