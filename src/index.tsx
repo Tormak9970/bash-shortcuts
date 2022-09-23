@@ -1,8 +1,10 @@
 import {
   ButtonItem,
   definePlugin,
+  gamepadDialogClasses,
   PanelSection,
   PanelSectionRow,
+  quickAccessControlsClasses,
   Router,
   ServerAPI,
   SidebarNavigation,
@@ -52,15 +54,15 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({}) => {
           justify-content: flex-start;
           align-content: stretch;
         }
-        .scope .quickaccesscontrols_PanelSection_2C0g0 {
+        .scope .${quickAccessControlsClasses.PanelSection} {
           padding: 0px;
         }
 
-        .scope .gamepaddialog_FieldChildren_14_HB {
+        .scope .${gamepadDialogClasses.FieldChildren} {
           margin: 0px 16px;
         }
         
-        .scope .gamepaddialog_FieldLabel_3b0U- {
+        .scope .${gamepadDialogClasses.FieldLabel} {
           margin-left: 16px;
         }
       `}</style>

@@ -1,4 +1,4 @@
-import { Field, PanelSection, PanelSectionRow, TextField, ButtonItem } from "decky-frontend-lib"
+import { Field, PanelSection, PanelSectionRow, TextField, ButtonItem, quickAccessControlsClasses } from "decky-frontend-lib"
 import { Fragment, useState, useEffect } from "react"
 import { PyInterop } from "../PyInterop";
 import { Shortcut } from "../Shortcut";
@@ -8,13 +8,13 @@ import { showToast } from "../general/Toast";
 import { useShortcutsState } from "../state/ShortcutsState";
 
 export function AddShortcut() {
-	const {shortcuts, setShortcuts} = useShortcutsState();
+	const {shortcuts, setShortcuts, shortcutsList} = useShortcutsState();
 	const [ableToSave, setAbleToSave] = useState(false);
 	const [name, setName] = useState<string>("");
 	const [cmd, setCmd] = useState<string>("");
 
 	function saveShortcut() {
-		const newShort = new Shortcut(uuidv4(), name, cmd);
+		const newShort = new Shortcut(uuidv4(), name, cmd, shortcutsList.length);
 		PyInterop.addShortcut(newShort);
 		setName("");
 		setCmd("");
@@ -32,7 +32,7 @@ export function AddShortcut() {
 	return (
 		<>
 			<style>{`
-            .scoper .quickaccesscontrols_PanelSection_2C0g0 {
+            .scoper .${quickAccessControlsClasses.PanelSection} {
                 width: inherit;
                 height: inherit;
                 padding: 0px;

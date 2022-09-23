@@ -1,4 +1,4 @@
-import { DialogButton, Field, Focusable } from "decky-frontend-lib";
+import { DialogButton, Field, Focusable, gamepadDialogClasses } from "decky-frontend-lib";
 import { Fragment } from "react";
 import { PyInterop } from "../PyInterop";
 import { Shortcut } from "../Shortcut";
@@ -18,7 +18,7 @@ export function ShortcutLauncher(props: ShortcutLauncherProps) {
                         height: inherit;
                         display: inherit;
                     }
-                    .custom-buttons .DialogButton._DialogLayout.Secondary.gamepaddialog_Button_1kn70.Focusable {
+                    .custom-buttons .DialogButton._DialogLayout.Secondary.${gamepadDialogClasses.Button}.Focusable {
                         min-width: 30px;
                         max-width: 60px;
                         display: flex;
@@ -29,7 +29,7 @@ export function ShortcutLauncher(props: ShortcutLauncherProps) {
                         width: 100%;
                     }
 
-                    .custom-buttons .gamepaddialog_FieldChildren_14_HB {
+                    .custom-buttons .${gamepadDialogClasses.FieldChildren} {
                         margin: 0px 16px;
                     }
                 `}

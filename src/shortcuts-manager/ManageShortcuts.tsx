@@ -1,4 +1,4 @@
-import { ButtonItem, ConfirmModal, DialogButton, Field, Focusable, Menu, MenuItem, showContextMenu, showModal, GamepadButton as DeckyGamepadButton, GamepadEvent as DeckyGamepadEvent } from "decky-frontend-lib";
+import { ButtonItem, ConfirmModal, DialogButton, Field, Focusable, Menu, MenuItem, showContextMenu, showModal, GamepadButton as DeckyGamepadButton, GamepadEvent as DeckyGamepadEvent, gamepadDialogClasses } from "decky-frontend-lib";
 import React, { Fragment, useEffect, useRef, useState } from "react";
 import { PyInterop } from "../PyInterop";
 import { Shortcut } from "../Shortcut";
@@ -122,7 +122,7 @@ export function ManageShortcuts() {
                             height: inherit;
                             display: inherit;
                         }
-                        .custom-buttons .DialogButton._DialogLayout.Secondary.gamepaddialog_Button_1kn70.Focusable {
+                        .custom-buttons .DialogButton._DialogLayout.Secondary.${gamepadDialogClasses.Button}.Focusable {
                             min-width: 30px;
                             max-width: 60px;
                             display: flex;
