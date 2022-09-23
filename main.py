@@ -56,7 +56,7 @@ class Plugin:
         self._addShortcut(self, self.shortcutsPath, shortcut)
         return self.serializeShortcuts(self)
 
-    async def setShortcut(self, shortcuts):
+    async def setShortcuts(self, shortcuts):
         self._setShortcuts(self, self.shortcutsPath, shortcuts)
         return self.serializeShortcuts(self)
 
