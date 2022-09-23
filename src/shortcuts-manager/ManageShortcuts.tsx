@@ -21,6 +21,7 @@ const ELEM_HEIGHT = 300; //find actual value
 export function ManageShortcuts() {
     let reorderEnabled = useRef(false);
     let focusedSide = useRef(false); //false = left, true = right
+    let firstFocus = useRef(false);
 
     let focusIdx = useRef(0);
 
@@ -68,6 +69,16 @@ export function ManageShortcuts() {
         useEffect(() => {
             if (focusIdx.current == props.index) {
                 reorderBtn.current?.focus();
+            }
+
+            if (firstFocus.current && focusIdx.current == props.index) {
+                if (focusedSide.current) {
+                    optionsBtn.current?.blur();
+                    reorderBtn.current?.focus();
+                } else {
+                    reorderBtn.current?.blur();
+                    optionsBtn.current?.focus();
+                }
             }
         });
 
@@ -120,7 +131,9 @@ export function ManageShortcuts() {
                 <div className="custom-buttons">
                     <Field label={props.shortcut.name} onFocus={(e:React.FocusEvent<HTMLDivElement>) => {
                         focusIdx.current = props.index;
-                    }} ref={wrapperFocusable}> {/* onBlur={(e) => {}} */}
+                    }} onBlur={(e) => {
+                        firstFocus.current = true;
+                    }} ref={wrapperFocusable}>
                         <Focusable style={{ display: "flex" }} onGamepadDirection={(e:DeckyGamepadEvent) => {
                             switch(e.detail.button) {
                                 case DeckyGamepadButton.DIR_DOWN: {
