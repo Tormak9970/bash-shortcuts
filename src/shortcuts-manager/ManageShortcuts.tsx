@@ -16,7 +16,7 @@ type ShortcutsDictionary = {
     [key:string]: Shortcut
 }
 
-const ELEM_HEIGHT = 300; //find actual value
+const ELEM_HEIGHT = 32; //height of each ModShort element
 
 export function ManageShortcuts() {
     let reorderEnabled = useRef(false);
@@ -72,7 +72,7 @@ export function ManageShortcuts() {
             }
 
             if (firstFocus.current && focusIdx.current == props.index) {
-                if (focusedSide.current) {
+                if (!focusedSide.current) {
                     optionsBtn.current?.blur();
                     reorderBtn.current?.focus();
                 } else {
@@ -93,18 +93,26 @@ export function ManageShortcuts() {
         }
 
         function reorder(down:boolean) {
-            const thisShortcut = props.shortcut;
-            const previous = shortcutsList[down ? props.index+1 : props.index-1];
-            const tmp = thisShortcut.position;
-            thisShortcut.position = previous.position;
-            previous.position = tmp;
+            if ((down && props.shortcut.position != shortcutsList.length) || (!down && props.shortcut.position != 1)) {
+                const thisShortcut = props.shortcut;
+                const previous = shortcutsList[down ? props.index+1 : props.index-1];
+                const tmp = thisShortcut.position;
+                thisShortcut.position = previous.position;
+                previous.position = tmp;
+    
+                const refs = shortcuts;
+                refs[thisShortcut.id] = thisShortcut;
+                refs[previous.id] = previous;
+    
+                setShortcuts(refs);
+                PyInterop.setShortcuts([thisShortcut, previous]);
 
-            const refs = shortcuts;
-            refs[thisShortcut.id] = thisShortcut;
-            refs[previous.id] = previous;
-
-            setShortcuts(refs);
-            PyInterop.setShortcuts([thisShortcut, previous]);
+                if (down) {
+                    focusIdx.current++;
+                } else {
+                    focusIdx.current--;
+                }
+            }
         }
 
         return (
@@ -209,6 +217,9 @@ export function ManageShortcuts() {
                             <DialogButton
                                 style={{ marginRight: "14px" }}
                                 ref={reorderBtn}
+                                // onFocus={(e) => {
+
+                                // }}
                                 // @ts-ignore
                                 onOKActionDescription={"Hold to reorder shortcuts"}
                                 onButtonDown={(e:DeckyGamepadEvent) => {
