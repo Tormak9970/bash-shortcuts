@@ -18,16 +18,6 @@ export function ShortcutLauncher(props: ShortcutLauncherProps) {
                         height: inherit;
                         display: inherit;
                     }
-                    .custom-buttons .DialogButton._DialogLayout.Secondary.${gamepadDialogClasses.Button}.Focusable {
-                        min-width: 30px;
-                        max-width: 60px;
-                        display: flex;
-                        justify-content: center,
-                        align-items: center
-                    }
-                    .custom-buttons > .Panel.Focusable {
-                        width: 100%;
-                    }
 
                     .custom-buttons .${gamepadDialogClasses.FieldChildren} {
                         margin: 0px 16px;
@@ -36,8 +26,14 @@ export function ShortcutLauncher(props: ShortcutLauncherProps) {
             </style>
             <div className="custom-buttons">
                 <Field label={props.shortcut.name}>
-                    <Focusable style={{ display: "flex" }}>
-                        <DialogButton onClick={() => PyInterop.launchApp(props.shortcut.name, props.shortcut.cmd)}>
+                    <Focusable style={{ display: "flex", width: "100%" }}>
+                        <DialogButton onClick={() => PyInterop.launchApp(props.shortcut.name, props.shortcut.cmd)} style={{
+                            minWidth: "30px",
+                            maxWidth: "60px",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center"
+                        }}>
                             <IoRocketSharp />
                         </DialogButton>
                     </Focusable>
