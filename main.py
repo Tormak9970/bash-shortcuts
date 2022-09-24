@@ -1,3 +1,4 @@
+from asyncio import subprocess
 import logging
 import json
 from os import path, system
@@ -70,8 +71,12 @@ class Plugin:
 
     async def launchApp(self, name, cmd):
         log(f"Launching {name}")
+
+        status, result = subprocess.getstatusoutput(cmd)
         
-        system(cmd)
+        if (status == 0):
+            system(cmd)
+
         pass
 
     # async def getInstalledApps(self):
