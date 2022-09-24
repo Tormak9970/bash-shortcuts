@@ -115,33 +115,15 @@ export function ManageShortcuts() {
 
         return (
             <>
-                <style>
-                    {`
-                        .custom-buttons {
-                            width: inherit;
-                            height: inherit;
-                            display: inherit;
-                        }
-                        .custom-buttons .DialogButton._DialogLayout.Secondary.${gamepadDialogClasses.Button}.Focusable {
-                            min-width: 30px;
-                            max-width: 60px;
-                            display: flex;
-                            justify-content: center,
-                            align-items: center
-                        }
-                        .custom-buttons > .Panel.Focusable {
-                            width: 100%;
-                        }
-                    `}
-                </style>
                 <div className="custom-buttons">
-                    <Field label={props.shortcut.name} onFocus={() => {
-                            focusIdx.current = props.index;
-                        }}
-                        ref={wrapperFocusable}
-                    >
+                    <Field label={props.shortcut.name} onFocus={() => { focusIdx.current = props.index; }} ref={wrapperFocusable} style={{
+                        width: "100%"
+                    }}>
                         <Focusable
-                            style={{ display: "flex" }}
+                            style={{
+                                display: "flex",
+                                width: "100%"
+                            }}
                             onGamepadDirection={(e:DeckyGamepadEvent) => {
                                 switch(e.detail.button) {
                                     case DeckyGamepadButton.DIR_DOWN: {
@@ -220,7 +202,14 @@ export function ManageShortcuts() {
                             }}
                         >
                             <DialogButton
-                                style={{ marginRight: "14px" }}
+                                style={{
+                                    marginRight: "14px",
+                                    minWidth: "30px",
+                                    maxWidth: "60px",
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center"
+                                }}
                                 ref={reorderBtn}
                                 // @ts-ignore
                                 onOKActionDescription={"Hold to reorder shortcuts"}
@@ -256,6 +245,13 @@ export function ManageShortcuts() {
                                 <FaArrowsAltV />
                             </DialogButton>
                             <DialogButton
+                                style={{
+                                    minWidth: "30px",
+                                    maxWidth: "60px",
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center"
+                                }}
                                 onClick={(e:MouseEvent) => showMenu(e, props.shortcut)}
                                 ref={optionsBtn}
                             >
