@@ -5,11 +5,6 @@ type ShortcutsDictionary = {
     [key:string]: Shortcut
 }
 
-interface launchAppArgs {
-    name:string,
-    cmd: string
-}
-
 export class PyInterop {
     private static serverAPI:ServerAPI;
 
@@ -35,10 +30,6 @@ export class PyInterop {
         return await this.serverAPI.callPluginMethod<{shortcut:Shortcut}, ShortcutsDictionary>("remShortcut", { shortcut: shortcut });
     }
 
-
-    static async launchApp(name:string, cmd:string): Promise<void> {
-        await this.serverAPI.callPluginMethod<launchAppArgs, void>("launchApp", { name: name, cmd: cmd });
-    }
     static async getInstalledApps(): Promise<ServerResponse<Application[]>> {
         const apps = await this.serverAPI.callPluginMethod<{}, Application[]>("getInstalledApps", {});
         return apps;

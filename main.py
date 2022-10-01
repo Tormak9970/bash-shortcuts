@@ -26,16 +26,6 @@ class Shortcut:
     def toJSON(self):
         return json.dumps({ "id": self.id, "name": self.name, "cmd": self.cmd, "position": self.position }, sort_keys=True, indent=4)
 
-class Application:
-    def __init__(self, path):
-        Config = ConfigParser()
-        Config.read(path)
-
-        self.type = Config.get("Desktop Entry", "Type")
-        self.name = Config.get("Desktop Entry", "Name")
-
-        self.path = path
-
 class Plugin:
     shortcuts = {}
     shortcutsPath = "/home/deck/homebrew/plugins/Shortcuts/shortcuts.json"
@@ -68,46 +58,6 @@ class Plugin:
     async def remShortcut(self, shortcut):
         self._remShortcut(self, self.shortcutsPath, shortcut)
         return self.serializeShortcuts(self)
-
-    async def launchApp(self, name, cmd):
-        log(f"Launching {name}")
-
-        status, result = subprocess.getstatusoutput(cmd)
-        
-        if (status == 0):
-            system(cmd)
-
-        pass
-
-    # async def getInstalledApps(self):
-    #     apps = []
-    #     appsDir = path.join(path.expanduser('~'), "share/applications")
-    #     locAppsDir = path.join(path.expanduser('~'), "local/share/applications")
-    #     desktopDir = path.join(path.expanduser('~'), "Desktop")
-
-    #     aDirApps = glob(f"{appsDir}/*.desktop")
-    #     locADirApps = glob(f"{locAppsDir}/*.desktop")
-    #     deskDirApps = glob(f"{desktopDir}/*.desktop")
-
-    #     if (exists(aDirApps)):
-    #         for file in aDirApps:
-    #             app = Application(file)
-    #             if (app.type == "Application"):
-    #                 apps.append(app)
-        
-    #     if (exists(locADirApps)):
-    #         for file in locADirApps:
-    #             app = Application(file)
-    #             if (app.type == "Application"):
-    #                 apps.append(app)
-        
-    #     if (exists(deskDirApps)):
-    #         for file in deskDirApps:
-    #             app = Application(file)
-    #             if (app.type == "Application"):
-    #                 apps.append(app)
-
-    #     return apps
 
     # Asyncio-compatible long-running code, executed in a task when the plugin is loaded
     async def _main(self):

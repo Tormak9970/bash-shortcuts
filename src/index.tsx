@@ -20,6 +20,7 @@ import { ManageShortcuts } from "./shortcuts-manager/ManageShortcuts";
 import { PyInterop } from "./PyInterop";
 import { Shortcut } from "./Shortcut";
 import { ShortcutsContextProvider, ShortcutsState, useShortcutsState } from "./state/ShortcutsState";
+import { ShortcutManager } from "./lib/ShortcutManager";
 
 type ShortcutsDictionary = {
   [key:string]: Shortcut
@@ -119,6 +120,7 @@ export default definePlugin((serverApi: ServerAPI) => {
   PyInterop.setServer(serverApi);
 
   const state = new ShortcutsState();
+  ShortcutManager.init("dev.tormak.shortcuts.runner");
 
   serverApi.routerHook.addRoute("/shortcuts-nav", () => (
     <ShortcutsContextProvider shortcutsStateClass={state}>
