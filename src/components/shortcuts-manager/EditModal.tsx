@@ -1,6 +1,6 @@
 import { Field, ConfirmModal, PanelSection, PanelSectionRow, TextField } from "decky-frontend-lib"
 import { VFC, Fragment, useState } from "react"
-import { Shortcut } from "../Shortcut"
+import { Shortcut } from "../../lib/data-structures/Shortcut"
 
 type EditModalProps = {
     closeModal: () => void,

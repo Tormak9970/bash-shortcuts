@@ -1,5 +1,5 @@
 import { createContext, FC, useContext, useEffect, useState } from "react";
-import { Shortcut } from "../Shortcut"
+import { Shortcut } from "../lib/data-structures/Shortcut"
 
 type ShortcutsDictionary = {
     [key:string]: Shortcut

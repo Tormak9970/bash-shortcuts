@@ -1,10 +1,10 @@
 import { DialogButton, Field, Focusable, gamepadDialogClasses } from "decky-frontend-lib";
 import { Fragment } from "react";
-import { Shortcut } from "../Shortcut";
+import { Shortcut } from "../lib/data-structures/Shortcut";
 
 import { IoRocketSharp } from "react-icons/io5";
 import { ShortcutManager } from "../lib/ShortcutManager";
-import { showToast } from "../general/Toast";
+import { showToast } from "./utils/Toast";
 
 export type ShortcutLauncherProps = {
     shortcut: Shortcut

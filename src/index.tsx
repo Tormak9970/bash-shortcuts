@@ -12,13 +12,13 @@ import {
 } from "decky-frontend-lib";
 import { VFC, Fragment } from "react";
 import { IoApps } from "react-icons/io5";
-import { About } from "./shortcuts-manager/About";
-import { AddShortcut } from "./shortcuts-manager/AddShortcut";
+import { About } from "./components/shortcuts-manager/About";
+import { AddShortcut } from "./components/shortcuts-manager/AddShortcut";
 import { ShortcutLauncher } from "./components/ShortcutLanucher";
-import { ManageShortcuts } from "./shortcuts-manager/ManageShortcuts";
+import { ManageShortcuts } from "./components/shortcuts-manager/ManageShortcuts";
 
-import { PyInterop } from "./PyInterop";
-import { Shortcut } from "./Shortcut";
+import { PyInterop } from "./lib/PyInterop";
+import { Shortcut } from "./lib/data-structures/Shortcut";
 import { ShortcutsContextProvider, ShortcutsState, useShortcutsState } from "./state/ShortcutsState";
 import { ShortcutManager } from "./lib/ShortcutManager";
 

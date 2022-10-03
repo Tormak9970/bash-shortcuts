@@ -1,4 +1,4 @@
-import { Shortcut } from "../Shortcut";
+import { Shortcut } from "./data-structures/Shortcut";
 import { SteamShortcut } from "./SteamClient";
 import { SteamUtils } from "./SteamUtils";
 
