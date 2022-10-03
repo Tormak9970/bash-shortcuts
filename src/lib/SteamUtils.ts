@@ -148,7 +148,6 @@ export class SteamUtils {
     }
 
     static async setAppLaunchOptions(appId: number, options: string) {
-        console.log(options);
         const details = await this.waitForAppDetails(appId, (details) => details !== null) ? await this.getAppDetails(appId) : null;
         if (!details) {
             console.error(`Could not add launch options for ${appId} (does not exist)!`);
@@ -229,7 +228,6 @@ export class SteamUtils {
         // Currently Steam fails to properly set appid for non-Steam games :/
         const gameStart = this.waitForGameLifetime(null, { initialTimeout: 1500, waitForStart: true, waitUntilNewEnd: waitUntilGameStops });
         const gameId = await this.getGameId(appId);
-        console.log(gameId);
         SteamClient.Apps.RunGame(gameId, "", -1, 100);
         return await gameStart;
     }

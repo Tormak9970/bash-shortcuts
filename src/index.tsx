@@ -120,7 +120,7 @@ export default definePlugin((serverApi: ServerAPI) => {
   PyInterop.setServer(serverApi);
 
   const state = new ShortcutsState();
-  ShortcutManager.init("dev.tormak.shortcuts.runner");
+  ShortcutManager.init("Bash Shortcuts");
 
   serverApi.routerHook.addRoute("/shortcuts-nav", () => (
     <ShortcutsContextProvider shortcutsStateClass={state}>
@@ -138,6 +138,7 @@ export default definePlugin((serverApi: ServerAPI) => {
     icon: <IoApps />,
     onDismount() {
       serverApi.routerHook.removeRoute("/shortcuts-nav");
+      ShortcutManager.onDismount();
     },
   };
 });
