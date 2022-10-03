@@ -1,5 +1,5 @@
 import { ServerAPI, ServerResponse } from "decky-frontend-lib";
-import { Shortcut } from "./data-structures/Shortcut";
+import { Shortcut } from "./lib/data-structures/Shortcut";
 
 type ShortcutsDictionary = {
     [key:string]: Shortcut

@@ -1,6 +1,6 @@
 import { Field, PanelSection, PanelSectionRow, TextField, ButtonItem, quickAccessControlsClasses, gamepadDialogClasses } from "decky-frontend-lib"
 import { Fragment, useState, useEffect } from "react"
-import { PyInterop } from "../../lib/PyInterop";
+import { PyInterop } from "../../PyInterop";
 import { Shortcut } from "../../lib/data-structures/Shortcut";
 
 import {v4 as uuidv4} from "uuid";

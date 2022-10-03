@@ -17,7 +17,7 @@ import { AddShortcut } from "./components/shortcuts-manager/AddShortcut";
 import { ShortcutLauncher } from "./components/ShortcutLanucher";
 import { ManageShortcuts } from "./components/shortcuts-manager/ManageShortcuts";
 
-import { PyInterop } from "./lib/PyInterop";
+import { PyInterop } from "./PyInterop";
 import { Shortcut } from "./lib/data-structures/Shortcut";
 import { ShortcutsContextProvider, ShortcutsState, useShortcutsState } from "./state/ShortcutsState";
 import { ShortcutManager } from "./lib/ShortcutManager";

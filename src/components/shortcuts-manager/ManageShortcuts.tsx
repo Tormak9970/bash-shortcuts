@@ -1,6 +1,6 @@
 import { ButtonItem, ConfirmModal, DialogButton, Field, Focusable, Menu, MenuItem, showContextMenu, showModal, GamepadButton as DeckyGamepadButton, GamepadEvent as DeckyGamepadEvent } from "decky-frontend-lib";
 import React, { Fragment, useEffect, useRef, useState } from "react";
-import { PyInterop } from "../../lib/PyInterop";
+import { PyInterop } from "../../PyInterop";
 import { Shortcut } from "../../lib/data-structures/Shortcut";
 
 import { FaEllipsisH, FaArrowsAltV } from "react-icons/fa";
