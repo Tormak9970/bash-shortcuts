@@ -133,7 +133,7 @@ export default definePlugin((serverApi: ServerAPI) => {
   ));
 
   return {
-    title: <div className={staticClasses.Title}>Shortcuts</div>,
+    title: <div className={staticClasses.Title}>Bash Shortcuts</div>,
     content: (
       <ShortcutsContextProvider shortcutsStateClass={state}>
         <Content serverAPI={serverApi} />

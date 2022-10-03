@@ -14,7 +14,7 @@ export function About() {
                     <li>the application must be added to the $PATH variable</li>
                 </ul>
                 <li>A script file (must be the absolute path)</li>
-                <li>A general terminal command (like mkdir or ls)</li>
+                <li>A bash command (like mkdir or ls)</li>
             </ul>
         </div>
         <br/>

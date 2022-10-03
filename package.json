@@ -1,7 +1,7 @@
 {
-  "name": "shortcuts",
+  "name": "bash-shortcuts",
   "version": "0.0.1",
-  "description": "A plugin for creating and managing shortcuts that can be launched from the Quick Access Menu",
+  "description": "A plugin for creating and managing shortcuts that can be launched from the Quick Access Menu. Uses bash to run shortcuts, hence the name.",
   "scripts": {
     "build": "shx rm -rf dist && rollup -c",
     "watch": "rollup -c -w",
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Tormak9970/Shortcuts.git"
+    "url": "git+https://github.com/Tormak9970/bash-shortcuts.git"
   },
   "keywords": [
     "decky",
@@ -26,9 +26,9 @@
   },
   "license": "GPL-2.0-or-later",
   "bugs": {
-    "url": "https://github.com/Tormak9970/Shortcuts/issues"
+    "url": "https://github.com/Tormak9970/bash-shortcuts/issues"
   },
-  "homepage": "https://github.com/Tormak9970/Shortcuts#readme",
+  "homepage": "https://github.com/Tormak9970/bash-shortcuts#readme",
   "devDependencies": {
     "@rollup/plugin-commonjs": "^21.1.0",
     "@rollup/plugin-json": "^4.1.0",

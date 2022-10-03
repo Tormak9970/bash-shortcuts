@@ -59,7 +59,7 @@ export class ShortcutManager {
             const didSetLaunchOpts = await SteamUtils.setAppLaunchOptions((steamShort as SteamShortcut).appid, shortcut.cmd);
             if (didSetLaunchOpts) {
                 console.log("Running Shortcut...");
-                const didLaunch = await SteamUtils.runGame(steamShort.appid, true);
+                const didLaunch = await SteamUtils.runGame(steamShort.appid, false);
                 return didLaunch;
             } else {
                 console.log("Failed at setAppLaunchOptions");
