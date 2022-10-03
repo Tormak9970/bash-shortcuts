@@ -227,14 +227,14 @@ export function ManageShortcuts() {
                                         }
                                     }
                                 }}
-                                onMouseDown={(e:React.MouseEvent<HTMLDivElement>) => {
+                                onMouseDown={(e:MouseEvent) => {
                                     mouseOrigin.current = {
                                         "x": e.clientX,
                                         "y": e.clientY,
                                     }
                                     enableReorder();
                                 }}
-                                onTouchStart={(e:React.TouchEvent<HTMLDivElement>) => {
+                                onTouchStart={(e:TouchEvent) => {
                                     touchOrigin.current = {
                                         "x": e.touches[0].clientX,
                                         "y": e.touches[0].clientY,
