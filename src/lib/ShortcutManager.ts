@@ -2,7 +2,6 @@ import { Shortcut } from "./data-structures/Shortcut";
 import { SteamShortcut } from "./SteamClient";
 import { SteamUtils } from "./SteamUtils";
 
-let steamShortcut:SteamShortcut;
 
 export class ShortcutManager {
     static shortcutName:string;
@@ -17,7 +16,6 @@ export class ShortcutManager {
             if (!success) console.log("Adding runner shortcut failed");
         } else {
             const shorcut = await SteamUtils.getShortcut(name) as SteamShortcut;
-            steamShortcut = shorcut;
             this.appId = shorcut.appid;
         }
     }
@@ -51,12 +49,11 @@ export class ShortcutManager {
     }
 
     static async launchShortcut(shortcut:Shortcut, name = this.shortcutName): Promise<boolean> {
-        console.log(steamShortcut);
         console.log("Getting Shortcut...");
         const steamShort = await SteamUtils.getShortcut(name);
         if (steamShort) {
             console.log("Setting Launch Options...");
-            const didSetLaunchOpts = await SteamUtils.setAppLaunchOptions((steamShort as SteamShortcut).appid, shortcut.cmd);
+            const didSetLaunchOpts = await SteamUtils.setAppLaunchOptions((steamShort as SteamShortcut).appid, `%command% ${shortcut.cmd}`);
             if (didSetLaunchOpts) {
                 console.log("Running Shortcut...");
                 const didLaunch = await SteamUtils.runGame(steamShort.appid, false);

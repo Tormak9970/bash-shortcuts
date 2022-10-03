@@ -39,10 +39,6 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({}) => {
     reload();
   }
 
-  console.log(quickAccessControlsClasses.PanelSection)
-  console.log(gamepadDialogClasses.FieldChildren)
-  console.log(gamepadDialogClasses.FieldLabel)
-
   return (
     <>
       <style>{`
