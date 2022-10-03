@@ -1,5 +1,5 @@
 import { sleep } from "decky-frontend-lib";
-import { SteamClient, SteamShortcut } from "./SteamClient";
+import { LifetimeNotification, SteamClient, SteamShortcut } from "./SteamClient";
 
 //? Credit to FrogTheFrog for some of the methods: https://github.com/FrogTheFrog/SDH-MoonDeck/blob/main/src/lib/steamutils.ts
 
@@ -148,6 +148,7 @@ export class SteamUtils {
     }
 
     static async setAppLaunchOptions(appId: number, options: string) {
+        console.log(options);
         const details = await this.waitForAppDetails(appId, (details) => details !== null) ? await this.getAppDetails(appId) : null;
         if (!details) {
             console.error(`Could not add launch options for ${appId} (does not exist)!`);
@@ -164,6 +165,73 @@ export class SteamUtils {
             return false;
         }
         return true;
+    }
+
+    static async getGameId(appId: number) {
+        const overview = await this.waitForAppOverview(appId, (overview) => overview !== null) ? await this.getAppOverview(appId) : null;
+        if (!overview) {
+            console.error(`Could not get game id for ${appId}!`);
+            return null;
+        }
+
+        return overview.gameid;
+    }
+
+    static registerForGameLifetime(callback: (data: LifetimeNotification) => void) {
+        const { unregister } = SteamClient.GameSessions.RegisterForAppLifetimeNotifications(callback);
+        return unregister as () => void;
+    }
+
+    static async waitForGameLifetime(appId: number | null, options: { initialTimeout?: number, waitForStart?: boolean, waitUntilNewEnd?: boolean } = {}) {
+        return new Promise<boolean>((resolve) => {
+            let timeoutId: any = null;
+            let startAwaited: boolean = false;
+            const unregister = this.registerForGameLifetime((data: LifetimeNotification) => {
+                if (appId !== null && data.unAppID !== appId) {
+                    return;
+                }
+
+                if (!startAwaited) {
+                    startAwaited = data.bRunning;
+                }
+
+                if (options.waitForStart && !startAwaited) {
+                    return;
+                }
+
+                if (timeoutId !== null) {
+                    clearTimeout(timeoutId);
+                    timeoutId = null;
+                }
+
+                if (options.waitUntilNewEnd) {
+                    if (!startAwaited || data.bRunning) {
+                        return;
+                    }
+                }
+
+                unregister();
+                resolve(true);
+            });
+
+            if (options.initialTimeout) {
+                timeoutId = setTimeout(() => {
+                    unregister();
+                    resolve(false);
+                }, options.initialTimeout);
+            }
+        });
+    }
+
+    static async runGame(appId: number, waitUntilGameStops: boolean) {
+        console.log(`Trying to launch app ${appId}.`);
+
+        // Currently Steam fails to properly set appid for non-Steam games :/
+        const gameStart = this.waitForGameLifetime(null, { initialTimeout: 1500, waitForStart: true, waitUntilNewEnd: waitUntilGameStops });
+        const gameId = await this.getGameId(appId);
+        console.log(gameId);
+        SteamClient.Apps.RunGame(gameId, "", -1, 100);
+        return await gameStart;
     }
 
     static restartClient() {

@@ -2,6 +2,8 @@ import { Shortcut } from "./data-structures/Shortcut";
 import { SteamShortcut } from "./SteamClient";
 import { SteamUtils } from "./SteamUtils";
 
+let steamShortcut:SteamShortcut;
+
 export class ShortcutManager {
     static shortcutName:string;
     static runnerPath = "/home/deck/homebrew/plugins/Shortcuts/shortcutsRunner.sh";
@@ -15,6 +17,7 @@ export class ShortcutManager {
             if (!success) console.log("Adding runner shortcut failed");
         } else {
             const shorcut = await SteamUtils.getShortcut(name) as SteamShortcut;
+            steamShortcut = shorcut;
             this.appId = shorcut.appid;
         }
     }
@@ -48,10 +51,22 @@ export class ShortcutManager {
     }
 
     static async launchShortcut(shortcut:Shortcut, name = this.shortcutName): Promise<boolean> {
-        const res = await SteamUtils.getShortcut(name);
-        if (res) {
-            return !!(await SteamUtils.setAppLaunchOptions((res as SteamShortcut).appid, shortcut.cmd));
+        console.log(steamShortcut);
+        console.log("Getting Shortcut...");
+        const steamShort = await SteamUtils.getShortcut(name);
+        if (steamShort) {
+            console.log("Setting Launch Options...");
+            const didSetLaunchOpts = await SteamUtils.setAppLaunchOptions((steamShort as SteamShortcut).appid, shortcut.cmd);
+            if (didSetLaunchOpts) {
+                console.log("Running Shortcut...");
+                const didLaunch = await SteamUtils.runGame(steamShort.appid, true);
+                return didLaunch;
+            } else {
+                console.log("Failed at setAppLaunchOptions");
+                return false;
+            }
         } else {
+            console.log("Failed at getShortcut");
             return false;
         }
     }

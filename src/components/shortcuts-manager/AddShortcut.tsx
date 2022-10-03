@@ -1,4 +1,4 @@
-import { Field, PanelSection, PanelSectionRow, TextField, ButtonItem, quickAccessControlsClasses, gamepadDialogClasses } from "decky-frontend-lib"
+import { Field, PanelSection, PanelSectionRow, TextField, ButtonItem, quickAccessControlsClasses } from "decky-frontend-lib"
 import { Fragment, useState, useEffect } from "react"
 import { PyInterop } from "../../PyInterop";
 import { Shortcut } from "../../lib/data-structures/Shortcut";
@@ -28,10 +28,6 @@ export function AddShortcut() {
 	useEffect(() => {
 		setAbleToSave(name != "" && cmd != "");
 	}, [name, cmd])
-
-	console.log(gamepadDialogClasses.FieldChildren);
-	console.log(gamepadDialogClasses.FieldLabel);
-	console.log(quickAccessControlsClasses.PanelSection);
 
 	return (
 		<>

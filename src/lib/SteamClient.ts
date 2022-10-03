@@ -194,3 +194,9 @@ export interface SteamShortcut {
         strSortAs:string
     }
 }
+
+export interface LifetimeNotification {
+    unAppID: number; // seems to be 0 for shortcuts :/
+    nInstanceID: number;
+    bRunning: boolean;
+  }
