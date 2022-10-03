@@ -1,3 +1,3 @@
 #!/bin/bash
 
-eval "$@"
+/bin/bash -c "$@"
