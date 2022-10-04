@@ -31,13 +31,11 @@ export class ShortcutManager {
         }
 
         if (this.appId) {
-            console.log("appId initialized")
             this.routerPatch = this.server.routerHook.addPatch(this.routePath, (routeProps: { path: string; children: ReactElement }) => {
-                afterPatch(routeProps.children, "props", (args: any[], ret:ReactElement) => {
-                    console.log("checking route");
-                    const { appid } = useParams<{ appid: string }>();
+                afterPatch(routeProps.children.props, "renderFunc", (args: any[], ret:ReactElement) => {
+                    const { appid } = ret.props.children.props.overview;
 
-                    if (appid === `${this.appId}`) {
+                    if (appid === this.appId) {
                         console.log("rerouting");
                         Router.Navigate('/library/home');
                         return null;
