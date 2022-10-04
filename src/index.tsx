@@ -74,10 +74,21 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({}) => {
               Manage Shortcuts
             </ButtonItem>
           </PanelSectionRow>
-    
-          {shortcutsList.map((itm: Shortcut) => (
-              <ShortcutLauncher shortcut={itm} />
-          ))}
+
+          {
+            (ShortcutManager.shortcutIsRunning) ? (
+              <>
+                <div>A shortcut is running. Please close before running another.</div>
+                <ButtonItem layout="below" onClick={ShortcutManager.closeGame} >
+                  Close Shortcut
+                </ButtonItem>
+              </>
+            ) : (
+              shortcutsList.map((itm: Shortcut) => (
+                <ShortcutLauncher shortcut={itm} />
+              ))
+            )
+          }
     
           <PanelSectionRow>
             <ButtonItem layout="below" onClick={reload} >

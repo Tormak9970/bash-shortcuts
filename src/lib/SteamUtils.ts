@@ -18,24 +18,24 @@ interface AppOverview {
 }
 
 export class SteamUtils {
-    static async getShortcuts(): Promise<SteamShortcut[]> {
+    public static async getShortcuts(): Promise<SteamShortcut[]> {
         const res = await SteamClient.Apps.GetAllShortcuts();
         return res as SteamShortcut[];
     }
     
-    static async getShortcut(appName:string): Promise<SteamShortcut|undefined> {
+    public static async getShortcut(appName:string): Promise<SteamShortcut|undefined> {
         const res = await SteamClient.Apps.GetAllShortcuts();
         const shortcutsList = res as SteamShortcut[];
 
         return shortcutsList.find((s:SteamShortcut) => s.data.strAppName == appName);
     }
 
-    static async getAppOverview(appId: number) {
+    public static async getAppOverview(appId: number) {
         const { appStore } = (window as any);
         return appStore.GetAppOverviewByAppID(appId) as AppOverview | null;
     }
 
-    static async waitForAppOverview(appId: number, predicate: (overview: AppOverview | null) => boolean) {
+    public static async waitForAppOverview(appId: number, predicate: (overview: AppOverview | null) => boolean) {
         let retries = 4;
         while (retries--) {
             if (predicate(await this.getAppOverview(appId))) {
@@ -49,7 +49,7 @@ export class SteamUtils {
         return false;
     }
 
-    static async getAppDetails(appId: number): Promise<AppDetails | null> {
+    public static async getAppDetails(appId: number): Promise<AppDetails | null> {
         return new Promise((resolve) => {
             const { unregister } = SteamClient.Apps.RegisterForAppDetails(appId, (details: any) => {
                 unregister();
@@ -58,7 +58,7 @@ export class SteamUtils {
         });
     }
 
-    static async waitForAppDetails(appId: number, predicate: (details: AppDetails | null) => boolean) {
+    public static async waitForAppDetails(appId: number, predicate: (details: AppDetails | null) => boolean) {
         let retries = 4;
         while (retries--) {
             if (predicate(await this.getAppDetails(appId))) {
@@ -72,7 +72,7 @@ export class SteamUtils {
         return false;
     }
 
-    static async hideApp(appId: number) {
+    public static async hideApp(appId: number) {
         if (!await this.waitForAppOverview(appId, (overview) => overview !== null)) {
             console.error(`Could not hide app ${appId}!`);
             return false;
@@ -98,7 +98,7 @@ export class SteamUtils {
         return false;
     }
 
-    static async addShortcut(appName: string, execPath: string) {
+    public static async addShortcut(appName: string, execPath: string) {
         console.log(`Adding shortcut for ${appName}.`);
 
         const appId = await SteamClient.Apps.AddShortcut(appName, execPath) as number | undefined | null;
@@ -120,7 +120,7 @@ export class SteamUtils {
     }
 
     // TODO: check if steam still gets into angry state :/
-    static async removeShortcut(appId: number) {
+    public static async removeShortcut(appId: number) {
         const overview = await this.waitForAppOverview(appId, (overview) => overview !== null) ? await this.getAppOverview(appId) : null;
         if (!overview) {
             console.warn(`Could not remove shortcut for ${appId} (does not exist)!`);
@@ -147,7 +147,7 @@ export class SteamUtils {
         return true;
     }
 
-    static async setAppLaunchOptions(appId: number, options: string) {
+    public static async setAppLaunchOptions(appId: number, options: string) {
         const details = await this.waitForAppDetails(appId, (details) => details !== null) ? await this.getAppDetails(appId) : null;
         if (!details) {
             console.error(`Could not add launch options for ${appId} (does not exist)!`);
@@ -166,7 +166,7 @@ export class SteamUtils {
         return true;
     }
 
-    static async getGameId(appId: number) {
+    public static async getGameId(appId: number) {
         const overview = await this.waitForAppOverview(appId, (overview) => overview !== null) ? await this.getAppOverview(appId) : null;
         if (!overview) {
             console.error(`Could not get game id for ${appId}!`);
@@ -176,12 +176,12 @@ export class SteamUtils {
         return overview.gameid;
     }
 
-    static registerForGameLifetime(callback: (data: LifetimeNotification) => void) {
+    public static registerForGameLifetime(callback: (data: LifetimeNotification) => void) {
         const { unregister } = SteamClient.GameSessions.RegisterForAppLifetimeNotifications(callback);
         return unregister as () => void;
     }
 
-    static async waitForGameLifetime(appId: number | null, options: { initialTimeout?: number, waitForStart?: boolean, waitUntilNewEnd?: boolean } = {}) {
+    public static async waitForGameLifetime(appId: number | null, options: { initialTimeout?: number, waitForStart?: boolean, waitUntilNewEnd?: boolean } = {}) {
         return new Promise<boolean>((resolve) => {
             let timeoutId: any = null;
             let startAwaited: boolean = false;
@@ -222,7 +222,7 @@ export class SteamUtils {
         });
     }
 
-    static async runGame(appId: number, waitUntilGameStops: boolean) {
+    public static async runGame(appId: number, waitUntilGameStops: boolean) {
         console.log(`Trying to launch app ${appId}.`);
 
         // Currently Steam fails to properly set appid for non-Steam games :/
@@ -232,7 +232,17 @@ export class SteamUtils {
         return await gameStart;
     }
 
-    static restartClient() {
+    public static async terminateGame(appId: number) {
+        console.log(`Trying to terminate app ${appId}.`);
+
+        // Currently Steam fails to properly set appid for non-Steam games :/
+        const gameEnd = this.waitForGameLifetime(null, { initialTimeout: 1500, waitForStart: false, waitUntilNewEnd: true });
+        const gameId = await this.getGameId(appId);
+        SteamClient.Apps.TerminateApp(gameId, -1);
+        return await gameEnd;
+    }
+
+    public static restartClient() {
         SteamClient.User.StartRestart();
     }
 }

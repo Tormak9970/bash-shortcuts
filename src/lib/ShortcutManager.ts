@@ -1,12 +1,14 @@
 import { afterPatch, Router, ServerAPI } from "decky-frontend-lib";
 import { ReactElement } from "react";
+import { showToast } from "../components/utils/Toast";
 import { Shortcut } from "./data-structures/Shortcut";
-import { SteamShortcut } from "./SteamClient";
+import { LifetimeNotification, SteamShortcut } from "./SteamClient";
 import { SteamUtils } from "./SteamUtils";
-import { useParams } from "./Utils";
 
 
 export class ShortcutManager {
+    public static shortcutIsRunning = false;
+
     private static server:ServerAPI;
     private static routePath = "/library/app/:appid";
     private static routerPatch:any;
@@ -15,11 +17,11 @@ export class ShortcutManager {
     private static runnerPath = "/home/deck/homebrew/plugins/Shortcuts/shortcutsRunner.sh";
     static appId:number;
 
-    static setServer(server:ServerAPI) {
+    public static setServer(server:ServerAPI) {
         this.server = server;
     }
 
-    static async init(name:string) {
+    public static async init(name:string) {
         this.shortcutName = name;
         if (!(await this.checkShortcutExist(this.shortcutName))) {
             const success = await this.addShortcut(this.shortcutName, this.runnerPath);
@@ -32,7 +34,7 @@ export class ShortcutManager {
 
         if (this.appId) {
             this.routerPatch = this.server.routerHook.addPatch(this.routePath, (routeProps: { path: string; children: ReactElement }) => {
-                afterPatch(routeProps.children.props, "renderFunc", (args: any[], ret:ReactElement) => {
+                afterPatch(routeProps.children.props, "renderFunc", (_args: any[], ret:ReactElement) => {
                     const { appid } = ret.props.children.props.overview;
 
                     if (appid === this.appId) {
@@ -49,13 +51,49 @@ export class ShortcutManager {
         }
     }
 
-    static onDismount() {
+    public static onDismount() {
         this.server.routerHook.removePatch(this.routePath, this.routerPatch);
     }
 
-    static async getShortcuts() {
+    public static async getShortcuts() {
         const res = await SteamUtils.getShortcuts();
         console.log(res);
+    }
+
+    public static async launchShortcut(shortcut:Shortcut, name = this.shortcutName): Promise<boolean> {
+        const steamShort = await SteamUtils.getShortcut(name);
+        if (steamShort) {
+            const didSetLaunchOpts = await SteamUtils.setAppLaunchOptions((steamShort as SteamShortcut).appid, shortcut.cmd); 
+            if (didSetLaunchOpts) {
+                Router.CloseSideMenus();
+                const didLaunch = await SteamUtils.runGame(steamShort.appid, false);
+                // if (didLaunch) {
+                //     this.shortcutIsRunning = true;
+                // } else {
+                //     showToast("Shortcut failed. Check the associated command.");
+                // }
+                // const unregister = SteamUtils.registerForGameLifetime((data: LifetimeNotification) => {
+                //     if (data.unAppID !== this.appId) return;
+    
+                //     if (data.bRunning) return;
+                //     this.shortcutIsRunning = false;
+    
+                //     unregister();
+                // });
+
+                return didLaunch;
+            } else {
+                console.log("Failed at setAppLaunchOptions");
+                return false;
+            }
+        } else {
+            console.log("Failed at getShortcut");
+            return false;
+        }
+    }
+
+    public static async closeGame() {
+        return await SteamUtils.terminateGame(this.appId);
     }
 
     private static async checkShortcutExist(name:string): Promise<boolean> {
@@ -77,24 +115,6 @@ export class ShortcutManager {
         if (shortcut) {
             return !!(await SteamUtils.removeShortcut(shortcut.appid));
         } else {
-            return false;
-        }
-    }
-
-    static async launchShortcut(shortcut:Shortcut, name = this.shortcutName): Promise<boolean> {
-        const steamShort = await SteamUtils.getShortcut(name);
-        if (steamShort) {
-            const didSetLaunchOpts = await SteamUtils.setAppLaunchOptions((steamShort as SteamShortcut).appid, shortcut.cmd); 
-            if (didSetLaunchOpts) {
-                Router.CloseSideMenus();
-                const didLaunch = await SteamUtils.runGame(steamShort.appid, false);
-                return didLaunch;
-            } else {
-                console.log("Failed at setAppLaunchOptions");
-                return false;
-            }
-        } else {
-            console.log("Failed at getShortcut");
             return false;
         }
     }
