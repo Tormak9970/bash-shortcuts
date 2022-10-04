@@ -120,6 +120,7 @@ export default definePlugin((serverApi: ServerAPI) => {
   PyInterop.setServer(serverApi);
 
   const state = new ShortcutsState();
+  ShortcutManager.setServer(serverApi);
   ShortcutManager.init("Bash Shortcuts");
 
   serverApi.routerHook.addRoute("/shortcuts-nav", () => (

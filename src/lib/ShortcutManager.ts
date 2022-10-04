@@ -6,14 +6,13 @@ import { SteamUtils } from "./SteamUtils";
 
 
 export class ShortcutManager {
-    static server:ServerAPI;
-
-    static shortcutName:string;
-    static runnerPath = "/home/deck/homebrew/plugins/Shortcuts/shortcutsRunner.sh";
-    static appId:number;
-
+    private static server:ServerAPI;
     private static routePath = "/library/app/:appid";
     private static routerPatch:any;
+
+    private static shortcutName:string;
+    private static runnerPath = "/home/deck/homebrew/plugins/Shortcuts/shortcutsRunner.sh";
+    static appId:number;
 
     static setServer(server:ServerAPI) {
         this.server = server;
