@@ -35,7 +35,7 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({}) => {
     });
   }
   
-  if (Object.values(shortcuts as ShortcutsDictionary).length == 0) {
+  if (Object.values(shortcuts as ShortcutsDictionary).length === 0) {
     reload();
   }
 

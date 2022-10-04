@@ -1,8 +1,9 @@
-import { Router, ServerAPI } from "decky-frontend-lib";
+import { afterPatch, Router, ServerAPI } from "decky-frontend-lib";
 import { ReactElement } from "react";
 import { Shortcut } from "./data-structures/Shortcut";
 import { SteamShortcut } from "./SteamClient";
 import { SteamUtils } from "./SteamUtils";
+import { useParams } from "./Utils";
 
 
 export class ShortcutManager {
@@ -32,11 +33,19 @@ export class ShortcutManager {
         if (this.appId) {
             console.log("appId initialized")
             this.routerPatch = this.server.routerHook.addPatch(this.routePath, (routeProps: { path: string; children: ReactElement }) => {
-                console.log("patching");
-                if (routeProps.path.includes(`${this.appId}`)) {
-                    Router.Navigate("/library/home");
-                    return null;
-                }
+                afterPatch(routeProps.children, "props", (args: any[], ret:ReactElement) => {
+                    console.log("checking route");
+                    const { appid } = useParams<{ appid: string }>();
+
+                    if (appid === `${this.appId}`) {
+                        console.log("rerouting");
+                        Router.Navigate('/library/home');
+                        return null;
+                    }
+
+                    return ret;
+                });
+
                 return routeProps;
             });
         }

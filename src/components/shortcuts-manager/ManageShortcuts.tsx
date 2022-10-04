@@ -68,7 +68,7 @@ export function ManageShortcuts() {
     }
 
     function forceUpdate() {
-        setUpdate(update == 0 ? 1 : 0);
+        setUpdate(update === 0 ? 1 : 0);
     }
     
     function ShortcutMod(props: ShortcutModProps) {
@@ -79,7 +79,7 @@ export function ManageShortcuts() {
         let lastEvent = false;
 
         useEffect(() => {
-            if (focusIdx.current == props.index) {
+            if (focusIdx.current === props.index) {
                 if (!focusedSide.current) {
                     optionsBtn.current?.blur();
                     reorderBtn.current?.focus();
@@ -128,7 +128,7 @@ export function ManageShortcuts() {
                                 switch(e.detail.button) {
                                     case DeckyGamepadButton.DIR_DOWN: {
                                         
-                                        if (reorderEnabled.current && props.shortcut.position == shortcutsList.length) {
+                                        if (reorderEnabled.current && props.shortcut.position === shortcutsList.length) {
                                             e.preventDefault();
                                             e.stopImmediatePropagation();
                                         }
@@ -142,7 +142,7 @@ export function ManageShortcuts() {
                                         break;
                                     }
                                     case DeckyGamepadButton.DIR_UP: {
-                                        if (reorderEnabled.current && props.shortcut.position == 1) {
+                                        if (reorderEnabled.current && props.shortcut.position === 1) {
                                             e.preventDefault();
                                             e.stopImmediatePropagation();
                                         }
@@ -268,7 +268,7 @@ export function ManageShortcuts() {
         await PyInterop.getShortcuts().then((res) => { setShortcuts(res.result as ShortcutsDictionary); });
     }
       
-    if (Object.values(shortcuts as ShortcutsDictionary).length == 0) reload();
+    if (Object.values(shortcuts as ShortcutsDictionary).length === 0) reload();
     
     return (
         <>
