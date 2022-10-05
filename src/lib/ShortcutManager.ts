@@ -13,7 +13,7 @@ export class ShortcutManager {
     private static routerPatch:any;
 
     private static shortcutName:string;
-    private static runnerPath = "/home/deck/homebrew/plugins/Shortcuts/shortcutsRunner.sh";
+    private static runnerPath = "/home/deck/homebrew/plugins/BashShortcuts/shortcutsRunner.sh";
 
     static setServer(server:ServerAPI) {
         this.server = server;
@@ -55,7 +55,7 @@ export class ShortcutManager {
 
     static async getShortcuts() {
         const res = await SteamUtils.getShortcuts();
-        console.log(res);
+        return res;
     }
 
     static async launchShortcut(shortcut:Shortcut, setIsRunning:(value:boolean) => void): Promise<boolean> {
@@ -83,7 +83,9 @@ export class ShortcutManager {
     }
 
     static async closeGame(): Promise<boolean> {
-        return await SteamUtils.terminateGame(this.appId);
+        Router.CloseSideMenus();
+        const status = await SteamUtils.terminateGame(this.appId);
+        return status;
     }
 
     private static async checkShortcutExist(name:string): Promise<boolean> {
@@ -100,6 +102,7 @@ export class ShortcutManager {
         }
     }
 
+    // @ts-ignore
     private static async removeShortcut(name:string): Promise<boolean> {
         const shortcut = await SteamUtils.getShortcut(name);
         if (shortcut) {

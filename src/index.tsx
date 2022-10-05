@@ -84,8 +84,11 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({}) => {
                     padding: "0px 15px",
                     fontSize: "18px"
                 }}>A shortcut is running. Please close before running another.</div>
-                <ButtonItem layout="below" onClick={() => {
-                  ShortcutManager.closeGame();
+                <ButtonItem layout="below" onClick={async () => {
+                  const status = await ShortcutManager.closeGame();
+                  if (status) {
+                    Router.CloseSideMenus();
+                  }
                 }} >
                   Close Shortcut
                 </ButtonItem>

@@ -1,10 +1,10 @@
 {
-  "name": "Shortcuts",
+  "name": "Bash Shortcuts",
   "author": "Tormak",
   "flags": [],
   "publish": {
     "tags": ["shortcuts", "apps"],
-    "description": "Manager for shortcuts in the Quick Access Menu!",
+    "description": "Manager for shortcuts in the Quick Access Menu! Use Bash under the hood.",
     "image": ""
   }
 }

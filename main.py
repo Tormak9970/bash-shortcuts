@@ -7,7 +7,7 @@ from posixpath import isabs
 from genericpath import exists
 from configparser import ConfigParser
 
-logging.basicConfig(filename="/home/deck/Desktop/dev-plugins/Shortcuts/shortcuts.log", format='[Shortcuts] %(asctime)s %(levelname)s %(message)s', filemode='w+', force=True)
+logging.basicConfig(filename="/tmp/bash-shortcuts.log", format='[Bash Shortcuts] %(asctime)s %(levelname)s %(message)s', filemode='w+', force=True)
 logger=logging.getLogger()
 logger.setLevel(logging.INFO) # can be changed to logging.DEBUG for debugging issues
 
@@ -28,7 +28,7 @@ class Shortcut:
 
 class Plugin:
     shortcuts = {}
-    shortcutsPath = "/home/deck/homebrew/plugins/Shortcuts/shortcuts.json"
+    shortcutsPath = "/home/deck/homebrew/plugins/BashShortcuts/shortcuts.json"
 
     def serializeShortcuts(self):
         res = {}
