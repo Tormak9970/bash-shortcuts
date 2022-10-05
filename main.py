@@ -3,6 +3,7 @@ import logging
 import json
 from os import path, system
 from glob import glob
+import os
 from posixpath import isabs
 from genericpath import exists
 from configparser import ConfigParser
@@ -28,7 +29,7 @@ class Shortcut:
 
 class Plugin:
     shortcuts = {}
-    shortcutsPath = "/home/deck/homebrew/plugins/BashShortcuts/shortcuts.json"
+    shortcutsPath = "~/config/BashShortcuts/shortcuts.json"
 
     def serializeShortcuts(self):
         res = {}
@@ -68,6 +69,21 @@ class Plugin:
         Initialized = True
 
         log("Initializing Shorcuts Plugin")
+
+        if not os.path.exists(self.shortcutsPath):
+            os.mkdir(os.path.dirname(self.shortcutsPath))
+            
+            data = {
+                "fcba1cb4-4601-45d8-b919-515d152c56ef": {
+                    "id": "fcba1cb4-4601-45d8-b919-515d152c56ef",
+                    "name": "Konsole",
+                    "cmd": "konsole",
+                    "position": 1
+                }
+            }
+
+            with open(self.shortcutsPath) as file:
+                json.dump(data, file)
 
         pass
 
