@@ -2,6 +2,11 @@
 
 A plugin for creating and managing shortcuts that can be launched from the Quick Access Menu! Uses bash under the hood to run commands, hence the name.
 
+
+![Main View](./assets/thumbnail.png)
+
+
+
 # Overview
 This plugin allows you to create shortcuts that can be run from the Quick Access Menu.
 
