@@ -1,12 +1,12 @@
 import { afterPatch, Router, ServerAPI } from "decky-frontend-lib";
 import { ReactElement } from "react";
 import { Shortcut } from "./data-structures/Shortcut";
-import { SteamShortcut } from "./SteamClient";
+import { LifetimeNotification, SteamShortcut } from "./SteamClient";
 import { SteamUtils } from "./SteamUtils";
 
 
 export class ShortcutManager {
-    static shortcutIsRunning = false;
+    static appId:number;
 
     private static server:ServerAPI;
     private static routePath = "/library/app/:appid";
@@ -14,7 +14,6 @@ export class ShortcutManager {
 
     private static shortcutName:string;
     private static runnerPath = "/home/deck/homebrew/plugins/Shortcuts/shortcutsRunner.sh";
-    static appId:number;
 
     static setServer(server:ServerAPI) {
         this.server = server;
@@ -59,32 +58,26 @@ export class ShortcutManager {
         console.log(res);
     }
 
-    static async launchShortcut(shortcut:Shortcut, name = this.shortcutName): Promise<boolean> {
-        const steamShort = await SteamUtils.getShortcut(name);
-        if (steamShort) {
-            const didSetLaunchOpts = await SteamUtils.setAppLaunchOptions((steamShort as SteamShortcut).appid, shortcut.cmd); 
-            if (didSetLaunchOpts) {
-                Router.CloseSideMenus();
-                const didLaunch = await SteamUtils.runGame(steamShort.appid, false);
-                // if (didLaunch) {
-                //     this.shortcutIsRunning = true;
-                // }
-                // const unregister = SteamUtils.registerForGameLifetime((data: LifetimeNotification) => {
-                //     if (data.unAppID !== this.appId) return;
-    
-                //     if (data.bRunning) return;
-                //     this.shortcutIsRunning = false;
-    
-                //     unregister();
-                // });
-
-                return didLaunch;
-            } else {
-                console.log("Failed at setAppLaunchOptions");
-                return false;
+    static async launchShortcut(shortcut:Shortcut, setIsRunning:(value:boolean) => void): Promise<boolean> {
+        const didSetLaunchOpts = await SteamUtils.setAppLaunchOptions(this.appId, shortcut.cmd); 
+        if (didSetLaunchOpts) {
+            Router.CloseSideMenus();
+            const didLaunch = await SteamUtils.runGame(this.appId, false);
+            if (didLaunch) {
+                console.log("shortcut is now running");
+                setIsRunning(true);
             }
+            const unregister = SteamUtils.registerForGameLifetime((data: LifetimeNotification) => {
+                if (data.bRunning) return;
+                console.log("shortcut is now terminated");
+                setIsRunning(false);
+
+                unregister();
+            });
+
+            return didLaunch;
         } else {
-            console.log("Failed at getShortcut");
+            console.log("Failed at setAppLaunchOptions");
             return false;
         }
     }

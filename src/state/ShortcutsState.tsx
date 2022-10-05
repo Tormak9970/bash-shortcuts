@@ -3,33 +3,42 @@ import { Shortcut } from "../lib/data-structures/Shortcut"
 
 type ShortcutsDictionary = {
     [key:string]: Shortcut
-  }
+}
 
 interface PublicShortcutsState {
     shortcuts: ShortcutsDictionary;
-    shortcutsList: Shortcut[]
+    shortcutsList: Shortcut[];
+    isRunning: boolean;
 }
 
 interface PublicShortcutsContext extends PublicShortcutsState {
     setShortcuts(shortcuts: ShortcutsDictionary): void;
+    setIsRunning(value: boolean): void;
 }
 
 export class ShortcutsState {
     private shortcuts: ShortcutsDictionary = {};
-    private shortcutsList: Shortcut[] = []
+    private shortcutsList: Shortcut[] = [];
+    private isRunning: boolean = false;
 
     public eventBus = new EventTarget();
 
     getPublicState() {
         return {
             "shortcuts": this.shortcuts,
-            "shortcutsList": this.shortcutsList
+            "shortcutsList": this.shortcutsList,
+            "isRunning": this.isRunning
         }
     }
 
     setShortcuts(shortcuts: ShortcutsDictionary) {
         this.shortcuts = shortcuts;
         this.shortcutsList = Object.values(this.shortcuts).sort((a, b) => a.position - b.position);
+        this.forceUpdate();
+    }
+
+    setIsRunning(value: boolean) {
+        this.isRunning = value;
         this.forceUpdate();
     }
 
@@ -71,11 +80,16 @@ export const ShortcutsContextProvider: FC<ProviderProps> = ({
         shortcutsStateClass.setShortcuts(shortcuts);
     }
 
+    const setIsRunning = (value: boolean) => {
+        shortcutsStateClass.setIsRunning(value);
+    }
+
     return (
         <ShortcutsContext.Provider
             value={{
                 ...publicState,
-                setShortcuts
+                setShortcuts,
+                setIsRunning
             }}
         >
             {children}

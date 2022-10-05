@@ -5,20 +5,22 @@ import { Shortcut } from "../lib/data-structures/Shortcut";
 import { IoRocketSharp } from "react-icons/io5";
 import { ShortcutManager } from "../lib/ShortcutManager";
 import { showToast } from "./utils/Toast";
+import { useShortcutsState } from "../state/ShortcutsState";
 
 export type ShortcutLauncherProps = {
     shortcut: Shortcut
 }
 
-async function runShortcut(shortcut:Shortcut) {
-    console.log(shortcut);
-    const res = await ShortcutManager.launchShortcut(shortcut);
-    if (!res) {
-        showToast("Shortcut failed. Check the associated command.");
-    }
-}
-
 export function ShortcutLauncher(props: ShortcutLauncherProps) {
+    const {setIsRunning} = useShortcutsState();
+
+    async function runShortcut(shortcut:Shortcut) {
+        const res = await ShortcutManager.launchShortcut(shortcut, setIsRunning);
+        if (!res) {
+            showToast("Shortcut failed. Check the associated command.");
+        }
+    }
+
     return (
         <>
             <style>

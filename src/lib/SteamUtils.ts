@@ -238,7 +238,7 @@ export class SteamUtils {
         // Currently Steam fails to properly set appid for non-Steam games :/
         const gameEnd = this.waitForGameLifetime(null, { initialTimeout: 1500, waitForStart: false, waitUntilNewEnd: true });
         const gameId = await this.getGameId(appId);
-        SteamClient.Apps.TerminateApp(gameId, -1);
+        SteamClient.Apps.TerminateApp(gameId, false);
         return await gameEnd;
     }
 

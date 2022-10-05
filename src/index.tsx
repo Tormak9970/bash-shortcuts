@@ -27,7 +27,7 @@ type ShortcutsDictionary = {
 }
 
 const Content: VFC<{ serverAPI: ServerAPI }> = ({}) => {
-  const {shortcuts, setShortcuts, shortcutsList} = useShortcutsState();
+  const {shortcuts, setShortcuts, shortcutsList, isRunning} = useShortcutsState();
 
   async function reload() {
     await PyInterop.getShortcuts().then((res) => {
@@ -76,25 +76,35 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({}) => {
           </PanelSectionRow>
 
           {
-            (ShortcutManager.shortcutIsRunning) ? (
+            (isRunning) ? (
               <>
-                <div>A shortcut is running. Please close before running another.</div>
-                <ButtonItem layout="below" onClick={ShortcutManager.closeGame} >
+                <div style={{
+                    textAlign: "center",
+                    margin: "14px 0px",
+                    padding: "0px 15px",
+                    fontSize: "18px"
+                }}>A shortcut is running. Please close before running another.</div>
+                <ButtonItem layout="below" onClick={() => {
+                  ShortcutManager.closeGame();
+                }} >
                   Close Shortcut
                 </ButtonItem>
               </>
             ) : (
-              shortcutsList.map((itm: Shortcut) => (
-                <ShortcutLauncher shortcut={itm} />
-              ))
+              <>
+                {
+                  shortcutsList.map((itm: Shortcut) => (
+                    <ShortcutLauncher shortcut={itm} />
+                  ))
+                }
+                <PanelSectionRow>
+                  <ButtonItem layout="below" onClick={reload} >
+                    Reload
+                  </ButtonItem>
+                </PanelSectionRow>
+              </>
             )
           }
-    
-          <PanelSectionRow>
-            <ButtonItem layout="below" onClick={reload} >
-              Reload
-            </ButtonItem>
-          </PanelSectionRow>
         </PanelSection>
       </div>
     </>
