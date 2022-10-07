@@ -13,7 +13,7 @@ export class ShortcutManager {
     private static routerPatch:any;
 
     private static shortcutName:string;
-    private static runnerPath = "/home/deck/homebrew/plugins/BashShortcuts/shortcutsRunner.sh";
+    private static runnerPath = "/home/deck/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh";
 
     static setServer(server:ServerAPI) {
         this.server = server;
