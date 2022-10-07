@@ -1,12 +1,7 @@
-from asyncio import subprocess
 import logging
 import json
-from os import path, system
-from glob import glob
 import os
-from posixpath import isabs
 from genericpath import exists
-from configparser import ConfigParser
 
 logging.basicConfig(filename="/tmp/bash-shortcuts.log", format='[Bash Shortcuts] %(asctime)s %(levelname)s %(message)s', filemode='w+', force=True)
 logger=logging.getLogger()
@@ -29,7 +24,7 @@ class Shortcut:
 
 class Plugin:
     shortcuts = {}
-    shortcutsPath = "~/config/BashShortcuts/shortcuts.json"
+    shortcutsPath = "/home/deck/.config/BashShortcuts/shortcuts.json"
 
     def serializeShortcuts(self):
         res = {}
@@ -71,7 +66,8 @@ class Plugin:
         log("Initializing Shorcuts Plugin")
 
         if not os.path.exists(self.shortcutsPath):
-            os.mkdir(os.path.dirname(self.shortcutsPath))
+            if not os.path.exists(os.path.dirname(self.shortcutsPath)):
+                os.mkdir(os.path.dirname(self.shortcutsPath))
             
             data = {
                 "fcba1cb4-4601-45d8-b919-515d152c56ef": {
@@ -82,8 +78,8 @@ class Plugin:
                 }
             }
 
-            with open(self.shortcutsPath) as file:
-                json.dump(data, file)
+            with open(self.shortcutsPath, "w") as file:
+                json.dump(data, file, indent=4)
 
         pass
 
