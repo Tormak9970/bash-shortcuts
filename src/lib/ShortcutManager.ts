@@ -14,7 +14,8 @@ export class ShortcutManager {
     private static routerPatch:any;
 
     private static shortcutName:string;
-    private static runnerPath = "/home/deck/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh";
+    private static runnerPath = "\"/home/deck/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh\"";
+    private static startDir = "\"/home/deck/homebrew/plugins/bash-shortcuts/\"";
 
     static setServer(server:ServerAPI) {
         this.server = server;
@@ -37,6 +38,15 @@ export class ShortcutManager {
                     if (!res) {
                         console.log("Failed to set the shortcutsRunner path");
                         showToast("Failed to set the shortcutsRunner path");
+                    }
+                }
+                console.log(shorcut);
+                // TODO these aren't ever equal. for now it works to confirm its correct by resetting it.
+                if (shorcut.data.strShortcutPath != this.startDir) {
+                    const res = await SteamUtils.setShortcutStartDir(shorcut.appid, this.startDir);
+                    if (!res) {
+                        console.log("Failed to set the start dir");
+                        showToast("Failed to set the start dir");
                     }
                 }
                 this.appId = shorcut.appid;

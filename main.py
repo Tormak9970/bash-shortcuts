@@ -24,7 +24,7 @@ class Shortcut:
 
 class Plugin:
     shortcuts = {}
-    shortcutsPath = "/home/deck/.config/BashShortcuts/shortcuts.json"
+    shortcutsPath = "/home/deck/.config/bash-shortcuts/shortcuts.json"
 
     def serializeShortcuts(self):
         res = {}

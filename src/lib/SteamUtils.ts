@@ -134,6 +134,25 @@ export class SteamUtils {
         return true;
     }
 
+    static async setShortcutStartDir(appId: number, startDir: string) {
+        const details = await this.waitForAppDetails(appId, (details) => details !== null) ? await this.getAppDetails(appId) : null;
+        if (!details) {
+            console.error(`Could not set start dir for ${appId} (does not exist)!`);
+            return false;
+        }
+
+        if (details.strShortcutStartDir == `\"${startDir}\"` || details.strShortcutStartDir == startDir) {
+            return true;
+        }
+
+        SteamClient.Apps.SetShortcutStartDir(appId, startDir);
+        if (!await this.waitForAppDetails(appId, (details) => details !== null && (details.strShortcutStartDir == `\"${startDir}\"` || details.strShortcutStartDir == startDir))) {
+            console.error(`Could not start dir for ${appId}!`);
+            return false;
+        }
+        return true;
+    }
+
     // TODO: check if steam still gets into angry state :/
     static async removeShortcut(appId: number) {
         const overview = await this.waitForAppOverview(appId, (overview) => overview !== null) ? await this.getAppOverview(appId) : null;
