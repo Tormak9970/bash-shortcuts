@@ -1,5 +1,6 @@
 import { afterPatch, Router, ServerAPI } from "decky-frontend-lib";
 import { ReactElement } from "react";
+import { showToast } from "../components/utils/Toast";
 import { Shortcut } from "./data-structures/Shortcut";
 import { LifetimeNotification, SteamShortcut } from "./SteamClient";
 import { SteamUtils } from "./SteamUtils";
@@ -24,10 +25,25 @@ export class ShortcutManager {
         if (!(await this.checkShortcutExist(this.shortcutName))) {
             const success = await this.addShortcut(this.shortcutName, this.runnerPath);
 
-            if (!success) console.log("Adding runner shortcut failed");
+            if (!success) {
+                console.log("Adding runner shortcut failed");
+                showToast("Adding runner shortcut failed");
+            }
         } else {
             const shorcut = await SteamUtils.getShortcut(name) as SteamShortcut;
-            this.appId = shorcut.appid;
+            if (shorcut) {
+                if (shorcut.data.strExePath != this.runnerPath) {
+                    const res = await SteamUtils.setShortcutExe(shorcut.appid, this.runnerPath);
+                    if (!res) {
+                        console.log("Failed to set the shortcutsRunner path");
+                        showToast("Failed to set the shortcutsRunner path");
+                    }
+                }
+                this.appId = shorcut.appid;
+            } else {
+                console.log("failed to get shortcut but it exists");
+                showToast("Failed to get shortcut but it exists. Please try restarting your Deck.");
+            }
         }
 
         if (this.appId) {
@@ -78,6 +94,7 @@ export class ShortcutManager {
             return didLaunch;
         } else {
             console.log("Failed at setAppLaunchOptions");
+            showToast("Failed at setAppLaunchOptions");
             return false;
         }
     }
@@ -98,6 +115,8 @@ export class ShortcutManager {
             this.appId = res as number;
             return true; 
         } else {
+            console.log("Failed to add shortcut");
+            showToast("Failed to add shortcut");
             return false;
         }
     }
@@ -108,6 +127,8 @@ export class ShortcutManager {
         if (shortcut) {
             return !!(await SteamUtils.removeShortcut(shortcut.appid));
         } else {
+            console.log("Failed to remove shortcut");
+            showToast("Failed to remove shortcut");
             return false;
         }
     }

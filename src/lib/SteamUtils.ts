@@ -1,20 +1,10 @@
 import { sleep } from "decky-frontend-lib";
-import { LifetimeNotification, SteamClient, SteamShortcut } from "./SteamClient";
+import { AppOverview, AppDetails, LifetimeNotification, SteamClient, SteamShortcut } from "./SteamClient";
 
 //? Credit to FrogTheFrog for some of the methods: https://github.com/FrogTheFrog/SDH-MoonDeck/blob/main/src/lib/steamutils.ts
 
 declare global {
     var SteamClient: SteamClient;
-}
-
-interface AppDetails {
-    unAppID: number;
-    strLaunchOptions: string;
-}
-
-interface AppOverview {
-    display_name: string;
-    gameid: string;
 }
 
 export class SteamUtils {
@@ -101,22 +91,47 @@ export class SteamUtils {
     static async addShortcut(appName: string, execPath: string) {
         console.log(`Adding shortcut for ${appName}.`);
 
-        const appId = await SteamClient.Apps.AddShortcut(appName, execPath) as number | undefined | null;
-        if (typeof appId === "number") {
-            if (await this.waitForAppOverview(appId, (overview) => overview !== null)) {
-                const overview = await this.getAppOverview(appId);
-                if (overview && overview.display_name === appName) {
-                    if (await this.hideApp(appId)) {
-                        return appId;
+        const shortcuts = await this.getShortcuts();
+
+        if (!shortcuts.find(shortcut => shortcut.data.strAppName == appName)) {
+            const appId = await SteamClient.Apps.AddShortcut(appName, execPath) as number | undefined | null;
+            if (typeof appId === "number") {
+                if (await this.waitForAppOverview(appId, (overview) => overview !== null)) {
+                    const overview = await this.getAppOverview(appId);
+                    if (overview && overview.display_name === appName) {
+                        if (await this.hideApp(appId)) {
+                            return appId;
+                        }
                     }
                 }
-            }
 
-            await this.removeShortcut(appId);
+                await this.removeShortcut(appId);
+            }
+        } else {
+            console.log("shortcut already exists with that name");
         }
 
         console.error(`Could not add shortcut for ${appName}!`);
         return null;
+    }
+
+    static async setShortcutExe(appId: number, exePath: string) {
+        const details = await this.waitForAppDetails(appId, (details) => details !== null) ? await this.getAppDetails(appId) : null;
+        if (!details) {
+            console.error(`Could not set exe path for ${appId} (does not exist)!`);
+            return false;
+        }
+
+        if (details.strShortcutExe == `\"${exePath}\"` || details.strShortcutExe == exePath) {
+            return true;
+        }
+
+        SteamClient.Apps.SetShortcutExe(appId, exePath);
+        if (!await this.waitForAppDetails(appId, (details) => details !== null && (details.strShortcutExe == `\"${exePath}\"` || details.strShortcutExe == exePath))) {
+            console.error(`Could not exe path for ${appId}!`);
+            return false;
+        }
+        return true;
     }
 
     // TODO: check if steam still gets into angry state :/
