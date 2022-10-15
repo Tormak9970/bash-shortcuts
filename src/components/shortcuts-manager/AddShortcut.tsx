@@ -14,7 +14,7 @@ export function AddShortcut() {
 	const [cmd, setCmd] = useState<string>("");
 
 	function saveShortcut() {
-		const newShort = new Shortcut(uuidv4(), name, cmd, shortcutsList.length);
+		const newShort = new Shortcut(uuidv4(), name, cmd, shortcutsList.length+1);
 		PyInterop.addShortcut(newShort);
 		setName("");
 		setCmd("");
