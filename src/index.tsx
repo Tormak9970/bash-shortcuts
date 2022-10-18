@@ -45,10 +45,8 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({}) => {
         .scope {
           width: inherit;
           height: inherit;
-          display: inherit;
 
           flex: 1 1 1px;
-          min-height: 1px;
           scroll-padding: 48px 0px;
           display: flex;
           flex-direction: column;
@@ -165,5 +163,6 @@ export default definePlugin((serverApi: ServerAPI) => {
       serverApi.routerHook.removeRoute("/shortcuts-nav");
       ShortcutManager.onDismount();
     },
+    alwaysRender: true
   };
 });
