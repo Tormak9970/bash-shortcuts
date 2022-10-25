@@ -83,20 +83,16 @@ export class ShortcutManager {
         const didSetLaunchOpts = await SteamUtils.setAppLaunchOptions(this.appId, shortcut.cmd); 
         if (didSetLaunchOpts) {
             Router.CloseSideMenus();
-            this.isRunning = true;
             const didLaunch = await SteamUtils.runGame(this.appId, false);
             if (didLaunch) {
                 Router.CloseSideMenus();
                 console.log("shortcut is now running");
                 setIsRunning(true);
-            } else {
-                this.isRunning = false;
             }
             const unregister = SteamUtils.registerForGameLifetime((data: LifetimeNotification) => {
                 if (data.bRunning) return;
                 console.log("shortcut is now terminated");
                 setIsRunning(false);
-                this.isRunning = false;
 
                 unregister();
             });
