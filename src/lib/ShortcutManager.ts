@@ -17,6 +17,8 @@ export class ShortcutManager {
     private static runnerPath = "\"/home/deck/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh\"";
     private static startDir = "\"/home/deck/homebrew/plugins/bash-shortcuts/\"";
 
+    private static redirectable = true;
+
     static setServer(server:ServerAPI) {
         this.server = server;
     }
@@ -56,9 +58,13 @@ export class ShortcutManager {
                 afterPatch(routeProps.children.props, "renderFunc", (_args: any[], ret:ReactElement) => {
                     const { appid } = ret.props.children.props.overview;
 
-                    if (appid === this.appId) {
+                    if (appid === this.appId && this.redirectable) {
                         console.log("rerouting");
                         Router.NavigateBackOrOpenMenu();
+                        this.redirectable = false;
+                        setTimeout(() => {
+                            this.redirectable = true;
+                        }, 500);
                         return null;
                     }
 

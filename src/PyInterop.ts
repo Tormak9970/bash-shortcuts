@@ -37,15 +37,15 @@ export class PyInterop {
 
     static toast(title: string, message: string) {
         return (() => {
-          try {
-            return this.serverAPI.toaster.toast({
-              title: title,
-              body: message,
-              duration: 8000,
-            });
-          } catch (e) {
-            console.log("Toaster Error", e);
-          }
+            try {
+                return this.serverAPI.toaster.toast({
+                    title: title,
+                    body: message,
+                    duration: 8000,
+                });
+            } catch (e) {
+                console.log("Toaster Error", e);
+            }
         })();
-      }
+    }
 }
