@@ -4,8 +4,8 @@ import { Shortcut } from "../lib/data-structures/Shortcut";
 
 import { IoRocketSharp } from "react-icons/io5";
 import { ShortcutManager } from "../lib/ShortcutManager";
-import { showToast } from "./utils/Toast";
 import { useShortcutsState } from "../state/ShortcutsState";
+import { PyInterop } from "../PyInterop";
 
 export type ShortcutLauncherProps = {
     shortcut: Shortcut
@@ -17,7 +17,7 @@ export function ShortcutLauncher(props: ShortcutLauncherProps) {
     async function runShortcut(shortcut:Shortcut) {
         const res = await ShortcutManager.launchShortcut(shortcut, setIsRunning);
         if (!res) {
-            showToast("Shortcut failed. Check the associated command.");
+            PyInterop.toast("Error", "Shortcut failed. Check the associated command.");
         }
     }
 

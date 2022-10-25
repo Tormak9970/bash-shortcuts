@@ -4,7 +4,6 @@ import { PyInterop } from "../../PyInterop";
 import { Shortcut } from "../../lib/data-structures/Shortcut";
 
 import {v4 as uuidv4} from "uuid";
-import { showToast } from "../utils/Toast";
 import { useShortcutsState } from "../../state/ShortcutsState";
 
 export function AddShortcut() {
@@ -18,7 +17,7 @@ export function AddShortcut() {
 		PyInterop.addShortcut(newShort);
 		setName("");
 		setCmd("");
-		showToast("Shortcut Saved!");
+		PyInterop.toast("Error", "Shortcut Saved!");
 
 		const ref = {...shortcuts};
 		ref[newShort.id]= newShort;
