@@ -1,5 +1,5 @@
 import { Field, ConfirmModal, PanelSection, PanelSectionRow, TextField, ToggleField } from "decky-frontend-lib"
-import { VFC, Fragment, useState, useEffect } from "react"
+import { VFC, Fragment, useState } from "react"
 import { Shortcut } from "../../lib/data-structures/Shortcut"
 
 type EditModalProps = {
@@ -18,10 +18,6 @@ export const EditModal: VFC<EditModalProps> = ({
     const [name, setName] = useState<string>(shortcut.name);
     const [cmd, setCmd] = useState<string>(shortcut.cmd);
     const [isApp, setIsApp] = useState<boolean>(shortcut.isApp);
-
-    useEffect(() => {
-        console.log(isApp);
-    }, [isApp])
     
     return (
         <>
