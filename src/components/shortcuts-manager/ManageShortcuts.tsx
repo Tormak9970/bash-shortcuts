@@ -48,7 +48,6 @@ export function ManageShortcuts() {
                     let shorts = shortcuts;
                     shorts[shortcut.id] = updated;
                     setShortcuts(shorts);
-                    reload();
                 }} shortcut={shortcut} />
             )}}>Edit</MenuItem>
             <MenuItem onSelected={() => {showModal(
@@ -57,7 +56,6 @@ export function ManageShortcuts() {
                     let shorts = shortcuts;
                     delete shorts[shortcut.id];
                     setShortcuts(shorts);
-                    reload();
                 }} bDestructiveWarning={true}>
                     Are you sure you want to delete this shortcut?
                 </ConfirmModal>

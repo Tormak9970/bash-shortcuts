@@ -33,7 +33,7 @@ class Plugin:
         res = {}
 
         for k,v in self.shortcuts.items():
-            res[k] = { "id": v.id, "name": v.name, "cmd": v.cmd, "position": v.position }
+            res[k] = { "id": v.id, "name": v.name, "cmd": v.cmd, "position": v.position, "isApp": v.isApp }
 
         return res
 
