@@ -17,7 +17,7 @@ export function ShortcutLauncher(props: ShortcutLauncherProps) {
     async function runShortcut(shortcut:Shortcut) {
         const res = await ShortcutManager.launchShortcut(shortcut, setIsRunning);
         if (!res) {
-            PyInterop.toast("Error", "Shortcut failed. Check the associated command.");
+            PyInterop.toast("Error", "Shortcut failed. Check the command.");
         }
     }
 
