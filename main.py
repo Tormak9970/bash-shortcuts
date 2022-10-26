@@ -168,4 +168,5 @@ class Plugin:
         pass
 
     def _runNonAppShortcut(self, shortcut):
-        return subprocess.run([self.shortcutsRunnerPath, shortcut['cmd']]).returncode == 0
+        res = subprocess.call([self.shortcutsRunnerPath, shortcut['cmd']], shell=True)
+        return res == 0

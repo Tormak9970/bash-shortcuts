@@ -112,6 +112,9 @@ export class ShortcutManager {
         } else {
             const res = await PyInterop.runNonAppShortcut(shortcut);
             const status = typeof res.result == "boolean" && (res.result as boolean);
+            if (status) {
+                PyInterop.toast("Success", "Command exited successfully!");
+            }
             return status;
         }
     }

@@ -18,7 +18,7 @@ export function AddShortcut() {
 		PyInterop.addShortcut(newShort);
 		setName("");
 		setCmd("");
-		PyInterop.toast("Error", "Shortcut Saved!");
+		PyInterop.toast("Success", "Shortcut Saved!");
 
 		const ref = {...shortcuts};
 		ref[newShort.id]= newShort;
