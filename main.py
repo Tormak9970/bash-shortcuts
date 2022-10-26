@@ -19,7 +19,7 @@ class Shortcut:
         self.cmd = dict['cmd']
         self.id = dict['id']
         self.position = dict['position']
-        self.isApp = dict['isApp'] if dict.has_key('isApp') else True
+        self.isApp = dict['isApp'] if 'isApp' in dict else True
     
     def toJSON(self):
         return json.dumps({ "id": self.id, "name": self.name, "cmd": self.cmd, "position": self.position, "isApp": self.isApp }, sort_keys=True, indent=4)

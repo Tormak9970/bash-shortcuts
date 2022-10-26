@@ -1,5 +1,5 @@
-import { Field, ConfirmModal, PanelSection, PanelSectionRow, TextField } from "decky-frontend-lib"
-import { VFC, Fragment, useState } from "react"
+import { Field, ConfirmModal, PanelSection, PanelSectionRow, TextField, ToggleField } from "decky-frontend-lib"
+import { VFC, Fragment, useState, useEffect } from "react"
 import { Shortcut } from "../../lib/data-structures/Shortcut"
 
 type EditModalProps = {
@@ -17,6 +17,11 @@ export const EditModal: VFC<EditModalProps> = ({
 }) => {
     const [name, setName] = useState<string>(shortcut.name);
     const [cmd, setCmd] = useState<string>(shortcut.cmd);
+    const [isApp, setIsApp] = useState<boolean>(shortcut.isApp);
+
+    useEffect(() => {
+        console.log(isApp);
+    }, [isApp])
     
     return (
         <>
@@ -26,32 +31,33 @@ export const EditModal: VFC<EditModalProps> = ({
             onEscKeypress={closeModal}
             
             onOK={() => {
-                const updated = new Shortcut(shortcut.id, name, cmd, shortcut.position);
+                const updated = new Shortcut(shortcut.id, name, cmd, shortcut.position, isApp);
                 onConfirm(updated);
                 closeModal();
             }}>
                 <PanelSection title={title}>
                     <PanelSectionRow>
                         <Field
-                            label="Shortcut Name"
+                            label="Name"
                             description={
                                 <TextField
-                                    label={'Name'}
                                     value={name}
-                                    onChange={(e) => setName(e?.target.value)}
+                                    onChange={(e) => {setName(e?.target.value)}}
                                 />}
                             />
                     </PanelSectionRow>
                     <PanelSectionRow>
                         <Field
-                            label="Shortcut Command"
+                            label="Command"
                             description={
                                 <TextField
-                                    label={'Command'}
                                     value={cmd}
-                                    onChange={(e) => setCmd(e?.target.value)}
+                                    onChange={(e) => {setCmd(e?.target.value)}}
                                 />}
                             />
+                    </PanelSectionRow>
+                    <PanelSectionRow>
+                        <ToggleField label="Does this launch an app?" onChange={(e) => {setIsApp(e)}} checked={isApp} />
                     </PanelSectionRow>
                 </PanelSection>
             </ConfirmModal>

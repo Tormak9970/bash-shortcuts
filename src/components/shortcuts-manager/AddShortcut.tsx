@@ -1,4 +1,4 @@
-import { Field, PanelSection, PanelSectionRow, TextField, ButtonItem, quickAccessControlsClasses } from "decky-frontend-lib"
+import { Field, PanelSection, PanelSectionRow, TextField, ButtonItem, quickAccessControlsClasses, ToggleField } from "decky-frontend-lib"
 import { Fragment, useState, useEffect } from "react"
 import { PyInterop } from "../../PyInterop";
 import { Shortcut } from "../../lib/data-structures/Shortcut";
@@ -11,9 +11,10 @@ export function AddShortcut() {
 	const [ableToSave, setAbleToSave] = useState(false);
 	const [name, setName] = useState<string>("");
 	const [cmd, setCmd] = useState<string>("");
+    const [isApp, setIsApp] = useState<boolean>(true);
 
 	function saveShortcut() {
-		const newShort = new Shortcut(uuidv4(), name, cmd, shortcutsList.length+1);
+		const newShort = new Shortcut(uuidv4(), name, cmd, shortcutsList.length+1, isApp);
 		PyInterop.addShortcut(newShort);
 		setName("");
 		setCmd("");
@@ -46,7 +47,7 @@ export function AddShortcut() {
 								<TextField
 									label={'Name'}
 									value={name}
-									onChange={(e) => setName(e?.target.value)}
+									onChange={(e) => {setName(e?.target.value)}}
 								/>}
 						/>
 					</PanelSectionRow>
@@ -57,10 +58,13 @@ export function AddShortcut() {
 								<TextField
 									label={'Command'}
 									value={cmd}
-									onChange={(e) => setCmd(e?.target.value)}
+									onChange={(e) => {setCmd(e?.target.value)}}
 								/>}
 						/>
 					</PanelSectionRow>
+                    <PanelSectionRow>
+                        <ToggleField label="Does this launch an app?" onChange={(e) => {setIsApp(e)}} checked />
+                    </PanelSectionRow>
 					<PanelSectionRow>
 						{/* @ts-ignore */}
 						<ButtonItem layout="below" onClick={saveShortcut} disabled={!ableToSave} bottomSeparator='none'>
