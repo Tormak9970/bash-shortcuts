@@ -1,3 +1,4 @@
+import subprocess
 import logging
 import json
 import os
@@ -18,19 +19,21 @@ class Shortcut:
         self.cmd = dict['cmd']
         self.id = dict['id']
         self.position = dict['position']
+        self.isApp = dict['isApp'] if 'isApp' in dict else True
     
     def toJSON(self):
-        return json.dumps({ "id": self.id, "name": self.name, "cmd": self.cmd, "position": self.position }, sort_keys=True, indent=4)
+        return json.dumps({ "id": self.id, "name": self.name, "cmd": self.cmd, "position": self.position, "isApp": self.isApp }, sort_keys=True, indent=4)
 
 class Plugin:
     shortcuts = {}
-    shortcutsPath = "/home/deck/.config/BashShortcuts/shortcuts.json"
+    shortcutsPath = "/home/deck/.config/bash-shortcuts/shortcuts.json"
+    shortcutsRunnerPath = "\"/home/deck/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh\""
 
     def serializeShortcuts(self):
         res = {}
 
         for k,v in self.shortcuts.items():
-            res[k] = { "id": v.id, "name": v.name, "cmd": v.cmd, "position": v.position }
+            res[k] = { "id": v.id, "name": v.name, "cmd": v.cmd, "position": v.position, "isApp": v.isApp }
 
         return res
 
@@ -55,6 +58,9 @@ class Plugin:
         self._remShortcut(self, self.shortcutsPath, shortcut)
         return self.serializeShortcuts(self)
 
+    async def runNonAppShortcut(self, shortcut):
+        return self._runNonAppShortcut(self, shortcut)
+
     # Asyncio-compatible long-running code, executed in a task when the plugin is loaded
     async def _main(self):
         global Initialized
@@ -74,7 +80,8 @@ class Plugin:
                     "id": "fcba1cb4-4601-45d8-b919-515d152c56ef",
                     "name": "Konsole",
                     "cmd": "konsole",
-                    "position": 1
+                    "position": 1,
+                    "isApp": True
                 }
             }
 
@@ -159,3 +166,7 @@ class Plugin:
             log(f"Shortcut {shortcut['name']} does not exist")
 
         pass
+
+    def _runNonAppShortcut(self, shortcut):
+        res = subprocess.call([self.shortcutsRunnerPath, shortcut['cmd']], shell=True)
+        return res == 0

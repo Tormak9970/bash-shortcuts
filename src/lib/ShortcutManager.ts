@@ -1,5 +1,6 @@
 import { afterPatch, Router, ServerAPI } from "decky-frontend-lib";
 import { ReactElement } from "react";
+import { PyInterop } from "../PyInterop";
 import { Shortcut } from "./data-structures/Shortcut";
 import { LifetimeNotification, SteamShortcut } from "./SteamClient";
 import { SteamUtils } from "./SteamUtils";
@@ -13,7 +14,10 @@ export class ShortcutManager {
     private static routerPatch:any;
 
     private static shortcutName:string;
-    private static runnerPath = "/home/deck/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh";
+    private static runnerPath = "\"/home/deck/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh\"";
+    private static startDir = "\"/home/deck/homebrew/plugins/bash-shortcuts/\"";
+
+    private static redirectable = true;
 
     static setServer(server:ServerAPI) {
         this.server = server;
@@ -24,10 +28,29 @@ export class ShortcutManager {
         if (!(await this.checkShortcutExist(this.shortcutName))) {
             const success = await this.addShortcut(this.shortcutName, this.runnerPath);
 
-            if (!success) console.log("Adding runner shortcut failed");
+            if (!success) {
+                PyInterop.toast("Error", "Adding runner shortcut failed");
+            }
         } else {
             const shorcut = await SteamUtils.getShortcut(name) as SteamShortcut;
-            this.appId = shorcut.appid;
+            if (shorcut) {
+                if (shorcut.data.strExePath != this.runnerPath) {
+                    const res = await SteamUtils.setShortcutExe(shorcut.appid, this.runnerPath);
+                    if (!res) {
+                        PyInterop.toast("Error", "Failed to set the shortcutsRunner path");
+                    }
+                }
+                // TODO these aren't ever equal. for now it works to confirm its correct by resetting it.
+                if (shorcut.data.strShortcutPath != this.startDir) {
+                    const res = await SteamUtils.setShortcutStartDir(shorcut.appid, this.startDir);
+                    if (!res) {
+                        PyInterop.toast("Error", "Failed to set the start dir");
+                    }
+                }
+                this.appId = shorcut.appid;
+            } else {
+                PyInterop.toast("Error", "Failed to get shortcut but it exists. Please try restarting your Deck.");
+            }
         }
 
         if (this.appId) {
@@ -35,9 +58,13 @@ export class ShortcutManager {
                 afterPatch(routeProps.children.props, "renderFunc", (_args: any[], ret:ReactElement) => {
                     const { appid } = ret.props.children.props.overview;
 
-                    if (appid === this.appId) {
+                    if (appid === this.appId && this.redirectable) {
                         console.log("rerouting");
-                        Router.Navigate('/library/home');
+                        Router.NavigateBackOrOpenMenu();
+                        this.redirectable = false;
+                        setTimeout(() => {
+                            this.redirectable = true;
+                        }, 500);
                         return null;
                     }
 
@@ -59,26 +86,36 @@ export class ShortcutManager {
     }
 
     static async launchShortcut(shortcut:Shortcut, setIsRunning:(value:boolean) => void): Promise<boolean> {
-        const didSetLaunchOpts = await SteamUtils.setAppLaunchOptions(this.appId, shortcut.cmd); 
-        if (didSetLaunchOpts) {
-            Router.CloseSideMenus();
-            const didLaunch = await SteamUtils.runGame(this.appId, false);
-            if (didLaunch) {
-                console.log("shortcut is now running");
-                setIsRunning(true);
+        if (shortcut.isApp) {
+            const didSetLaunchOpts = await SteamUtils.setAppLaunchOptions(this.appId, shortcut.cmd); 
+            if (didSetLaunchOpts) {
+                Router.CloseSideMenus();
+                const didLaunch = await SteamUtils.runGame(this.appId, false);
+                if (didLaunch) {
+                    Router.CloseSideMenus();
+                    console.log("shortcut is now running");
+                    setIsRunning(true);
+                }
+                const unregister = SteamUtils.registerForGameLifetime((data: LifetimeNotification) => {
+                    if (data.bRunning) return;
+                    console.log("shortcut is now terminated");
+                    setIsRunning(false);
+
+                    unregister();
+                });
+
+                return didLaunch;
+            } else {
+                PyInterop.toast("Error", "Failed at setAppLaunchOptions");
+                return false;
             }
-            const unregister = SteamUtils.registerForGameLifetime((data: LifetimeNotification) => {
-                if (data.bRunning) return;
-                console.log("shortcut is now terminated");
-                setIsRunning(false);
-
-                unregister();
-            });
-
-            return didLaunch;
         } else {
-            console.log("Failed at setAppLaunchOptions");
-            return false;
+            const res = await PyInterop.runNonAppShortcut(shortcut);
+            const status = typeof res.result == "boolean" && (res.result as boolean);
+            if (status) {
+                PyInterop.toast("Success", "Command exited successfully!");
+            }
+            return status;
         }
     }
 
@@ -89,7 +126,8 @@ export class ShortcutManager {
     }
 
     private static async checkShortcutExist(name:string): Promise<boolean> {
-        return !!(await SteamUtils.getShortcut(name));
+        const shortcut = await SteamUtils.getShortcut(name);
+        return shortcut?.data != null && shortcut?.data != undefined;
     }
 
     private static async addShortcut(name:string, exec:string): Promise<boolean> {
@@ -98,6 +136,8 @@ export class ShortcutManager {
             this.appId = res as number;
             return true; 
         } else {
+            console.log("Failed to add shortcut");
+            PyInterop.toast("Error", "Failed to add shortcut");
             return false;
         }
     }
@@ -108,6 +148,8 @@ export class ShortcutManager {
         if (shortcut) {
             return !!(await SteamUtils.removeShortcut(shortcut.appid));
         } else {
+            console.log("Failed to remove shortcut");
+            PyInterop.toast("Error", "Failed to remove shortcut");
             return false;
         }
     }

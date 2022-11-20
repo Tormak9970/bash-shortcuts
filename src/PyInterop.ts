@@ -34,4 +34,23 @@ export class PyInterop {
         const apps = await this.serverAPI.callPluginMethod<{}, Application[]>("getInstalledApps", {});
         return apps;
     }
+
+    static async runNonAppShortcut(shortcut:Shortcut): Promise<ServerResponse<boolean>> {
+        const successful = await this.serverAPI.callPluginMethod<{shortcut:Shortcut}, boolean>("runNonAppShortcut", { shortcut: shortcut });
+        return successful;
+    }
+
+    static toast(title: string, message: string) {
+        return (() => {
+            try {
+                return this.serverAPI.toaster.toast({
+                    title: title,
+                    body: message,
+                    duration: 8000,
+                });
+            } catch (e) {
+                console.log("Toaster Error", e);
+            }
+        })();
+    }
 }
