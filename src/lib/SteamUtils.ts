@@ -104,8 +104,6 @@ export class SteamUtils {
                         }
                     }
                 }
-
-                await this.removeShortcut(appId);
             }
         } else {
             console.log("shortcut already exists with that name");

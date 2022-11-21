@@ -77,7 +77,9 @@ export class ShortcutManager {
     }
 
     static onDismount() {
-        this.server.routerHook.removePatch(this.routePath, this.routerPatch);
+        if (this.routerPatch) {
+            this.server.routerHook.removePatch(this.routePath, this.routerPatch);
+        }
     }
 
     static async getShortcuts() {
