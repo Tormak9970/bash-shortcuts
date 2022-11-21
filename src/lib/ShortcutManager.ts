@@ -18,6 +18,7 @@ export class ShortcutManager {
     private static startDir = "\"/home/deck/homebrew/plugins/bash-shortcuts/\"";
 
     private static redirectable = true;
+    private static hideShortcut = false;
 
     static setServer(server:ServerAPI) {
         this.server = server;
@@ -26,7 +27,7 @@ export class ShortcutManager {
     static async init(name:string) {
         this.shortcutName = name;
         if (!(await this.checkShortcutExist(this.shortcutName))) {
-            const success = await this.addShortcut(this.shortcutName, this.runnerPath);
+            const success = await this.addShortcut(this.shortcutName, this.runnerPath, ShortcutManager.hideShortcut);
 
             if (!success) {
                 PyInterop.toast("Error", "Adding runner shortcut failed");
@@ -54,25 +55,25 @@ export class ShortcutManager {
         }
 
         if (this.appId) {
-            this.routerPatch = this.server.routerHook.addPatch(this.routePath, (routeProps: { path: string; children: ReactElement }) => {
-                afterPatch(routeProps.children.props, "renderFunc", (_args: any[], ret:ReactElement) => {
-                    const { appid } = ret.props.children.props.overview;
+            // this.routerPatch = this.server.routerHook.addPatch(this.routePath, (routeProps: { path: string; children: ReactElement }) => {
+            //     afterPatch(routeProps.children.props, "renderFunc", (_args: any[], ret:ReactElement) => {
+            //         const { appid } = ret.props.children.props.overview;
 
-                    if (appid === this.appId && this.redirectable) {
-                        console.log("rerouting");
-                        Router.NavigateBackOrOpenMenu();
-                        this.redirectable = false;
-                        setTimeout(() => {
-                            this.redirectable = true;
-                        }, 500);
-                        return null;
-                    }
+            //         if (appid === this.appId && this.redirectable) {
+            //             console.log("rerouting");
+            //             Router.NavigateBackOrOpenMenu();
+            //             this.redirectable = false;
+            //             setTimeout(() => {
+            //                 this.redirectable = true;
+            //             }, 500);
+            //             return null;
+            //         }
 
-                    return ret;
-                });
+            //         return ret;
+            //     });
 
-                return routeProps;
-            });
+            //     return routeProps;
+            // });
         }
     }
 
@@ -132,8 +133,8 @@ export class ShortcutManager {
         return shortcut?.data != null && shortcut?.data != undefined;
     }
 
-    private static async addShortcut(name:string, exec:string): Promise<boolean> {
-        const res = await SteamUtils.addShortcut(name, exec);
+    private static async addShortcut(name:string, exec:string, hideShortcut:boolean): Promise<boolean> {
+        const res = await SteamUtils.addShortcut(name, exec, hideShortcut);
         if (res) {
             this.appId = res as number;
             return true; 

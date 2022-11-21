@@ -88,19 +88,21 @@ export class SteamUtils {
         return false;
     }
 
-    static async addShortcut(appName: string, execPath: string) {
+    static async addShortcut(appName: string, execPath: string, hideShortcut: boolean) {
         console.log(`Adding shortcut for ${appName}.`);
 
         const shortcuts = await this.getShortcuts();
 
         if (!shortcuts.find(shortcut => shortcut.data.strAppName == appName)) {
             const appId = await SteamClient.Apps.AddShortcut(appName, execPath) as number | undefined | null;
-            if (typeof appId === "number") {
-                if (await this.waitForAppOverview(appId, (overview) => overview !== null)) {
-                    const overview = await this.getAppOverview(appId);
-                    if (overview && overview.display_name === appName) {
-                        if (await this.hideApp(appId)) {
-                            return appId;
+            if (hideShortcut) {
+                if (typeof appId === "number") {
+                    if (await this.waitForAppOverview(appId, (overview) => overview !== null)) {
+                        const overview = await this.getAppOverview(appId);
+                        if (overview && overview.display_name == appName) {
+                            if (await this.hideApp(appId)) {
+                                return appId;
+                            }
                         }
                     }
                 }
@@ -151,7 +153,6 @@ export class SteamUtils {
         return true;
     }
 
-    // TODO: check if steam still gets into angry state :/
     static async removeShortcut(appId: number) {
         const overview = await this.waitForAppOverview(appId, (overview) => overview !== null) ? await this.getAppOverview(appId) : null;
         if (!overview) {
