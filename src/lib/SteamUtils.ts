@@ -8,6 +8,9 @@ declare global {
 }
 
 export class SteamUtils {
+    private static hasLoggedIn = false;
+    private static hasLoggedOut = false;
+
     static async getShortcuts(): Promise<SteamShortcut[]> {
         const res = await SteamClient.Apps.GetAllShortcuts();
         return res as SteamShortcut[];
@@ -273,6 +276,20 @@ export class SteamUtils {
         const gameId = await this.getGameId(appId);
         SteamClient.Apps.TerminateApp(gameId, false);
         return await gameEnd;
+    }
+
+    static registerForAuthStateChange(onLogin:(() => Promise<void>)|null, onLogout:(() => Promise<void>)|null, once:boolean): {unregister:()=>void} {
+        return SteamClient.User.RegisterForLoginStateChange(async (e: string) => {
+            console.log("Auth state changed. Event data:", e)
+            const isLoggedIn = e !== "";
+            if (isLoggedIn && (once ? !SteamUtils.hasLoggedIn : true)) {
+                SteamUtils.hasLoggedIn = true;
+                if (onLogin) await onLogin();
+            } else if (!isLoggedIn && (once ? !SteamUtils.hasLoggedOut : true)) {
+                SteamUtils.hasLoggedOut = true;
+                if (onLogout) await onLogout();
+            }
+        });
     }
 
     static restartClient() {

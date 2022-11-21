@@ -24,6 +24,12 @@ export class ShortcutManager {
         this.server = server;
     }
 
+    static initOnLogin() {
+        return SteamUtils.registerForAuthStateChange(async () => {
+            ShortcutManager.init("Bash Shortcuts");
+        }, null, true);
+    }
+
     static async init(name:string) {
         this.shortcutName = name;
         if (!(await this.checkShortcutExist(this.shortcutName))) {

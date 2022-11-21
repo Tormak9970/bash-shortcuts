@@ -143,7 +143,8 @@ export default definePlugin((serverApi: ServerAPI) => {
 
   const state = new ShortcutsState();
   ShortcutManager.setServer(serverApi);
-  ShortcutManager.init("Bash Shortcuts");
+  
+  const loginHook = ShortcutManager.initOnLogin();
 
   serverApi.routerHook.addRoute("/shortcuts-nav", () => (
     <ShortcutsContextProvider shortcutsStateClass={state}>
@@ -160,6 +161,7 @@ export default definePlugin((serverApi: ServerAPI) => {
     ),
     icon: <IoApps />,
     onDismount() {
+      loginHook.unregister();
       serverApi.routerHook.removeRoute("/shortcuts-nav");
       ShortcutManager.onDismount();
     },
