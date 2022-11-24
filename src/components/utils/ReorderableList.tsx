@@ -1,57 +1,66 @@
-import { DialogButton, Field, Focusable, GamepadButton as DeckyGamepadButton, GamepadEvent as DeckyGamepadEvent } from "decky-frontend-lib";
+import { ButtonItem, DialogButton, Field, Focusable, GamepadButton as DeckyGamepadButton, GamepadEvent as DeckyGamepadEvent } from "decky-frontend-lib";
 import React, { Fragment, useEffect, useRef, useState } from "react";
 
 import { FaEllipsisH, FaArrowsAltV } from "react-icons/fa";
 
-export type ReorderableEntry<T> = {
-    id: number,
-    label: string,
-    data: T,
+interface Positioned {
     position: number
 }
 
-type ReorderableEntryProps<T> = {
-    entry: ReorderableEntry<T>
-    index: number,
-    action: (e:MouseEvent, entry:ReorderableEntry<T>) => any;
+export type ReorderableEntry<T extends Positioned> = {
+    key: string,
+    label: string,
+    data: T
 }
 
-type ReorderableListData<T> = {
+export type ReorderableEntryProps<T extends Positioned> = {
+    entry: ReorderableEntry<T>,
+    index: number,
+    action: (e:MouseEvent, entry:ReorderableEntry<T>) => any
+}
+
+export type ReorderableListData<T extends Positioned> = {
     [key:string]: ReorderableEntry<T>
 }
 
-type ReorderableListProps<T> = {
-    data: ReorderableListData<T>
-    action: (e:MouseEvent, entry:ReorderableEntry<T>) => any;
-    onUpdate: (data: ReorderableListData<T>) => any
+export type ReloadData = {
+    showReload: boolean,
+    reload: () => Promise<void>,
+    reloadLabel?: string
+}
+
+type ReorderableListProps<T extends Positioned> = {
+    data: ReorderableListData<T>,
+    action: (e:MouseEvent, entry:ReorderableEntry<T>) => any,
+    onUpdate: (data: {[key:string]:T}) => void,
+    reloadData: ReloadData
 }
 
 const ELEM_HEIGHT = 32; //height of each ReorderableEntry element
 
-export function ReorderableList<T>(props: ReorderableListProps<T>) {
+export function ReorderableList<T extends Positioned>(props: ReorderableListProps<T>) {
     let reorderEnabled = useRef(false);
     const touchOrigin = useRef({"x": -1, "y": -1});
     const mouseOrigin = useRef({"x": -1, "y": -1});
     let focusedSide = useRef(false); //false = left, true = right
+    let focusIdx = useRef(0);
 
     let data = props.data;
     let onUpdate = props.onUpdate;
-    let dataAsList:ReorderableEntry<T>[] = [];
+    let dataAsList:ReorderableEntry<T>[] = Object.values(props.data).sort((a, b) => a.data.position - b.data.position);;
 
     const [update, setUpdate] = useState(0);
     
     useEffect(() => {
+        console.log("Component mounted");
         dataAsList = [];
-        dataAsList = Object.values(props.data).sort((a, b) => a.position - b.position);
+        dataAsList = Object.values(props.data).sort((a, b) => a.data.position - b.data.position);
         data = props.data;
-    }, [update]);
-
-    let focusIdx = useRef(0);
+        console.log("Data:", data);
+    });
 
     function enableReorder() { reorderEnabled.current = true; }
-
     function disabledReorder() { reorderEnabled.current = false; }
-
     function forceUpdate() { setUpdate(update === 0 ? 1 : 0); }
     
     function ReorderableEntry(props: ReorderableEntryProps<T>) {
@@ -74,18 +83,22 @@ export function ReorderableList<T>(props: ReorderableListProps<T>) {
         });
 
         function reorder(down:boolean) {
-            if ((down && props.entry.position != dataAsList.length) || (!down && props.entry.position != 1)) {
+            if ((down && props.entry.data.position != dataAsList.length) || (!down && props.entry.data.position != 1)) {
                 const thisData = props.entry;
                 const previous = dataAsList[down ? props.index+1 : props.index-1];
-                const tmp = thisData.position;
-                thisData.position = previous.position;
-                previous.position = tmp;
+                const tmp = thisData.data.position;
+                thisData.data.position = previous.data.position;
+                previous.data.position = tmp;
     
                 const refs = data;
-                refs[thisData.id] = thisData;
-                refs[previous.id] = previous;
+                refs[thisData.key] = thisData;
+                refs[previous.key] = previous;
     
-                onUpdate(refs);
+                const toSave:{[key:string]:T} = {};
+                Object.values(refs).map((val:ReorderableEntry<T>) => {
+                    toSave[val.key] = val.data;
+                })
+                onUpdate(toSave);
 
                 if (down) {
                     focusIdx.current++;
@@ -108,28 +121,28 @@ export function ReorderableList<T>(props: ReorderableListProps<T>) {
                                 switch(e.detail.button) {
                                     case DeckyGamepadButton.DIR_DOWN: {
                                         
-                                        if (reorderEnabled.current && props.entry.position === dataAsList.length) {
+                                        if (reorderEnabled.current && props.entry.data.position === dataAsList.length) {
                                             e.preventDefault();
                                             e.stopImmediatePropagation();
                                         }
 
-                                        if (reorderEnabled.current && props.entry.position != dataAsList.length) reorder(true);
+                                        if (reorderEnabled.current && props.entry.data.position != dataAsList.length) reorder(true);
 
-                                        if (props.entry.position != dataAsList.length) {
+                                        if (props.entry.data.position != dataAsList.length) {
                                             focusIdx.current++;
                                             forceUpdate();
                                         }
                                         break;
                                     }
                                     case DeckyGamepadButton.DIR_UP: {
-                                        if (reorderEnabled.current && props.entry.position === 1) {
+                                        if (reorderEnabled.current && props.entry.data.position === 1) {
                                             e.preventDefault();
                                             e.stopImmediatePropagation();
                                         }
 
-                                        if (reorderEnabled.current && props.entry.position != 1) reorder(false);
+                                        if (reorderEnabled.current && props.entry.data.position != 1) reorder(false);
                                         
-                                        if (props.entry.position != 1) {
+                                        if (props.entry.data.position != 1) {
                                             focusIdx.current--;
                                             forceUpdate();
                                         }
@@ -278,6 +291,11 @@ export function ReorderableList<T>(props: ReorderableListProps<T>) {
                         </div>
                     )
                 }
+                {props.reloadData.showReload ? (
+                    <ButtonItem layout="below" onClick={props.reloadData.reload} bottomSeparator='none'>
+                        Reload {props.reloadData.reloadLabel}
+                    </ButtonItem>
+                ) : ""}
             </div>
         </>
     );

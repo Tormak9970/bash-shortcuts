@@ -1,4 +1,5 @@
 import { createContext, FC, useContext, useEffect, useState } from "react";
+import { ReorderableListData } from "../components/utils/ReorderableList";
 import { Shortcut } from "../lib/data-structures/Shortcut"
 
 type ShortcutsDictionary = {
@@ -8,6 +9,7 @@ type ShortcutsDictionary = {
 interface PublicShortcutsState {
     shortcuts: ShortcutsDictionary;
     shortcutsList: Shortcut[];
+    reorderableShortcuts:ReorderableListData<Shortcut>;
     isRunning: boolean;
 }
 
@@ -19,6 +21,7 @@ interface PublicShortcutsContext extends PublicShortcutsState {
 export class ShortcutsState {
     private shortcuts: ShortcutsDictionary = {};
     private shortcutsList: Shortcut[] = [];
+    private reorderableShortcuts: ReorderableListData<Shortcut> = {};
     private isRunning: boolean = false;
 
     public eventBus = new EventTarget();
@@ -27,6 +30,7 @@ export class ShortcutsState {
         return {
             "shortcuts": this.shortcuts,
             "shortcutsList": this.shortcutsList,
+            "reorderableShortcuts": this.reorderableShortcuts,
             "isRunning": this.isRunning
         }
     }
@@ -34,6 +38,17 @@ export class ShortcutsState {
     setShortcuts(shortcuts: ShortcutsDictionary) {
         this.shortcuts = shortcuts;
         this.shortcutsList = Object.values(this.shortcuts).sort((a, b) => a.position - b.position);
+        this.reorderableShortcuts = {};
+        
+        for (let i = 0; i < this.shortcutsList.length; i++) {
+            const shortcut = this.shortcutsList[i];
+            this.reorderableShortcuts[shortcut.id] = {
+                "key": shortcut.id,
+                "label": shortcut.name,
+                "data": shortcut
+            }
+        }
+
         this.forceUpdate();
     }
 
