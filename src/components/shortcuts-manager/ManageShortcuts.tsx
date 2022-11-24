@@ -1,5 +1,5 @@
 import { ConfirmModal, Menu, MenuItem, showContextMenu, showModal } from "decky-frontend-lib";
-import { Fragment, useEffect } from "react";
+import { Fragment } from "react";
 import { PyInterop } from "../../PyInterop";
 import { Shortcut } from "../../lib/data-structures/Shortcut";
 
@@ -14,33 +14,6 @@ type ShortcutsDictionary = {
 export function ManageShortcuts() {
     const {shortcuts, setShortcuts, shortcutsList, reorderableShortcuts} = useShortcutsState();
 
-    function showMenu(e: MouseEvent, shortcut: Shortcut) {
-        return showContextMenu(
-            <Menu label="Actions" cancelText="Cancel" onCancel={() => {}}>
-            <MenuItem onSelected={() => {showModal(
-                // @ts-ignore
-                <EditModal onConfirm={(updated:Shortcut) => {
-                    PyInterop.modShortcut(updated);
-                    let shorts = shortcuts;
-                    shorts[shortcut.id] = updated;
-                    setShortcuts(shorts);
-                }} shortcut={shortcut} />
-            )}}>Edit</MenuItem>
-            <MenuItem onSelected={() => {showModal(
-                <ConfirmModal onOK={() => {
-                    PyInterop.remShortcut(shortcut);
-                    let shorts = shortcuts;
-                    delete shorts[shortcut.id];
-                    setShortcuts(shorts);
-                }} bDestructiveWarning={true}>
-                    Are you sure you want to delete this shortcut?
-                </ConfirmModal>
-            )}}>Delete</MenuItem>
-            </Menu>,
-            e.currentTarget ?? window
-        );
-    }
-
     async function reload() {
         console.log("Reloading...");
         await PyInterop.getShortcuts().then((res) => {
@@ -50,11 +23,34 @@ export function ManageShortcuts() {
 
     const reloadData = { "showReload": true, "reload": reload, "reloadLabel": "Shortcuts" };
     function onUpdate(data:ShortcutsDictionary) { setShortcuts(data); }
-    function action(e: MouseEvent, data:ReorderableEntry<Shortcut>) { showMenu(e, data.data); }
-
-    useEffect(() => {
-        console.log("Data in manager comp:", reorderableShortcuts);
-    });
+    function action(e: MouseEvent, data:ReorderableEntry<Shortcut>) {
+        console.log(e, data);
+        const shortcut = data.data;
+        return showContextMenu(
+            <Menu label="Actions" cancelText="Cancel" onCancel={() => {}}>
+                <MenuItem onSelected={() => {showModal(
+                    // @ts-ignore
+                    <EditModal onConfirm={(updated:Shortcut) => {
+                        PyInterop.modShortcut(updated);
+                        let shorts = shortcuts;
+                        shorts[shortcut.id] = updated;
+                        setShortcuts(shorts);
+                    }} shortcut={shortcut} />
+                )}}>Edit</MenuItem>
+                <MenuItem onSelected={() => {showModal(
+                    <ConfirmModal onOK={() => {
+                        PyInterop.remShortcut(shortcut);
+                        let shorts = shortcuts;
+                        delete shorts[shortcut.id];
+                        setShortcuts(shorts);
+                    }} bDestructiveWarning={true}>
+                        Are you sure you want to delete this shortcut?
+                    </ConfirmModal>
+                )}}>Delete</MenuItem>
+            </Menu>,
+            e.currentTarget ?? window
+        );
+    }
 
     if (shortcutsList.length === 0) reload();
     

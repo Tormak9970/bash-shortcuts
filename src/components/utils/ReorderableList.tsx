@@ -16,7 +16,7 @@ export type ReorderableEntry<T extends Positioned> = {
 export type ReorderableEntryProps<T extends Positioned> = {
     entry: ReorderableEntry<T>,
     index: number,
-    action: (e:MouseEvent, entry:ReorderableEntry<T>) => any
+    action: (e:MouseEvent, entry:ReorderableEntry<T>) => void
 }
 
 export type ReorderableListData<T extends Positioned> = {
@@ -31,7 +31,7 @@ export type ReloadData = {
 
 type ReorderableListProps<T extends Positioned> = {
     data: ReorderableListData<T>,
-    action: (e:MouseEvent, entry:ReorderableEntry<T>) => any,
+    action: (e:MouseEvent, entry:ReorderableEntry<T>) => void,
     onUpdate: (data: {[key:string]:T}) => void,
     reloadData: ReloadData
 }
@@ -52,11 +52,9 @@ export function ReorderableList<T extends Positioned>(props: ReorderableListProp
     const [update, setUpdate] = useState(0);
     
     useEffect(() => {
-        console.log("Component mounted");
         dataAsList = [];
         dataAsList = Object.values(props.data).sort((a, b) => a.data.position - b.data.position);
         data = props.data;
-        console.log("Data:", data);
     });
 
     function enableReorder() { reorderEnabled.current = true; }
@@ -245,7 +243,7 @@ export function ReorderableList<T extends Positioned>(props: ReorderableListProp
                                     justifyContent: "center",
                                     alignItems: "center"
                                 }}
-                                onClick={(e:MouseEvent) => props.action(e, props.entry)}
+                                onClick={(e:MouseEvent) => {props.action(e, props.entry);}}
                                 ref={optionsBtn}
                             >
                                 <FaEllipsisH />
