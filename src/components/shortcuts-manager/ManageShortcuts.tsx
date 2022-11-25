@@ -26,8 +26,8 @@ export function ManageShortcuts() {
     function action(e: MouseEvent, data:ReorderableEntry<Shortcut>) {
         console.log(e, data);
         const shortcut = data.data;
-        return showContextMenu(
-            <Menu label="Actions" cancelText="Cancel" onCancel={() => {}}>
+        showContextMenu(
+            <Menu label="Actions">
                 <MenuItem onSelected={() => {showModal(
                     // @ts-ignore
                     <EditModal onConfirm={(updated:Shortcut) => {
