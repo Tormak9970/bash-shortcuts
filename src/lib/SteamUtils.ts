@@ -94,24 +94,20 @@ export class SteamUtils {
     static async addShortcut(appName: string, execPath: string, hideShortcut: boolean) {
         console.log(`Adding shortcut for ${appName}.`);
 
-        const shortcuts = await this.getShortcuts();
-
-        if (!shortcuts.find(shortcut => shortcut.data.strAppName == appName)) {
-            const appId = await SteamClient.Apps.AddShortcut(appName, execPath) as number | undefined | null;
-            if (hideShortcut) {
-                if (typeof appId === "number") {
-                    if (await this.waitForAppOverview(appId, (overview) => overview !== null)) {
-                        const overview = await this.getAppOverview(appId);
-                        if (overview && overview.display_name == appName) {
-                            if (await this.hideApp(appId)) {
-                                return appId;
-                            }
-                        }
+        const appId = await SteamClient.Apps.AddShortcut(appName, execPath) as number | undefined | null;
+        if (typeof appId === "number") {
+            if (await this.waitForAppOverview(appId, (overview) => overview !== null)) {
+                const overview = await this.getAppOverview(appId);
+                if (overview && overview.display_name == appName) {
+                    if (hideShortcut) {
+                        await this.hideApp(appId);
                     }
+                    return appId;
                 }
             }
-        } else {
-            console.log("shortcut already exists with that name");
+            
+            // necessary cleanup to avoid duplicates, which is very BAD (Steam goes bonkers)
+            await SteamUtils.removeShortcut(appId as number);
         }
 
         console.error(`Could not add shortcut for ${appName}!`);
