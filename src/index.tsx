@@ -23,18 +23,18 @@ import { ShortcutsContextProvider, ShortcutsState, useShortcutsState } from "./s
 import { ShortcutManager } from "./lib/ShortcutManager";
 
 type ShortcutsDictionary = {
-  [key:string]: Shortcut
+  [key: string]: Shortcut
 }
 
-const Content: VFC<{ serverAPI: ServerAPI }> = ({}) => {
-  const {shortcuts, setShortcuts, shortcutsList, isRunning} = useShortcutsState();
+const Content: VFC<{ serverAPI: ServerAPI }> = ({ }) => {
+  const { shortcuts, setShortcuts, shortcutsList, isRunning } = useShortcutsState();
 
   async function reload() {
     await PyInterop.getShortcuts().then((res) => {
       setShortcuts(res.result as ShortcutsDictionary);
     });
   }
-  
+
   if (Object.values(shortcuts as ShortcutsDictionary).length === 0) {
     reload();
   }
@@ -77,10 +77,10 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({}) => {
             (isRunning) ? (
               <>
                 <div style={{
-                    textAlign: "center",
-                    margin: "14px 0px",
-                    padding: "0px 15px",
-                    fontSize: "18px"
+                  textAlign: "center",
+                  margin: "14px 0px",
+                  padding: "0px 15px",
+                  fontSize: "18px"
                 }}>A shortcut is running. Please close before running another.</div>
                 <ButtonItem layout="below" onClick={async () => {
                   const status = await ShortcutManager.closeGame();
@@ -143,7 +143,7 @@ export default definePlugin((serverApi: ServerAPI) => {
 
   const state = new ShortcutsState();
   ShortcutManager.setServer(serverApi);
-  
+
   const loginHook = ShortcutManager.initOnLogin();
 
   serverApi.routerHook.addRoute("/shortcuts-nav", () => (

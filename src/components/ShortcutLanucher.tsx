@@ -8,49 +8,49 @@ import { useShortcutsState } from "../state/ShortcutsState";
 import { PyInterop } from "../PyInterop";
 
 export type ShortcutLauncherProps = {
-    shortcut: Shortcut
+  shortcut: Shortcut
 }
 
 export function ShortcutLauncher(props: ShortcutLauncherProps) {
-    const {setIsRunning} = useShortcutsState();
+  const { setIsRunning } = useShortcutsState();
 
-    async function runShortcut(shortcut:Shortcut) {
-        const res = await ShortcutManager.launchShortcut(shortcut, setIsRunning);
-        if (!res) {
-            PyInterop.toast("Error", "Shortcut failed. Check the command.");
-        }
+  async function runShortcut(shortcut: Shortcut) {
+    const res = await ShortcutManager.launchShortcut(shortcut, setIsRunning);
+    if (!res) {
+      PyInterop.toast("Error", "Shortcut failed. Check the command.");
     }
+  }
 
-    return (
-        <>
-            <style>
-                {`
-                    .custom-buttons {
-                        width: inherit;
-                        height: inherit;
-                        display: inherit;
-                    }
+  return (
+    <>
+      <style>
+        {`
+          .custom-buttons {
+            width: inherit;
+            height: inherit;
+            display: inherit;
+          }
 
-                    .custom-buttons .${gamepadDialogClasses.FieldChildren} {
-                        margin: 0px 16px;
-                    }
-                `}
-            </style>
-            <div className="custom-buttons">
-                <Field label={props.shortcut.name}>
-                    <Focusable style={{ display: "flex", width: "100%" }}>
-                        <DialogButton onClick={() => runShortcut(props.shortcut)} style={{
-                            minWidth: "30px",
-                            maxWidth: "60px",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center"
-                        }}>
-                            <IoRocketSharp />
-                        </DialogButton>
-                    </Focusable>
-                </Field>
-            </div>
-        </>
-    );
+          .custom-buttons .${gamepadDialogClasses.FieldChildren} {
+            margin: 0px 16px;
+          }
+      `}
+      </style>
+      <div className="custom-buttons">
+        <Field label={props.shortcut.name}>
+          <Focusable style={{ display: "flex", width: "100%" }}>
+            <DialogButton onClick={() => runShortcut(props.shortcut)} style={{
+              minWidth: "30px",
+              maxWidth: "60px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center"
+            }}>
+              <IoRocketSharp />
+            </DialogButton>
+          </Focusable>
+        </Field>
+      </div>
+    </>
+  );
 }
