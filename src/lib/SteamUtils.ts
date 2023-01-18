@@ -274,18 +274,38 @@ export class SteamUtils {
     return await gameEnd;
   }
 
-  static registerForAuthStateChange(onLogin: (() => Promise<void>) | null, onLogout: (() => Promise<void>) | null, once: boolean): { unregister: () => void } {
-    return SteamClient.User.RegisterForLoginStateChange(async (e: string) => {
-      console.log("Auth state changed. Event data:", e)
-      const isLoggedIn = e !== "";
-      if (isLoggedIn && (once ? !SteamUtils.hasLoggedIn : true)) {
-        SteamUtils.hasLoggedIn = true;
-        if (onLogin) await onLogin();
-      } else if (!isLoggedIn && (once ? !SteamUtils.hasLoggedOut : true)) {
-        SteamUtils.hasLoggedOut = true;
-        if (onLogout) await onLogout();
-      }
-    });
+  static registerForAuthStateChange(onLogin: ((username?:string) => Promise<void>) | null, onLogout: (() => Promise<void>) | null, once: boolean): { unregister: () => void } {
+    // return SteamClient.User.RegisterForLoginStateChange(async (e: string) => {
+    //   console.log("Auth state changed. Event data:", e)
+    //   const isLoggedIn = e !== "";
+    //   if (isLoggedIn && (once ? !SteamUtils.hasLoggedIn : true)) {
+    //     SteamUtils.hasLoggedIn = true;
+    //     if (onLogin) await onLogin();
+    //   } else if (!isLoggedIn && (once ? !SteamUtils.hasLoggedOut : true)) {
+    //     SteamUtils.hasLoggedOut = true;
+    //     if (onLogout) await onLogout();
+    //   }
+    // });
+    try {
+      let isLoggedIn: boolean | null = null;
+      return SteamClient.User.RegisterForLoginStateChange((username: string) => {
+        if (username === "") {
+          if (isLoggedIn !== false && (once ? !SteamUtils.hasLoggedIn : true)) {
+            if (onLogout) onLogout();
+          }
+          isLoggedIn = false;
+        } else {
+          if (isLoggedIn !== true && (once ? !SteamUtils.hasLoggedIn : true)) {
+            if (onLogin) onLogin(username);
+          }
+          isLoggedIn = true;
+        }
+      }).unregister;
+    } catch (error) {
+      console.error(error);
+      // @ts-ignore
+      return () => { };
+    }
   }
 
   static restartClient() {

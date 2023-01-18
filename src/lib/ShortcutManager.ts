@@ -2,6 +2,7 @@ import { afterPatch, Router, ServerAPI } from "decky-frontend-lib";
 import { ReactElement } from "react";
 import { PyInterop } from "../PyInterop";
 import { Shortcut } from "./data-structures/Shortcut";
+import { waitForServicesInitialized } from "./Services";
 import { LifetimeNotification, SteamShortcut } from "./SteamClient";
 import { SteamUtils } from "./SteamUtils";
 
@@ -25,7 +26,11 @@ export class ShortcutManager {
 
   static initOnLogin() {
     return SteamUtils.registerForAuthStateChange(async () => {
-      ShortcutManager.init("Bash Shortcuts");
+      if (await waitForServicesInitialized()) {
+        ShortcutManager.init("Bash Shortcuts");
+      } else {
+        PyInterop.toast("Error", "Failed to initialize, try restarting.");
+      }
     }, null, true);
   }
 
@@ -35,7 +40,7 @@ export class ShortcutManager {
       const success = await this.addShortcut(this.shortcutName, this.runnerPath, ShortcutManager.hideShortcut);
 
       if (!success) {
-        PyInterop.toast("Error", "Adding runner shortcut failed");
+        // PyInterop.toast("Error", "Adding runner shortcut failed");
       }
     } else {
       const shorcuts = await SteamUtils.getShortcut(name) as SteamShortcut[];
@@ -126,6 +131,7 @@ export class ShortcutManager {
         return didLaunch;
       } else {
         PyInterop.toast("Error", "Failed at setAppLaunchOptions");
+        setIsRunning(false);
         return false;
       }
     } else {
