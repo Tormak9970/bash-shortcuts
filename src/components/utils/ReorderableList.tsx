@@ -258,12 +258,12 @@ export function ReorderableList<T extends Positioned>(props: ReorderableListProp
   return (
     <>
       <style>{`
-                .scoper {
-                    width: 100%;
-                    display: flex;
-                    flex-direction: column;
-                }
-            `}</style>
+        .scoper {
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+        }
+      `}</style>
       <div className="scoper"
         onMouseUp={() => {
           mouseOrigin.current = {
