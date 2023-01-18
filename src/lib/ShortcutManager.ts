@@ -38,22 +38,33 @@ export class ShortcutManager {
         PyInterop.toast("Error", "Adding runner shortcut failed");
       }
     } else {
-      const shorcut = (await SteamUtils.getShortcut(name) as SteamShortcut[])[0];
-      if (shorcut) {
-        if (shorcut.data.strExePath != this.runnerPath) {
-          const res = await SteamUtils.setShortcutExe(shorcut.appid, this.runnerPath);
+      const shorcuts = await SteamUtils.getShortcut(name) as SteamShortcut[];
+
+      if (shorcuts.length > 1) {
+        for (let i = 1; i < shorcuts.length; i++) {
+          const s = shorcuts[i];
+          const success = await SteamUtils.removeShortcut(s.appid);
+          console.log("Tried to delete a duplicate shortcut:", success);
+        }
+      }
+
+      const shortcut = shorcuts[0];
+
+      if (shortcut) {
+        if (shortcut.data.strExePath != this.runnerPath) {
+          const res = await SteamUtils.setShortcutExe(shortcut.appid, this.runnerPath);
           if (!res) {
             PyInterop.toast("Error", "Failed to set the shortcutsRunner path");
           }
         }
         // TODO these aren't ever equal. for now it works to confirm its correct by resetting it.
-        if (shorcut.data.strShortcutPath != this.startDir) {
-          const res = await SteamUtils.setShortcutStartDir(shorcut.appid, this.startDir);
+        if (shortcut.data.strShortcutPath != this.startDir) {
+          const res = await SteamUtils.setShortcutStartDir(shortcut.appid, this.startDir);
           if (!res) {
             PyInterop.toast("Error", "Failed to set the start dir");
           }
         }
-        this.appId = shorcut.appid;
+        this.appId = shortcut.appid;
       } else {
         PyInterop.toast("Error", "Failed to get shortcut but it exists. Please try restarting your Deck.");
       }
@@ -135,10 +146,6 @@ export class ShortcutManager {
 
   private static async checkShortcutExist(name: string): Promise<boolean> {
     const shortcutsArr = await SteamUtils.getShortcut(name) as SteamShortcut[];
-    console.log(shortcutsArr);
-
-
-
     return !!shortcutsArr[0]?.data;
   }
 
