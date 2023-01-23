@@ -22,7 +22,10 @@ export function ManageShortcuts() {
   }
 
   const reloadData = { "showReload": true, "reload": reload, "reloadLabel": "Shortcuts" };
-  function onUpdate(data: ShortcutsDictionary) { setShortcuts(data); }
+  function onUpdate(data: ShortcutsDictionary) {
+    setShortcuts(data);
+    PyInterop.setShortcuts(shortcutsList);
+  }
   function action(e: MouseEvent, data: ReorderableEntry<Shortcut>) {
     console.log(e, data);
     const shortcut = data.data;
