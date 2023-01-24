@@ -1,5 +1,5 @@
 import { ConfirmModal, showModal } from "decky-frontend-lib";
-import { Fragment } from "react";
+import { Fragment, useRef } from "react";
 import { PyInterop } from "../../PyInterop";
 import { Shortcut } from "../../lib/data-structures/Shortcut";
 
@@ -14,6 +14,7 @@ type ShortcutsDictionary = {
 
 export function ManageShortcuts() {
   const { shortcuts, setShortcuts, shortcutsList, reorderableShortcuts } = useShortcutsState();
+  const tries = useRef(0);
 
   async function reload() {
     console.log("Reloading...");
@@ -61,7 +62,10 @@ export function ManageShortcuts() {
     );
   }
 
-  if (shortcutsList.length === 0) reload();
+  if (shortcutsList.length === 0 && tries.current < 10) {
+    reload();
+    tries.current++;
+  }
 
   return (
     <>

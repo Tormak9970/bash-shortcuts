@@ -10,7 +10,7 @@ import {
   SidebarNavigation,
   staticClasses,
 } from "decky-frontend-lib";
-import { VFC, Fragment } from "react";
+import { VFC, Fragment, useRef } from "react";
 import { IoApps } from "react-icons/io5";
 import { About } from "./components/shortcuts-manager/About";
 import { AddShortcut } from "./components/shortcuts-manager/AddShortcut";
@@ -28,6 +28,7 @@ type ShortcutsDictionary = {
 
 const Content: VFC<{ serverAPI: ServerAPI }> = ({ }) => {
   const { shortcuts, setShortcuts, shortcutsList, isRunning } = useShortcutsState();
+  const tries = useRef(0);
 
   async function reload() {
     await PyInterop.getShortcuts().then((res) => {
@@ -35,8 +36,9 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({ }) => {
     });
   }
 
-  if (Object.values(shortcuts as ShortcutsDictionary).length === 0) {
+  if (Object.values(shortcuts as ShortcutsDictionary).length === 0 && tries.current < 10) {
     reload();
+    tries.current++;
   }
 
   return (

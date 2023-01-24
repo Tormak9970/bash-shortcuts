@@ -41,7 +41,7 @@ export class PyInterop {
   }
 
   static async log(message: String): Promise<void> {
-    await this.serverAPI.callPluginMethod<{ message: String }, boolean>("logMessage", { message: message });
+    await this.serverAPI.callPluginMethod<{ message: String }, boolean>("logMessage", { message: `[front-end]: ${message}` });
   }
 
   static async getHomeDir(): Promise<ServerResponse<string>> {

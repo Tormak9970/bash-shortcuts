@@ -44,7 +44,7 @@ export class ShortcutManager {
       const success = await this.addShortcut(this.shortcutName, this.runnerPath, ShortcutManager.hideShortcut);
 
       if (!success) {
-        // PyInterop.toast("Error", "Adding runner shortcut failed");
+        PyInterop.log("Failed to create shortcut during boot");
       }
     } else {
       const shorcuts = await SteamUtils.getShortcut(name) as SteamShortcut[];
@@ -114,6 +114,13 @@ export class ShortcutManager {
   }
 
   static async launchShortcut(shortcut: Shortcut, setIsRunning: (value: boolean) => void): Promise<boolean> {
+    if (!(await this.checkShortcutExist(this.shortcutName))) {
+      const success = await this.addShortcut(this.shortcutName, this.runnerPath, ShortcutManager.hideShortcut);
+
+      if (!success) {
+        PyInterop.log("Failed to create shortcut, was missing when launch attempted");
+      }
+    }
     if (shortcut.isApp) {
       const didSetLaunchOpts = await SteamUtils.setAppLaunchOptions(this.appId, shortcut.cmd);
       if (didSetLaunchOpts) {
