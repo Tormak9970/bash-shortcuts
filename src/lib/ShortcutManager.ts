@@ -25,8 +25,8 @@ export class ShortcutManager {
 
   static initOnLogin() {
     PyInterop.getHomeDir().then((res) => {
-      ShortcutManager.runnerPath = `\"${res.result}/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh\"`;
-      ShortcutManager.startDir = `\"${res.result}/homebrew/plugins/bash-shortcuts/\"`;
+      ShortcutManager.runnerPath = `\"/home/${res.result}/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh\"`;
+      ShortcutManager.startDir = `\"/home/${res.result}/homebrew/plugins/bash-shortcuts/\"`;
     });
 
     return SteamUtils.registerForAuthStateChange(async () => {

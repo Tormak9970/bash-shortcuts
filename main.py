@@ -28,8 +28,8 @@ class Shortcut:
 class Plugin:
   plugin_user = os.environ["DECKY_USER"]
   shortcuts = {}
-  shortcutsPath = f"{plugin_user}/.config/bash-shortcuts/shortcuts.json"
-  shortcutsRunnerPath = f"\"{plugin_user}/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh\""
+  shortcutsPath = f"/home/{plugin_user}/.config/bash-shortcuts/shortcuts.json"
+  shortcutsRunnerPath = f"\"/home/{plugin_user}/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh\""
 
   def serializeShortcuts(self):
     res = {}
