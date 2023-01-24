@@ -1,4 +1,4 @@
-import { ConfirmModal, Menu, MenuItem, showContextMenu, showModal } from "decky-frontend-lib";
+import { ConfirmModal, showModal } from "decky-frontend-lib";
 import { Fragment } from "react";
 import { PyInterop } from "../../PyInterop";
 import { Shortcut } from "../../lib/data-structures/Shortcut";
@@ -6,6 +6,7 @@ import { Shortcut } from "../../lib/data-structures/Shortcut";
 import { EditModal } from "./EditModal";
 import { useShortcutsState } from "../../state/ShortcutsState";
 import { ReorderableEntry, ReorderableList } from "../utils/ReorderableList";
+import { Menu, MenuItem, showContextMenu } from "./MenuProxy";
 
 type ShortcutsDictionary = {
   [key: string]: Shortcut
@@ -26,6 +27,7 @@ export function ManageShortcuts() {
     setShortcuts(data);
     PyInterop.setShortcuts(shortcutsList);
   }
+
   function action(e: MouseEvent, data: ReorderableEntry<Shortcut>) {
     console.log(e, data);
     const shortcut = data.data;
@@ -40,7 +42,7 @@ export function ManageShortcuts() {
               shorts[shortcut.id] = updated;
               setShortcuts(shorts);
             }} shortcut={shortcut} />
-          )
+          );
         }}>Edit</MenuItem>
         <MenuItem onSelected={() => {
           showModal(
@@ -52,7 +54,7 @@ export function ManageShortcuts() {
             }} bDestructiveWarning={true}>
               Are you sure you want to delete this shortcut?
             </ConfirmModal>
-          )
+          );
         }}>Delete</MenuItem>
       </Menu>,
       e.currentTarget ?? window
