@@ -1,5 +1,4 @@
-import { afterPatch, Router, ServerAPI } from "decky-frontend-lib";
-import { ReactElement } from "react";
+import { Router, ServerAPI } from "decky-frontend-lib";
 import { PyInterop } from "../PyInterop";
 import { Shortcut } from "./data-structures/Shortcut";
 import { waitForServicesInitialized } from "./Services";
@@ -25,6 +24,11 @@ export class ShortcutManager {
   }
 
   static initOnLogin() {
+    PyInterop.getHomeDir().then((res) => {
+      ShortcutManager.runnerPath = `\"${res.result}/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh\"`;
+      ShortcutManager.startDir = `\"${res.result}/homebrew/plugins/bash-shortcuts/\"`;
+    });
+
     return SteamUtils.registerForAuthStateChange(async () => {
       if (await waitForServicesInitialized()) {
         ShortcutManager.init("Bash Shortcuts");

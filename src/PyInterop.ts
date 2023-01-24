@@ -40,6 +40,15 @@ export class PyInterop {
     return successful;
   }
 
+  static async log(message: String): Promise<void> {
+    await this.serverAPI.callPluginMethod<{ message: String }, boolean>("logMessage", { message: message });
+  }
+
+  static async getHomeDir(): Promise<ServerResponse<string>> {
+    const res = await this.serverAPI.callPluginMethod<{}, string>("getHomeDir", {});
+    return res;
+  }
+
   static toast(title: string, message: string) {
     return (() => {
       try {

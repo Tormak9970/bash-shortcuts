@@ -2,6 +2,7 @@ import subprocess
 import logging
 import json
 import os
+import pathlib
 from genericpath import exists
 
 logging.basicConfig(filename="/tmp/bash-shortcuts.log", format='[Bash Shortcuts] %(asctime)s %(levelname)s %(message)s', filemode='w+', force=True)
@@ -25,9 +26,10 @@ class Shortcut:
     return json.dumps({ "id": self.id, "name": self.name, "cmd": self.cmd, "position": self.position, "isApp": self.isApp }, sort_keys=True, indent=4)
 
 class Plugin:
+  plugin_user = os.environ["DECKY_USER"]
   shortcuts = {}
-  shortcutsPath = "/home/deck/.config/bash-shortcuts/shortcuts.json"
-  shortcutsRunnerPath = "\"/home/deck/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh\""
+  shortcutsPath = f"{plugin_user}/.config/bash-shortcuts/shortcuts.json"
+  shortcutsRunnerPath = f"\"{plugin_user}/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh\""
 
   def serializeShortcuts(self):
     res = {}
@@ -60,6 +62,12 @@ class Plugin:
 
   async def runNonAppShortcut(self, shortcut):
     return self._runNonAppShortcut(self, shortcut)
+
+  async def getHomeDir(self):
+    return self.plugin_user
+
+  async def logMessage(self, message):
+    log(message)
 
   # Asyncio-compatible long-running code, executed in a task when the plugin is loaded
   async def _main(self):
