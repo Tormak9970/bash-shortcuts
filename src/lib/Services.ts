@@ -1,4 +1,5 @@
 import { findModuleChild, sleep } from "decky-frontend-lib";
+import { PyInterop } from "../PyInterop";
 
 async function waitForPredicate(retries: number, delay: number, predicate: () => (boolean | Promise<boolean>)): Promise<boolean> {
   const waitImpl = async (): Promise<boolean> => {
@@ -48,7 +49,15 @@ const LibraryInitializer = findModuleChild((mod: { [key: string]: Partial<Librar
 export async function waitForServicesInitialized(): Promise<boolean> {
   // This is for stable
   if (LibraryInitializer != null) {
-    return await LibraryInitializer.WaitForServicesInitialized();
+    console.log(`Waiting for services to be initialized...`);
+    PyInterop.log(`Waiting for services to be initialized...`);
+
+    return await LibraryInitializer.WaitForServicesInitialized().then((res) => {
+      console.log(`Services initialized.`);
+      PyInterop.log(`Services initialized.`);
+
+      return res;
+    });
   }
 
   // This is for beta

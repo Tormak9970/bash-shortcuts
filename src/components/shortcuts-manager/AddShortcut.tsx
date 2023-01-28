@@ -32,11 +32,11 @@ export function AddShortcut() {
   return (
     <>
       <style>{`
-            .scoper .${quickAccessControlsClasses.PanelSection} {
-                width: inherit;
-                height: inherit;
-                padding: 0px;
-            }
+          .scoper .${quickAccessControlsClasses.PanelSection} {
+            width: inherit;
+            height: inherit;
+            padding: 0px;
+          }
         `}</style>
       <div className="scoper">
         <PanelSection>

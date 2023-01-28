@@ -17,7 +17,6 @@ export function ManageShortcuts() {
   const tries = useRef(0);
 
   async function reload() {
-    console.log("Reloading...");
     await PyInterop.getShortcuts().then((res) => {
       setShortcuts(res.result as ShortcutsDictionary);
     });
@@ -26,6 +25,8 @@ export function ManageShortcuts() {
   const reloadData = { "showReload": true, "reload": reload, "reloadLabel": "Shortcuts" };
   function onUpdate(data: ShortcutsDictionary) {
     setShortcuts(data);
+    
+    PyInterop.log("Reordered shortcuts.");
     PyInterop.setShortcuts(shortcutsList);
   }
 

@@ -44,7 +44,7 @@ export class ShortcutManager {
       const success = await this.addShortcut(this.shortcutName, this.runnerPath, ShortcutManager.hideShortcut);
 
       if (!success) {
-        PyInterop.log("Failed to create shortcut during boot");
+        PyInterop.log(`Failed to create shortcut during boot. [DEBUG INFO] appId: ${this.appId}; appName: ${name};`);
       }
     } else {
       const shorcuts = await SteamUtils.getShortcut(name) as SteamShortcut[];
@@ -53,7 +53,8 @@ export class ShortcutManager {
         for (let i = 1; i < shorcuts.length; i++) {
           const s = shorcuts[i];
           const success = await SteamUtils.removeShortcut(s.appid);
-          console.log("Tried to delete a duplicate shortcut:", success);
+          console.log(`Tried to delete a duplicate shortcut. [DEBUG INFO] appId: ${this.appId}; appName: ${name}; success: ${success};`);
+          PyInterop.log(`Tried to delete a duplicate shortcut. [DEBUG INFO] appId: ${this.appId}; appName: ${name}; success: ${success};`);
         }
       }
 
@@ -105,6 +106,7 @@ export class ShortcutManager {
   static onDismount() {
     if (this.routerPatch) {
       this.server.routerHook.removePatch(this.routePath, this.routerPatch);
+      PyInterop.log("Dismounting...");
     }
   }
 
@@ -118,7 +120,7 @@ export class ShortcutManager {
       const success = await this.addShortcut(this.shortcutName, this.runnerPath, ShortcutManager.hideShortcut);
 
       if (!success) {
-        PyInterop.log("Failed to create shortcut, was missing when launch attempted");
+        PyInterop.log("Failed to create shortcut, was missing when launch attempted.");
       }
     }
     if (shortcut.isApp) {
@@ -128,12 +130,10 @@ export class ShortcutManager {
         const didLaunch = await SteamUtils.runGame(this.appId, false);
         if (didLaunch) {
           Router.CloseSideMenus();
-          console.log("shortcut is now running");
           setIsRunning(true);
         }
         const unregister = SteamUtils.registerForGameLifetime((data: LifetimeNotification) => {
           if (data.bRunning) return;
-          console.log("shortcut is now terminated");
           setIsRunning(false);
 
           unregister();
@@ -172,7 +172,7 @@ export class ShortcutManager {
       this.appId = res as number;
       return true;
     } else {
-      console.log("Failed to add shortcut");
+      console.log("Failed to add shortcut.");
       PyInterop.toast("Error", "Failed to add shortcut");
       return false;
     }
@@ -184,7 +184,7 @@ export class ShortcutManager {
     if (shortcut) {
       return !!(await SteamUtils.removeShortcut(shortcut.appid));
     } else {
-      console.log("Failed to remove shortcut");
+      console.log("Failed to remove shortcut.");
       PyInterop.toast("Error", "Failed to remove shortcut");
       return false;
     }
