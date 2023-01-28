@@ -2,7 +2,6 @@ import subprocess
 import logging
 import json
 import os
-import pathlib
 from genericpath import exists
 
 logging.basicConfig(filename="/tmp/bash-shortcuts.log", format='[Bash Shortcuts] %(asctime)s %(levelname)s %(message)s', filemode='w+', force=True)
@@ -178,3 +177,6 @@ class Plugin:
   def _runNonAppShortcut(self, shortcut):
     res = subprocess.call([self.shortcutsRunnerPath, shortcut['cmd']], shell=True)
     return res == 0
+
+  def _unload(self):
+    log("Plugin unloaded")
