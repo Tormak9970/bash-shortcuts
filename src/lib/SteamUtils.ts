@@ -330,7 +330,7 @@ export class SteamUtils {
           }
           isLoggedIn = true;
         }
-      }).unregister;
+      });
     } catch (error) {
       PyInterop.log(`error with AuthStateChange hook. [DEBUG INFO] error: ${error};`);
       // @ts-ignore

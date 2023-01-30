@@ -97,6 +97,9 @@ class Plugin:
 
     pass
 
+  async def _unload(self):
+    pass
+
   def _load(self):
     log("Analyzing Shortcuts JSON")
         

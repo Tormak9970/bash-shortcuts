@@ -106,8 +106,8 @@ export class ShortcutManager {
   static onDismount() {
     if (this.routerPatch) {
       this.server.routerHook.removePatch(this.routePath, this.routerPatch);
-      PyInterop.log("Dismounting...");
     }
+    PyInterop.log("Dismounting...");
   }
 
   static async getShortcuts() {
