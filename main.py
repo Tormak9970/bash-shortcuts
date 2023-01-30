@@ -98,6 +98,7 @@ class Plugin:
     pass
 
   async def _unload(self):
+    log("Plugin unloaded")
     pass
 
   def _load(self):
@@ -180,6 +181,3 @@ class Plugin:
   def _runNonAppShortcut(self, shortcut):
     res = subprocess.call([self.shortcutsRunnerPath, shortcut['cmd']], shell=True)
     return res == 0
-
-  def _unload(self):
-    log("Plugin unloaded")
