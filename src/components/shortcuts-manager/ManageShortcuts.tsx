@@ -1,38 +1,26 @@
-import { ConfirmModal, showModal } from "decky-frontend-lib";
+import { ButtonItem, ConfirmModal, DialogButton, ReorderableEntry, ReorderableList, showModal } from "decky-frontend-lib";
 import { Fragment, useRef } from "react";
 import { PyInterop } from "../../PyInterop";
 import { Shortcut } from "../../lib/data-structures/Shortcut";
 
 import { EditModal } from "./EditModal";
 import { useShortcutsState } from "../../state/ShortcutsState";
-import { ReorderableEntry, ReorderableList } from "../utils/ReorderableList";
 import { Menu, MenuItem, showContextMenu } from "./MenuProxy";
+import { FaEllipsisH } from "react-icons/fa"
 
 type ShortcutsDictionary = {
   [key: string]: Shortcut
 }
 
-export function ManageShortcuts() {
-  const { shortcuts, setShortcuts, shortcutsList, reorderableShortcuts } = useShortcutsState();
-  const tries = useRef(0);
+type ActionButtonProps<T> = {
+  entry: ReorderableEntry<T>
+}
 
-  async function reload() {
-    await PyInterop.getShortcuts().then((res) => {
-      setShortcuts(res.result as ShortcutsDictionary);
-    });
-  }
+function ActionButtion(props:ActionButtonProps<Shortcut>){
+  const { shortcuts, setShortcuts } = useShortcutsState();
 
-  const reloadData = { "showReload": true, "reload": reload, "reloadLabel": "Shortcuts" };
-  function onUpdate(data: ShortcutsDictionary) {
-    setShortcuts(data);
-    
-    PyInterop.log("Reordered shortcuts.");
-    PyInterop.setShortcuts(shortcutsList);
-  }
-
-  function action(e: MouseEvent, data: ReorderableEntry<Shortcut>) {
-    console.log(e, data);
-    const shortcut = data.data;
+  function onAction(entryReference: ReorderableEntry<Shortcut>): void {
+    const shortcut = entryReference.data as Shortcut;
     showContextMenu(
       <Menu label="Actions">
         <MenuItem onSelected={() => {
@@ -59,8 +47,50 @@ export function ManageShortcuts() {
           );
         }}>Delete</MenuItem>
       </Menu>,
-      e.currentTarget ?? window
+      window
     );
+  }
+
+  return (
+    <DialogButton style={{ height: "40px", minWidth: "40px", width: "40px", display: "flex", justifyContent: "center", alignItems: "center", padding: "10px" }} onClick={() => onAction(props.entry)} onOKButton={() => onAction(props.entry)}>
+      <FaEllipsisH />
+    </DialogButton>
+  );
+}
+
+type InteractablesProps<T> = {
+  entry: ReorderableEntry<T>
+}
+
+function Interactables(props:InteractablesProps<Shortcut>) {
+  return (
+    <>
+      <ActionButtion  entry={props.entry} />
+    </>
+  );
+}
+
+export function ManageShortcuts() {
+  const { setShortcuts, shortcutsList, reorderableShortcuts } = useShortcutsState();
+  const tries = useRef(0);
+
+  async function reload() {
+    await PyInterop.getShortcuts().then((res) => {
+      setShortcuts(res.result as ShortcutsDictionary);
+    });
+  }
+
+  function onSave(entries: ReorderableEntry<Shortcut>[]) {
+    const data = {};
+
+    for (const entry of entries) {
+      data[entry.data!.id] = {...entry.data, "position": entry.position}
+    }
+
+    setShortcuts(data);
+    
+    PyInterop.log("Reordered shortcuts.");
+    PyInterop.setShortcuts(shortcutsList);
   }
 
   if (shortcutsList.length === 0 && tries.current < 10) {
@@ -74,7 +104,12 @@ export function ManageShortcuts() {
         marginBottom: "5px"
       }}>Here you can re-order or remove existing shortcuts</div>
       {shortcutsList.length > 0 ? (
-        <ReorderableList<Shortcut> data={reorderableShortcuts} reloadData={reloadData} action={action} onUpdate={onUpdate} />
+        <>
+          <ReorderableList<Shortcut> entries={reorderableShortcuts} onSave={onSave} interactables={Interactables} />
+          <ButtonItem layout="below" onClick={reload} >
+            Reload Shortcuts
+          </ButtonItem>
+        </>
       ) : (
         <div style={{ width: "100%", display: "flex", justifyContent: "center", alignItems: "center", padding: "5px" }}>
           Loading...

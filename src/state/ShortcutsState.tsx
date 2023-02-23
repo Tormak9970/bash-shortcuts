@@ -1,6 +1,6 @@
 import { createContext, FC, useContext, useEffect, useState } from "react";
-import { ReorderableListData } from "../components/utils/ReorderableList";
 import { Shortcut } from "../lib/data-structures/Shortcut"
+import { ReorderableEntry } from "decky-frontend-lib";
 
 type ShortcutsDictionary = {
   [key: string]: Shortcut
@@ -9,7 +9,7 @@ type ShortcutsDictionary = {
 interface PublicShortcutsState {
   shortcuts: ShortcutsDictionary;
   shortcutsList: Shortcut[];
-  reorderableShortcuts: ReorderableListData<Shortcut>;
+  reorderableShortcuts: ReorderableEntry<Shortcut>[];
   isRunning: boolean;
 }
 
@@ -21,7 +21,7 @@ interface PublicShortcutsContext extends PublicShortcutsState {
 export class ShortcutsState {
   private shortcuts: ShortcutsDictionary = {};
   private shortcutsList: Shortcut[] = [];
-  private reorderableShortcuts: ReorderableListData<Shortcut> = {};
+  private reorderableShortcuts: ReorderableEntry<Shortcut>[] = [];
   private isRunning: boolean = false;
 
   public eventBus = new EventTarget();
@@ -38,16 +38,18 @@ export class ShortcutsState {
   setShortcuts(shortcuts: ShortcutsDictionary) {
     this.shortcuts = shortcuts;
     this.shortcutsList = Object.values(this.shortcuts).sort((a, b) => a.position - b.position);
-    this.reorderableShortcuts = {};
+    this.reorderableShortcuts = [];
 
     for (let i = 0; i < this.shortcutsList.length; i++) {
       const shortcut = this.shortcutsList[i];
-      this.reorderableShortcuts[shortcut.id] = {
-        "key": shortcut.id,
+      this.reorderableShortcuts[i] = {
         "label": shortcut.name,
-        "data": shortcut
+        "data": shortcut,
+        "position": shortcut.position
       }
     }
+
+    this.reorderableShortcuts.sort((a, b) => a.position - b.position);
 
     this.forceUpdate();
   }
