@@ -15,6 +15,7 @@ export class PyInterop {
   static get server() { return this.serverAPI; }
 
   static async log(message: String): Promise<void> {
+    console.log(message);
     await this.serverAPI.callPluginMethod<{ message: String }, boolean>("logMessage", { message: `[front-end]: ${message}` });
   }
   static async getHomeDir(): Promise<ServerResponse<string>> {

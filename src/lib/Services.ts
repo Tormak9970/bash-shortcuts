@@ -49,11 +49,9 @@ const LibraryInitializer = findModuleChild((mod: { [key: string]: Partial<Librar
 export async function waitForServicesInitialized(): Promise<boolean> {
   // This is for stable
   if (LibraryInitializer != null) {
-    console.log(`Waiting for services to be initialized...`);
     PyInterop.log(`Waiting for services to be initialized...`);
 
     return await LibraryInitializer.WaitForServicesInitialized().then((res) => {
-      console.log(`Services initialized.`);
       PyInterop.log(`Services initialized.`);
 
       return res;
