@@ -1,19 +1,23 @@
 import { sleep } from "decky-frontend-lib";
-import { AppOverview, AppDetails, LifetimeNotification, SteamClient, SteamShortcut } from "./SteamClient";
 import { PyInterop } from "../PyInterop";
-
-//? Credit to FrogTheFrog for some of the methods: https://github.com/FrogTheFrog/SDH-MoonDeck/blob/main/src/lib/steamutils.ts
 
 declare global {
   var SteamClient: SteamClient;
+  var collectionStore: CollectionStore;
 }
 
 export class SteamUtils {
   private static hasLoggedIn = false;
   private static hasLoggedOut = false;
 
+  static getNonSteamAppIds() {
+    return Array.from(collectionStore.deckDesktopApps.apps.keys());
+  }
+
   static async getShortcuts(): Promise<SteamShortcut[]> {
-    const res = await SteamClient.Apps.GetAllShortcuts();
+    const appIds = SteamUtils.getNonSteamAppIds();
+    const res = await Promise.all(appIds.map((appid)=> SteamUtils.getAppDetails(appid)));
+  
     
     console.log(`Got shortcuts. [DEBUG INFO] resultsLength: ${res.length};`);
     PyInterop.log(`Got shortcuts. [DEBUG INFO] resultsLength: ${res.length};`);
@@ -22,7 +26,7 @@ export class SteamUtils {
   }
 
   static async getShortcut(appName: string): Promise<SteamShortcut[] | undefined> {
-    const res = await SteamClient.Apps.GetAllShortcuts();
+    const res = await SteamUtils.getShortcuts();
     const shortcutsList = res as SteamShortcut[];
 
     console.log(`Got shortcuts with desired name. [DEBUG INFO] appName: ${appName}; resultsLength: ${shortcutsList.length};`);
@@ -32,10 +36,10 @@ export class SteamUtils {
 
   static async getAppOverview(appId: number) {
     const { appStore } = (window as any);
-    return appStore.GetAppOverviewByAppID(appId) as AppOverview | null;
+    return appStore.GetAppOverviewByAppID(appId) as SteamAppOverview | null;
   }
 
-  static async waitForAppOverview(appId: number, predicate: (overview: AppOverview | null) => boolean) {
+  static async waitForAppOverview(appId: number, predicate: (overview: SteamAppOverview | null) => boolean) {
     let retries = 4;
     while (retries--) {
       if (predicate(await this.getAppOverview(appId))) {
@@ -49,7 +53,7 @@ export class SteamUtils {
     return false;
   }
 
-  static async getAppDetails(appId: number): Promise<AppDetails | null> {
+  static async getAppDetails(appId: number): Promise<SteamAppDetails | null> {
     return new Promise((resolve) => {
       const { unregister } = SteamClient.Apps.RegisterForAppDetails(appId, (details: any) => {
         unregister();
@@ -58,7 +62,7 @@ export class SteamUtils {
     });
   }
 
-  static async waitForAppDetails(appId: number, predicate: (details: AppDetails | null) => boolean) {
+  static async waitForAppDetails(appId: number, predicate: (details: SteamAppDetails | null) => boolean) {
     let retries = 4;
     while (retries--) {
       if (predicate(await this.getAppDetails(appId))) {

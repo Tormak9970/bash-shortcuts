@@ -2,7 +2,6 @@ import { Router, ServerAPI } from "decky-frontend-lib";
 import { PyInterop } from "../PyInterop";
 import { Shortcut } from "./data-structures/Shortcut";
 import { waitForServicesInitialized } from "./Services";
-import { LifetimeNotification, SteamShortcut } from "./SteamClient";
 import { SteamUtils } from "./SteamUtils";
 
 
@@ -19,10 +18,18 @@ export class ShortcutManager {
 
   private static hideShortcut = false;
 
+  /**
+   * Sets the plugin's serverAPI.
+   * @param server The serverAPI to use.
+   */
   static setServer(server: ServerAPI) {
     this.server = server;
   }
 
+  /**
+   * Sets the plugin to initialize once the user logs in.
+   * @returns The unregister function for the login hook.
+   */
   static initOnLogin() {
     PyInterop.getHomeDir().then((res) => {
       ShortcutManager.runnerPath = `\"/home/${res.result}/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh\"`;
@@ -38,6 +45,10 @@ export class ShortcutManager {
     }, null, true);
   }
 
+  /**
+   * Initializes the Plugin.
+   * @param name The name of the main shortcut.
+   */
   static async init(name: string) {
     this.shortcutName = name;
     if (!(await this.checkShortcutExist(this.shortcutName))) {
@@ -103,6 +114,9 @@ export class ShortcutManager {
     }
   }
 
+  /**
+   * Function to run when the plugin dismounts.
+   */
   static onDismount() {
     if (this.routerPatch) {
       this.server.routerHook.removePatch(this.routePath, this.routerPatch);
@@ -110,12 +124,21 @@ export class ShortcutManager {
     PyInterop.log("Dismounting...");
   }
 
+  /**
+   * Gets all of the current user's steam shortcuts.
+   * @returns A collection of the current user's steam shortcuts.
+   */
   static async getShortcuts() {
     const res = await SteamUtils.getShortcuts();
     return res;
   }
 
-  static async launchShortcut(shortcut: Shortcut, setIsRunning: (value: boolean) => void): Promise<boolean> {
+  /**
+   * Launches a steam shortcut.
+   * @param shortcut The shortcut to launch.
+   * @returns A promise resolving to true if the shortcut was successfully launched.
+   */
+  static async launchShortcut(shortcut: Shortcut): Promise<boolean> {
     if (!(await this.checkShortcutExist(this.shortcutName))) {
       const success = await this.addShortcut(this.shortcutName, this.runnerPath, ShortcutManager.hideShortcut);
 
@@ -130,11 +153,13 @@ export class ShortcutManager {
         const didLaunch = await SteamUtils.runGame(this.appId, false);
         if (didLaunch) {
           Router.CloseSideMenus();
-          setIsRunning(true);
+          shortcut.isRunning = true;
+          await PyInterop.setShortcutIsRunning(shortcut);
         }
         const unregister = SteamUtils.registerForGameLifetime((data: LifetimeNotification) => {
           if (data.bRunning) return;
-          setIsRunning(false);
+          shortcut.isRunning = false;
+          PyInterop.setShortcutIsRunning(shortcut);
 
           unregister();
         });
@@ -142,30 +167,64 @@ export class ShortcutManager {
         return didLaunch;
       } else {
         PyInterop.toast("Error", "Failed at setAppLaunchOptions");
-        setIsRunning(false);
+        shortcut.isRunning = false;
+        await PyInterop.setShortcutIsRunning(shortcut);
         return false;
       }
     } else {
       const res = await PyInterop.runNonAppShortcut(shortcut);
       const status = typeof res.result == "boolean" && (res.result as boolean);
       if (status) {
+        shortcut.isRunning = true;
+        
         PyInterop.toast("Success", "Command exited successfully!");
       }
       return status;
     }
   }
 
-  static async closeGame(): Promise<boolean> {
-    Router.CloseSideMenus();
-    const status = await SteamUtils.terminateGame(this.appId);
+  /**
+   * Closes a running shortcut.
+   * @param shortcut The shortcut to close.
+   * @returns A promise resolving to true if the shortcut was successfully closed.
+   */
+  static async closeShortcut(shortcut:Shortcut): Promise<boolean> {
+    let status: boolean;
+
+    if (shortcut.isApp) {
+      status = await SteamUtils.terminateGame(this.appId);
+      if (status) {
+        Router.CloseSideMenus();
+        shortcut.isRunning = false;
+        await PyInterop.setShortcutIsRunning(shortcut);
+      } else {
+        PyInterop.log(`Failed to close shortcut ${shortcut.name}`);
+        PyInterop.toast("Error", "Failed to close the shortcut");
+      }
+    } else {
+      status = false;
+    }
+
     return status;
   }
 
+  /**
+   * Checks if a shortcut exists.
+   * @param name The name of the shortcut to check for.
+   * @returns A promise resolving to true if the shortcut was found.
+   */
   private static async checkShortcutExist(name: string): Promise<boolean> {
     const shortcutsArr = await SteamUtils.getShortcut(name) as SteamShortcut[];
     return !!shortcutsArr[0]?.data;
   }
 
+  /**
+   * Creates a new steam shortcut.
+   * @param name The name of the shortcut to create.
+   * @param exec The executable file for the shortcut.
+   * @param hideShortcut Whether to hide the shortcut or not.
+   * @returns A promise resolving to true if the shortcut was successfully created.
+   */
   private static async addShortcut(name: string, exec: string, hideShortcut: boolean): Promise<boolean> {
     const res = await SteamUtils.addShortcut(name, exec, hideShortcut);
     if (res) {
@@ -178,6 +237,11 @@ export class ShortcutManager {
     }
   }
 
+  /**
+   * Deletes a shortcut from steam.
+   * @param name Name of the shortcut to delete.
+   * @returns A promise resolving to true if the shortcut was successfully deleted.
+   */
   // @ts-ignore
   private static async removeShortcut(name: string): Promise<boolean> {
     const shortcut = await SteamUtils.getShortcut(name)[0];

@@ -14,6 +14,27 @@ export class PyInterop {
 
   static get server() { return this.serverAPI; }
 
+  static async log(message: String): Promise<void> {
+    await this.serverAPI.callPluginMethod<{ message: String }, boolean>("logMessage", { message: `[front-end]: ${message}` });
+  }
+  static async getHomeDir(): Promise<ServerResponse<string>> {
+    const res = await this.serverAPI.callPluginMethod<{}, string>("getHomeDir", {});
+    return res;
+  }
+  static toast(title: string, message: string) {
+    return (() => {
+      try {
+        return this.serverAPI.toaster.toast({
+          title: title,
+          body: message,
+          duration: 8000,
+        });
+      } catch (e) {
+        console.log("Toaster Error", e);
+      }
+    })();
+  }
+
   static async getShortcuts(): Promise<ServerResponse<ShortcutsDictionary>> {
     return await this.serverAPI.callPluginMethod<{}, ShortcutsDictionary>("getShortcuts", {});
   }
@@ -30,36 +51,11 @@ export class PyInterop {
     return await this.serverAPI.callPluginMethod<{ shortcut: Shortcut }, ShortcutsDictionary>("remShortcut", { shortcut: shortcut });
   }
 
-  static async getInstalledApps(): Promise<ServerResponse<Application[]>> {
-    const apps = await this.serverAPI.callPluginMethod<{}, Application[]>("getInstalledApps", {});
-    return apps;
-  }
-
   static async runNonAppShortcut(shortcut: Shortcut): Promise<ServerResponse<boolean>> {
     const successful = await this.serverAPI.callPluginMethod<{ shortcut: Shortcut }, boolean>("runNonAppShortcut", { shortcut: shortcut });
     return successful;
   }
-
-  static async log(message: String): Promise<void> {
-    await this.serverAPI.callPluginMethod<{ message: String }, boolean>("logMessage", { message: `[front-end]: ${message}` });
-  }
-
-  static async getHomeDir(): Promise<ServerResponse<string>> {
-    const res = await this.serverAPI.callPluginMethod<{}, string>("getHomeDir", {});
-    return res;
-  }
-
-  static toast(title: string, message: string) {
-    return (() => {
-      try {
-        return this.serverAPI.toaster.toast({
-          title: title,
-          body: message,
-          duration: 8000,
-        });
-      } catch (e) {
-        console.log("Toaster Error", e);
-      }
-    })();
+  static async setShortcutIsRunning(shortcut:Shortcut): Promise<ServerResponse<void>> {
+    return await this.serverAPI.callPluginMethod<{ shortcut: Shortcut }, void>("setShortcutIsRunning", { shortcut: shortcut });
   }
 }

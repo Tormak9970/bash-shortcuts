@@ -27,7 +27,7 @@ type ShortcutsDictionary = {
 }
 
 const Content: VFC<{ serverAPI: ServerAPI }> = ({ }) => {
-  const { shortcuts, setShortcuts, shortcutsList, isRunning } = useShortcutsState();
+  const { shortcuts, setShortcuts, shortcutsList } = useShortcutsState();
   const tries = useRef(0);
 
   async function reload() {
@@ -76,23 +76,13 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({ }) => {
           </PanelSectionRow>
 
           {
-            (isRunning) ? (
-              <>
-                <div style={{
-                  textAlign: "center",
-                  margin: "14px 0px",
-                  padding: "0px 15px",
-                  fontSize: "18px"
-                }}>A shortcut is running. Please close before running another.</div>
-                <ButtonItem layout="below" onClick={async () => {
-                  const status = await ShortcutManager.closeGame();
-                  if (status) {
-                    Router.CloseSideMenus();
-                  }
-                }} >
-                  Close Shortcut
-                </ButtonItem>
-              </>
+            (shortcutsList.length == 0) ? (
+              <div style={{
+                textAlign: "center",
+                margin: "14px 0px",
+                padding: "0px 15px",
+                fontSize: "18px"
+              }}>No shortcuts found</div>
             ) : (
               <>
                 {
