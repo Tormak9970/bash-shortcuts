@@ -75,7 +75,9 @@ export class PluginController {
   static async launchShortcut(shortcut: Shortcut): Promise<boolean> {
     const createdInstance = await this.instancesController.startInstance(PluginController.shortcutName, shortcut, PluginController.runnerPath, PluginController.startDir);
     if (createdInstance) {
-      return await this.instancesController.launchInstance(shortcut.id);
+      PyInterop.log(`Created Instance for shortcut ${shortcut.name}`);
+      return await this.instancesController.killInstance(shortcut.id);
+      // return await this.instancesController.launchInstance(shortcut.id);
     } else {
       return false;
     }

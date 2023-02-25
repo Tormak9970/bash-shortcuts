@@ -32,6 +32,21 @@ export class ShortcutsController {
   }
 
   /**
+   * Gets the current user's steam shortcut with the given name.
+   * @param name The name of the shortcut to get.
+   * @returns A promise resolving to the shortcut with the provided name, or null.
+   */
+  async getShortcut(name:string): Promise<SteamAppDetails | null> {
+    const res = await this.steamController.getShortcut(name);
+
+    if (res) {
+      return res[0];
+    } else {
+      return null;
+    }
+  }
+
+  /**
    * Checks if a shortcut exists.
    * @param name The name of the shortcut to check for.
    * @returns A promise resolving to true if the shortcut was found.

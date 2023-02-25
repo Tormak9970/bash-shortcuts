@@ -67,8 +67,17 @@ export class InstancesController {
     this.numInstances++;
     const shortcutName = `${baseName} - Instance ${this.numInstances}`;
     
+    // TODO check if instance exists. if so, grab it and modify it
+
     if (shortcut.isApp) {
-      const appId = await this.shorcutsController.addShortcut(shortcutName, exec);
+      let appId = null;
+      
+      if (await this.shorcutsController.checkShortcutExist(shortcutName)) {
+        const shortcut = await this.shorcutsController.getShortcut(shortcutName);
+        appId = shortcut?.unAppID;
+      } else {
+        appId = await this.shorcutsController.addShortcut(shortcutName, exec);
+      }
 
       if (appId) {
         this.instances[shortcut.id] = new Instance(appId, shortcutName, shortcut.id, shortcut.isApp);

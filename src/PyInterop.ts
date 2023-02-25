@@ -5,6 +5,9 @@ type ShortcutsDictionary = {
   [key: string]: Shortcut
 }
 
+/**
+ * Class for frontend - backend communication.
+ */
 export class PyInterop {
   private static serverAPI: ServerAPI;
 
