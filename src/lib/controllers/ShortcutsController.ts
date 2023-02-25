@@ -53,7 +53,7 @@ export class ShortcutsController {
    */
   async checkShortcutExist(name: string): Promise<boolean> {
     const shortcutsArr = await this.steamController.getShortcut(name) as SteamAppDetails[];
-    return shortcutsArr[0]?.unAppID != 0;
+    return shortcutsArr.length > 0;
   }
   
   /**

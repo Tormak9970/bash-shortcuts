@@ -59,12 +59,16 @@ export function ShortcutLauncher(props: ShortcutLauncherProps) {
     if (isRunning) {
       const res = await PluginController.closeShortcut(shortcut);
       if (!res) {
-        PyInterop.toast("Error", "Shortcut failed. Check the command.");
+        PyInterop.toast("Error", "Failed to close shortcut.");
       }
     } else {
       const res = await PluginController.launchShortcut(shortcut);
       if (!res) {
         PyInterop.toast("Error", "Shortcut failed. Check the command.");
+      } else {
+        setTimeout(async () => {
+          const res = await PluginController.closeShortcut(shortcut);
+        }, 3000);
       }
     }
   }

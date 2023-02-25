@@ -66,12 +66,11 @@ export class InstancesController {
   async startInstance(baseName: string, shortcut: Shortcut, exec: string, startDir: string): Promise<boolean> {
     this.numInstances++;
     const shortcutName = `${baseName} - Instance ${this.numInstances}`;
-    
-    // TODO check if instance exists. if so, grab it and modify it
 
     if (shortcut.isApp) {
       let appId = null;
       
+      //* check if instance exists. if so, grab it and modify it
       if (await this.shorcutsController.checkShortcutExist(shortcutName)) {
         const shortcut = await this.shorcutsController.getShortcut(shortcutName);
         appId = shortcut?.unAppID;

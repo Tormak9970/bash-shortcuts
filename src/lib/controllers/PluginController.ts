@@ -63,6 +63,15 @@ export class PluginController {
    */
   static async init(name: string) {
     this.shortcutName = name;
+
+    //* clean out all shortcuts with names that start with "Bash Shortcuts - Instance"
+    const oldInstances = (await this.shortcutsController.getShortcuts()).filter((shortcut:SteamAppDetails) => shortcut.strDisplayName.startsWith("Bash Shortcuts - Instance"));
+
+    if (oldInstances.length > 0) {
+      for (const instance of oldInstances) {
+        await this.shortcutsController.removeShortcutById(instance.unAppID);
+      }
+    }
   }
 
   /**
@@ -76,7 +85,7 @@ export class PluginController {
     const createdInstance = await this.instancesController.startInstance(PluginController.shortcutName, shortcut, PluginController.runnerPath, PluginController.startDir);
     if (createdInstance) {
       PyInterop.log(`Created Instance for shortcut ${shortcut.name}`);
-      return await this.instancesController.killInstance(shortcut.id);
+      return true;
       // return await this.instancesController.launchInstance(shortcut.id);
     } else {
       return false;

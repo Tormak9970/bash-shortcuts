@@ -1,5 +1,6 @@
-import { sleep } from "decky-frontend-lib";
+import { SteamAppOverview, sleep } from "decky-frontend-lib";
 import { PyInterop } from "../../PyInterop";
+import { waitForCondition } from "../Utils";
 // import { waitForCondition } from "./Utils";
 
 /**
@@ -63,6 +64,18 @@ export class SteamController {
    * @returns A promise resolving to the SteamAppOverview of the app
    */
   async getAppOverview(appId: number) {
+    await this.waitForAppOverview(appId, (overview) => overview !== null);
+    return this._getAppOverview(appId);
+  }
+
+  private async waitForAppOverview(appId: number, condition: (overview:SteamAppOverview|null) => boolean): Promise<boolean> {
+    return await waitForCondition(3, 250, async () => {
+      const overview = await this._getAppOverview(appId);
+      return condition(overview);
+    });
+  }
+  
+  async _getAppOverview(appId: number) {
     const { appStore } = (window as any);
     return appStore.GetAppOverviewByAppID(appId) as SteamAppOverview | null;
   }
@@ -73,10 +86,19 @@ export class SteamController {
    * @returns A promise resolving to the SteamAppDetails of the app
    */
   async getAppDetails(appId: number): Promise<SteamAppDetails | null> {
-    // await this.waitForAppDetails(appId, (details) => details !== null);
-    // return await this._getAppDetails(appId);
+    await this.waitForAppDetails(appId, (details) => details !== null);
+    return await this._getAppDetails(appId);
+  }
+
+  private async waitForAppDetails(appId: number, condition: (details:SteamAppDetails|null) => boolean): Promise<boolean> {
+    return await waitForCondition(3, 250, async () => {
+      const details = await this._getAppDetails(appId);
+      return condition(details);
+    });
+  }
+
+  private async _getAppDetails(appId: number): Promise<SteamAppDetails | null> {
     return new Promise((resolve) => {
-      console.log(appId);
       try {
         const { unregister } = SteamClient.Apps.RegisterForAppDetails(appId, (details: SteamAppDetails) => {
           unregister();
@@ -87,27 +109,6 @@ export class SteamController {
       }
     });
   }
-
-  // private async _getAppDetails(appId: number): Promise<SteamAppDetails | null> {
-  //   return new Promise((resolve) => {
-  //     console.log(appId);
-  //     try {
-  //       const { unregister } = SteamClient.Apps.RegisterForAppDetails(appId, (details: SteamAppDetails) => {
-  //         unregister();
-  //         resolve(details.unAppID === undefined ? null : details);
-  //       });
-  //     } catch (e:any) {
-  //       PyInterop.log(`Error encountered trying to get app details. Error: ${e.message}`);
-  //     }
-  //   });
-  // }
-
-  // private async waitForAppDetails(appId: number, condition: (details:SteamAppDetails|null) => boolean): Promise<boolean> {
-  //   return await waitForCondition(3, 250, async () => {
-  //     const details = await this._getAppDetails(appId);
-  //     return condition(details);
-  //   });
-  // }
 
   /**
    * Hides a steam app.
@@ -152,7 +153,6 @@ export class SteamController {
         return appId;
       }
 
-      // necessary cleanup to avoid duplicates, which is very BAD (Steam goes bonkers)
       await this.removeShortcut(appId as number);
       PyInterop.log(`Removing shortcut. [DEBUG INFO] appId: ${appId}; appName: ${appName};`);
     }
@@ -182,10 +182,12 @@ export class SteamController {
 
     SteamClient.Apps.SetShortcutExe(appId, exePath);
     const updated = await this.getAppDetails(appId);
-    if (updated?.strShortcutExe == `\"${exePath}\"` || updated?.strShortcutExe == exePath) {
+    if (updated?.strShortcutExe !== `\"${exePath}\"` && updated?.strShortcutExe !== exePath) {
       PyInterop.log(`Could not exe path. [DEBUG INFO] strDisplayName: ${details.strDisplayName}; appId: ${appId};`);
       return false;
     }
+    
+    PyInterop.log(`Set shortcut exe path. [DEBUG INFO] strDisplayName: ${details.strDisplayName}; appId:${appId};`);
     return true;
   }
 
@@ -209,10 +211,12 @@ export class SteamController {
 
     SteamClient.Apps.SetShortcutStartDir(appId, startDir);
     const updated = await this.getAppDetails(appId);
-    if (updated?.strShortcutStartDir == `\"${startDir}\"` || updated?.strShortcutStartDir == startDir) {
-      PyInterop.log(`Could not start dir. [DEBUG INFO] appId: ${appId};`);
+    if (updated?.strShortcutStartDir !== `\"${startDir}\"` && updated?.strShortcutStartDir !== startDir) {
+      PyInterop.log(`Could not set start dir. [DEBUG INFO] appId: ${appId};`);
       return false;
     }
+    
+    PyInterop.log(`Set start dir. [DEBUG INFO] appId: ${appId};`);
     return true;
   }
 
@@ -230,16 +234,18 @@ export class SteamController {
     }
 
     if (details.strLaunchOptions === options) {
-      PyInterop.log(`Removed shortcut. [DEBUG INFO] appId: ${appId};`);
+      PyInterop.log(`Added launch options. [DEBUG INFO] appId: ${appId};`);
       return true;
     }
 
     SteamClient.Apps.SetAppLaunchOptions(appId, options);
     const updated = await this.getAppDetails(appId);
-    if (updated?.strLaunchOptions === options) {
+    if (updated?.strLaunchOptions !== `\"${options}\"` && updated?.strLaunchOptions !== options) {
       PyInterop.log(`Could not add launch options. [DEBUG INFO] appId: ${appId};`);
       return false;
     }
+    
+    PyInterop.log(`Added launch options. [DEBUG INFO] appId: ${appId};`);
     return true;
   }
 
