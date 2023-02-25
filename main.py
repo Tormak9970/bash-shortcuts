@@ -20,7 +20,6 @@ class Shortcut:
     self.id = dict['id']
     self.position = dict['position']
     self.isApp = dict['isApp'] if 'isApp' in dict else True
-    self.isRunning = False
     
   def toJSON(self):
     return json.dumps({ "id": self.id, "name": self.name, "cmd": self.cmd, "position": self.position, "isApp": self.isApp }, sort_keys=True, indent=4)
@@ -180,7 +179,6 @@ class Plugin:
     pass
 
   def _runNonAppShortcut(self, shortcut):
-    self.shortcuts[shortcut.id].isRunning = True
     res = subprocess.call([self.shortcutsRunnerPath, shortcut['cmd']], shell=True)
     return res == 0
   

@@ -20,7 +20,7 @@ import { ManageShortcuts } from "./components/shortcuts-manager/ManageShortcuts"
 import { PyInterop } from "./PyInterop";
 import { Shortcut } from "./lib/data-structures/Shortcut";
 import { ShortcutsContextProvider, ShortcutsState, useShortcutsState } from "./state/ShortcutsState";
-import { ShortcutManager } from "./lib/ShortcutManager";
+import { PluginController } from "./lib/controllers/PluginController";
 
 type ShortcutsDictionary = {
   [key: string]: Shortcut
@@ -134,9 +134,9 @@ export default definePlugin((serverApi: ServerAPI) => {
   PyInterop.setServer(serverApi);
 
   const state = new ShortcutsState();
-  ShortcutManager.setServer(serverApi);
+  PluginController.setup(serverApi);
 
-  const loginHook = ShortcutManager.initOnLogin();
+  const loginHook = PluginController.initOnLogin();
 
   serverApi.routerHook.addRoute("/shortcuts-nav", () => (
     <ShortcutsContextProvider shortcutsStateClass={state}>
@@ -155,7 +155,7 @@ export default definePlugin((serverApi: ServerAPI) => {
     onDismount() {
       loginHook.unregister();
       serverApi.routerHook.removeRoute("/shortcuts-nav");
-      ShortcutManager.onDismount();
+      PluginController.onDismount();
     },
     alwaysRender: true
   };

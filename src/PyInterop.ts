@@ -56,7 +56,4 @@ export class PyInterop {
     const successful = await this.serverAPI.callPluginMethod<{ shortcut: Shortcut }, boolean>("runNonAppShortcut", { shortcut: shortcut });
     return successful;
   }
-  static async setShortcutIsRunning(shortcut:Shortcut): Promise<ServerResponse<void>> {
-    return await this.serverAPI.callPluginMethod<{ shortcut: Shortcut }, void>("setShortcutIsRunning", { shortcut: shortcut });
-  }
 }

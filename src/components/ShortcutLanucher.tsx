@@ -1,17 +1,17 @@
 import { DialogButton, Field, Focusable, gamepadDialogClasses } from "decky-frontend-lib";
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Shortcut } from "../lib/data-structures/Shortcut";
 
 import { IoRocketSharp } from "react-icons/io5";
-import { ShortcutManager } from "../lib/ShortcutManager";
 import { PyInterop } from "../PyInterop";
 import { FaTrashAlt } from "react-icons/fa";
+import { PluginController } from "../lib/controllers/PluginController";
 
 export type ShortcutLauncherProps = {
   shortcut: Shortcut
 }
 
-function ShortcutLabel(props: { shortcut: Shortcut }) {
+function ShortcutLabel(props: { shortcut: Shortcut, isRunning: boolean }) {
   return (
     <>
       <style>{`
@@ -35,7 +35,7 @@ function ShortcutLabel(props: { shortcut: Shortcut }) {
       }}>
         <div>{props.shortcut.name}</div>
         <div style={{
-          "visibility": props.shortcut.isRunning ? "visible" : "hidden",
+          "visibility": props.isRunning ? "visible" : "hidden",
           "marginLeft": "7px",
           "width": "12px",
           "height": "12px",
@@ -49,16 +49,20 @@ function ShortcutLabel(props: { shortcut: Shortcut }) {
 }
 
 export function ShortcutLauncher(props: ShortcutLauncherProps) {
-  async function onAction(shortcut:Shortcut) {
-    const isRunning = shortcut.isRunning;
+  const [ isRunning, setIsRunning ] = useState<boolean>(PluginController.checkIfRunning(props.shortcut));
 
+  useEffect(() => {
+    setIsRunning(PluginController.checkIfRunning(props.shortcut));
+  });
+
+  async function onAction(shortcut:Shortcut) {
     if (isRunning) {
-      const res = await ShortcutManager.closeShortcut(shortcut);
+      const res = await PluginController.closeShortcut(shortcut);
       if (!res) {
         PyInterop.toast("Error", "Shortcut failed. Check the command.");
       }
     } else {
-      const res = await ShortcutManager.launchShortcut(shortcut);
+      const res = await PluginController.launchShortcut(shortcut);
       if (!res) {
         PyInterop.toast("Error", "Shortcut failed. Check the command.");
       }
@@ -81,7 +85,7 @@ export function ShortcutLauncher(props: ShortcutLauncherProps) {
       `}
       </style>
       <div className="custom-buttons">
-        <Field label={<ShortcutLabel shortcut={props.shortcut} />}>
+        <Field label={<ShortcutLabel shortcut={props.shortcut} isRunning={isRunning} />}>
           <Focusable style={{ display: "flex", width: "100%" }}>
             <DialogButton onClick={() => onAction(props.shortcut)} style={{
               minWidth: "30px",
@@ -90,7 +94,7 @@ export function ShortcutLauncher(props: ShortcutLauncherProps) {
               justifyContent: "center",
               alignItems: "center"
             }}>
-              { (props.shortcut.isRunning) ? <FaTrashAlt color="#e24a4a" /> : <IoRocketSharp color="#36ff04" /> }
+              { (isRunning) ? <FaTrashAlt color="#e24a4a" /> : <IoRocketSharp color="#36ff04" /> }
             </DialogButton>
           </Focusable>
         </Field>

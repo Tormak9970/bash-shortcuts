@@ -7,7 +7,6 @@ export class Shortcut {
   cmd: string;
   position: number;
   isApp: boolean;
-  isRunning: boolean;
 
   /**
    * Creates a new Shortcut.
@@ -16,18 +15,16 @@ export class Shortcut {
    * @param cmd The command the shortcut runs.
    * @param position The position of the shortcut in the list of shortcuts.
    * @param isApp Whether the shortcut is an app or not.
-   * @param isRunning Whether the shortcut is running currently.
    */
-  constructor(id: string, name: string, cmd: string, position: number, isApp: boolean, isRunning:boolean) {
+  constructor(id: string, name: string, cmd: string, position: number, isApp: boolean) {
     this.id = id;
     this.name = name;
     this.cmd = cmd;
     this.position = position;
     this.isApp = isApp;
-    this.isRunning = isRunning;
   }
 
   static fromJSON(json: any) {
-    return new Shortcut(json.id, json.name, json.cmd, json.position, json.isApp, json.isRunning);
+    return new Shortcut(json.id, json.name, json.cmd, json.position, json.isApp);
   }
 }
