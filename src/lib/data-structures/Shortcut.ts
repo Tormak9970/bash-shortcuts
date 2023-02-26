@@ -24,7 +24,12 @@ export class Shortcut {
     this.isApp = isApp;
   }
 
-  static fromJSON(json: any) {
+  /**
+   * Creates a new Shortcut from the provided json data.
+   * @param json The json data to use for the shortcut.
+   * @returns A new Shortcut.
+   */
+  static fromJSON(json: any): Shortcut {
     return new Shortcut(json.id, json.name, json.cmd, json.position, json.isApp);
   }
 }

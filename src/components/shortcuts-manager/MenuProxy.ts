@@ -1,7 +1,6 @@
 import { FooterLegendProps, findModuleChild } from "decky-frontend-lib";
 import { FC, ReactNode } from "react";
 
-
 export const showContextMenu: (children: ReactNode, parent?: EventTarget) => void = findModuleChild((m) => {
   if (typeof m !== 'object') return undefined;
   for (let prop in m) {

@@ -1,9 +1,12 @@
-import { ReactRouter, sleep } from 'decky-frontend-lib'
+import { sleep } from 'decky-frontend-lib';
 
-export const useParams = Object.values(ReactRouter).find((val) =>
-  /return (\w)\?\1\.params:{}/.test(`${val}`)
-) as <T>() => T;
-
+/**
+ * Waits for a condition to be true.
+ * @param retries The number of times to retry the condition.
+ * @param delay The time (in ms) between retries.
+ * @param check The condition to check.
+ * @returns A promise resolving to true if the check was true on any attempt, or false if it failed each time.
+ */
 export async function waitForCondition(retries: number, delay: number, check: () => (boolean | Promise<boolean>)): Promise<boolean> {
   const waitImpl = async (): Promise<boolean> => {
     try {

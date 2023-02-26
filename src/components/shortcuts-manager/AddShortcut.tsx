@@ -1,12 +1,16 @@
 import { Field, PanelSection, PanelSectionRow, TextField, ButtonItem, quickAccessControlsClasses, ToggleField } from "decky-frontend-lib"
-import { Fragment, useState, useEffect } from "react"
+import { Fragment, useState, useEffect, VFC } from "react"
 import { PyInterop } from "../../PyInterop";
 import { Shortcut } from "../../lib/data-structures/Shortcut";
 
 import { v4 as uuidv4 } from "uuid";
 import { useShortcutsState } from "../../state/ShortcutsState";
 
-export function AddShortcut() {
+/**
+ * Component for adding a shortcut to the plugin.
+ * @returns An AddShortcut component.
+ */
+export const AddShortcut: VFC = () => {
   const { shortcuts, setShortcuts, shortcutsList } = useShortcutsState();
   const [ableToSave, setAbleToSave] = useState(false);
   const [name, setName] = useState<string>("");

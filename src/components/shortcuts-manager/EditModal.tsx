@@ -9,6 +9,11 @@ type EditModalProps = {
   shortcut: Shortcut,
 }
 
+/**
+ * Component for the edit shortcut modal.
+ * @param props The EditModalProps for this component. 
+ * @returns An EditModal component.
+ */
 export const EditModal: VFC<EditModalProps> = ({
   closeModal,
   onConfirm = () => { },

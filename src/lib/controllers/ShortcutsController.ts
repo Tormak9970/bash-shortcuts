@@ -18,7 +18,7 @@ export class ShortcutsController {
   /**
    * Function to run when the plugin dismounts.
    */
-  onDismount() {
+  onDismount(): void {
     PyInterop.log("Dismounting...");
   }
 

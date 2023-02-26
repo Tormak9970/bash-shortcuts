@@ -22,15 +22,17 @@ import { Shortcut } from "./lib/data-structures/Shortcut";
 import { ShortcutsContextProvider, ShortcutsState, useShortcutsState } from "./state/ShortcutsState";
 import { PluginController } from "./lib/controllers/PluginController";
 
-type ShortcutsDictionary = {
-  [key: string]: Shortcut
+declare global {
+  var SteamClient: SteamClient;
+  var collectionStore: CollectionStore;
+  var appStore: any;
 }
 
 const Content: VFC<{ serverAPI: ServerAPI }> = ({ }) => {
   const { shortcuts, setShortcuts, shortcutsList } = useShortcutsState();
   const tries = useRef(0);
 
-  async function reload() {
+  async function reload(): Promise<void> {
     await PyInterop.getShortcuts().then((res) => {
       setShortcuts(res.result as ShortcutsDictionary);
     });
@@ -44,7 +46,7 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({ }) => {
   return (
     <>
       <style>{`
-        .scope {
+        .bash-shortcuts-scope {
           width: inherit;
           height: inherit;
 
@@ -55,34 +57,28 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({ }) => {
           justify-content: flex-start;
           align-content: stretch;
         }
-        .scope .${quickAccessControlsClasses.PanelSection} {
+        .bash-shortcuts-scope .${quickAccessControlsClasses.PanelSection} {
           padding: 0px;
         }
 
-        .scope .${gamepadDialogClasses.FieldChildren} {
+        .bash-shortcuts-scope .${gamepadDialogClasses.FieldChildren} {
           margin: 0px 16px;
         }
         
-        .scope .${gamepadDialogClasses.FieldLabel} {
+        .bash-shortcuts-scope .${gamepadDialogClasses.FieldLabel} {
           margin-left: 16px;
         }
       `}</style>
-      <div className="scope">
+      <div className="bash-shortcuts-scope">
         <PanelSection>
           <PanelSectionRow>
-            <ButtonItem layout="below" onClick={() => { Navigation.CloseSideMenus(); Navigation.Navigate("/shortcuts-nav"); }} >
+            <ButtonItem layout="below" onClick={() => { Navigation.CloseSideMenus(); Navigation.Navigate("/bash-shortcuts-nav"); }} >
               Manage Shortcuts
             </ButtonItem>
           </PanelSectionRow>
-
           {
             (shortcutsList.length == 0) ? (
-              <div style={{
-                textAlign: "center",
-                margin: "14px 0px",
-                padding: "0px 15px",
-                fontSize: "18px"
-              }}>No shortcuts found</div>
+              <div style={{ textAlign: "center", margin: "14px 0px", padding: "0px 15px", fontSize: "18px" }}>No shortcuts found</div>
             ) : (
               <>
                 {
@@ -113,17 +109,17 @@ const ShortcutsManagerRouter: VFC = () => {
         {
           title: "Add a Shortcut",
           content: <AddShortcut />,
-          route: "/shortcuts-nav/add",
+          route: "/bash-shortcuts-nav/add",
         },
         {
           title: "Manage Shortcuts",
           content: <ManageShortcuts />,
-          route: "/shortcuts-nav/manage",
+          route: "/bash-shortcuts-nav/manage",
         },
         {
           title: "About Shortcuts",
           content: <About />,
-          route: "/shortcuts-nav/about",
+          route: "/bash-shortcuts-nav/about",
         },
       ]}
     />
@@ -138,7 +134,7 @@ export default definePlugin((serverApi: ServerAPI) => {
 
   const loginHook = PluginController.initOnLogin();
 
-  serverApi.routerHook.addRoute("/shortcuts-nav", () => (
+  serverApi.routerHook.addRoute("/bash-shortcuts-nav", () => (
     <ShortcutsContextProvider shortcutsStateClass={state}>
       <ShortcutsManagerRouter />
     </ShortcutsContextProvider>
@@ -154,7 +150,7 @@ export default definePlugin((serverApi: ServerAPI) => {
     icon: <IoApps />,
     onDismount() {
       loginHook.unregister();
-      serverApi.routerHook.removeRoute("/shortcuts-nav");
+      serverApi.routerHook.removeRoute("/bash-shortcuts-nav");
       PluginController.onDismount();
     },
     alwaysRender: true

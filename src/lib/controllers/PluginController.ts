@@ -6,11 +6,6 @@ import { SteamController } from "./SteamController";
 import { waitForServicesInitialized } from "../Services";
 import { Shortcut } from "../data-structures/Shortcut";
 
-declare global {
-  var SteamClient: SteamClient;
-  var collectionStore: CollectionStore;
-}
-
 /**
  * Main controller class for the plugin.
  */
@@ -31,7 +26,7 @@ export class PluginController {
    * Sets the plugin's serverAPI.
    * @param server The serverAPI to use.
    */
-  static setup(server: ServerAPI) {
+  static setup(server: ServerAPI): void {
     this.server = server;
     this.steamController = new SteamController();
     this.shortcutsController = new ShortcutsController(this.steamController);
@@ -42,7 +37,7 @@ export class PluginController {
    * Sets the plugin to initialize once the user logs in.
    * @returns The unregister function for the login hook.
    */
-  static initOnLogin() {
+  static initOnLogin(): Unregisterer {
     PyInterop.getHomeDir().then((res) => {
       PluginController.runnerPath = `\"/home/${res.result}/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh\"`;
       PluginController.startDir = `\"/home/${res.result}/homebrew/plugins/bash-shortcuts/\"`;
@@ -61,7 +56,7 @@ export class PluginController {
    * Initializes the Plugin.
    * @param name The name of the main shortcut.
    */
-  static async init(name: string) {
+  static async init(name: string): Promise<void> {
     this.shortcutName = name;
 
     //* clean out all shortcuts with names that start with "Bash Shortcuts - Instance"
@@ -105,14 +100,14 @@ export class PluginController {
    * @param shorcut The shortcut to check for.
    * @returns True if the shortcut is running.
    */
-  static checkIfRunning(shorcut: Shortcut) {
+  static checkIfRunning(shorcut: Shortcut): boolean {
     return Object.keys(PluginController.instancesController.instances).includes(shorcut.id);
   }
 
   /**
    * Function to run when the plugin dismounts.
    */
-  static onDismount() {
+  static onDismount(): void {
     this.shortcutsController.onDismount();
   }
 }

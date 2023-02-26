@@ -1,5 +1,5 @@
 import { DialogButton, Field, Focusable, gamepadDialogClasses } from "decky-frontend-lib";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, VFC, useEffect, useState } from "react";
 import { Shortcut } from "../lib/data-structures/Shortcut";
 
 import { IoRocketSharp } from "react-icons/io5";
@@ -11,7 +11,12 @@ export type ShortcutLauncherProps = {
   shortcut: Shortcut
 }
 
-function ShortcutLabel(props: { shortcut: Shortcut, isRunning: boolean }) {
+/**
+ * A component for the label of a ShortcutLauncher.
+ * @param props The props for this ShortcutLabel.
+ * @returns A ShortcutLabel component.
+ */
+const ShortcutLabel: VFC<{ shortcut: Shortcut, isRunning: boolean}> = (props: { shortcut: Shortcut, isRunning: boolean }) => {
   return (
     <>
       <style>{`
@@ -47,15 +52,23 @@ function ShortcutLabel(props: { shortcut: Shortcut, isRunning: boolean }) {
     </>
   );
 }
-
-export function ShortcutLauncher(props: ShortcutLauncherProps) {
+/**
+ * A component for launching shortcuts.
+ * @param props The ShortcutLauncher's props.
+ * @returns The ShortcutLauncher component.
+ */
+export const ShortcutLauncher: VFC<ShortcutLauncherProps> = (props: ShortcutLauncherProps) => {
   const [ isRunning, setIsRunning ] = useState<boolean>(PluginController.checkIfRunning(props.shortcut));
 
   useEffect(() => {
     setIsRunning(PluginController.checkIfRunning(props.shortcut));
   });
 
-  async function onAction(shortcut:Shortcut) {
+  /**
+   * Determines which action to run when the interactable is selected.
+   * @param shortcut The shortcut associated with this shortcutLauncher.
+   */
+  async function onAction(shortcut:Shortcut): Promise<void> {
     if (isRunning) {
       const res = await PluginController.closeShortcut(shortcut);
       if (!res) {

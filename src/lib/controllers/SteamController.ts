@@ -1,7 +1,6 @@
 import { SteamAppOverview, sleep } from "decky-frontend-lib";
 import { PyInterop } from "../../PyInterop";
 import { waitForCondition } from "../Utils";
-// import { waitForCondition } from "./Utils";
 
 /**
  * Wrapper class for the SteamClient interface.
@@ -76,7 +75,6 @@ export class SteamController {
   }
   
   async _getAppOverview(appId: number) {
-    const { appStore } = (window as any);
     return appStore.GetAppOverviewByAppID(appId) as SteamAppOverview | null;
   }
 
@@ -303,14 +301,13 @@ export class SteamController {
    * @param callback The callback to run when an update is recieved.
    * @returns A function to call to unregister the hook.
    */
-  registerForAppLifetimeNotifications(appId: number, callback: (data: LifetimeNotification) => void) {
-    const { unregister } = SteamClient.GameSessions.RegisterForAppLifetimeNotifications((data: LifetimeNotification) => {
+  registerForAppLifetimeNotifications(appId: number, callback: (data: LifetimeNotification) => void): Unregisterer {
+    return SteamClient.GameSessions.RegisterForAppLifetimeNotifications((data: LifetimeNotification) => {
       console.log("Lifecycle id:", data.unAppID, appId);
       if (data.unAppID !== appId) return;
 
       callback(data);
     });
-    return unregister as () => void;
   }
 
   /**
@@ -322,7 +319,7 @@ export class SteamController {
   async waitForAppLifetimeNotifications(appId: number, options: { initialTimeout?: number, waitForStart?: boolean, waitUntilNewEnd?: boolean } = {}): Promise<boolean> {
     return new Promise<boolean>((resolve) => {
       let timeoutId: any = null;
-      const unregister = this.registerForAppLifetimeNotifications(appId, (data: LifetimeNotification) => {
+      const { unregister } = this.registerForAppLifetimeNotifications(appId, (data: LifetimeNotification) => {
         if (options.waitForStart && !data.bRunning) {
           return;
         }
@@ -388,7 +385,7 @@ export class SteamController {
    * @param once Whether the hook should run once.
    * @returns A function to unregister the hook.
    */
-  registerForAuthStateChange(onLogin: ((username?:string) => Promise<void>) | null, onLogout: (() => Promise<void>) | null, once: boolean): { unregister: () => void } {
+  registerForAuthStateChange(onLogin: ((username?:string) => Promise<void>) | null, onLogout: (() => Promise<void>) | null, once: boolean): Unregisterer {
     try {
       let isLoggedIn: boolean | null = null;
       return SteamClient.User.RegisterForLoginStateChange((username: string) => {
@@ -416,7 +413,7 @@ export class SteamController {
   /**
    * Restarts the Steam client.
    */
-  restartClient() {
+  restartClient(): void {
     SteamClient.User.StartRestart();
   }
 }

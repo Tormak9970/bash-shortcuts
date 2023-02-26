@@ -1,5 +1,5 @@
 import { ButtonItem, ConfirmModal, DialogButton, ReorderableEntry, ReorderableList, showModal } from "decky-frontend-lib";
-import { Fragment, useRef } from "react";
+import { Fragment, VFC, useRef } from "react";
 import { PyInterop } from "../../PyInterop";
 import { Shortcut } from "../../lib/data-structures/Shortcut";
 
@@ -8,15 +8,16 @@ import { useShortcutsState } from "../../state/ShortcutsState";
 import { Menu, MenuItem, showContextMenu } from "./MenuProxy";
 import { FaEllipsisH } from "react-icons/fa"
 
-type ShortcutsDictionary = {
-  [key: string]: Shortcut
-}
-
 type ActionButtonProps<T> = {
   entry: ReorderableEntry<T>
 }
 
-function ActionButtion(props:ActionButtonProps<Shortcut>){
+/**
+ * Component for reorderable list actions.
+ * @param props The props for this ActionButton.
+ * @returns An ActionButton component.
+ */
+const ActionButtion: VFC<ActionButtonProps<Shortcut>> = (props:ActionButtonProps<Shortcut>) => {
   const { shortcuts, setShortcuts } = useShortcutsState();
 
   function onAction(entryReference: ReorderableEntry<Shortcut>): void {
@@ -62,7 +63,7 @@ type InteractablesProps<T> = {
   entry: ReorderableEntry<T>
 }
 
-function Interactables(props:InteractablesProps<Shortcut>) {
+const Interactables: VFC<InteractablesProps<Shortcut>> = (props:InteractablesProps<Shortcut>) => {
   return (
     <>
       <ActionButtion  entry={props.entry} />
@@ -70,7 +71,11 @@ function Interactables(props:InteractablesProps<Shortcut>) {
   );
 }
 
-export function ManageShortcuts() {
+/**
+ * Component for managing plugin shortcuts.
+ * @returns A ManageShortcuts component.
+ */
+export const ManageShortcuts: VFC = () => {
   const { setShortcuts, shortcutsList, reorderableShortcuts } = useShortcutsState();
   const tries = useRef(0);
 

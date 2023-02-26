@@ -1,6 +1,10 @@
-import { Fragment } from "react";
+import { Fragment, VFC } from "react";
 
-export function About() {
+/**
+ * The plugin's about page component.
+ * @returns The about page component.
+ */
+export const About: VFC = () => {
   return (
     <>
       <div>The Bash Shortcuts plugin was created to make launching programs from SteamOS easier, as it is kind of annoying to have to create 'non-steam game' shortcuts for things like web browsers.</div>
@@ -20,5 +24,5 @@ export function About() {
       <br />
       <div>Author: Tormak</div>
     </>
-  )
+  );
 }
