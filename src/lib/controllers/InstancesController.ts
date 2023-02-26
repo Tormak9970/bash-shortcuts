@@ -2,7 +2,7 @@ import { Instance } from "../data-structures/Instance";
 import { Shortcut } from "../data-structures/Shortcut";
 import { ShortcutsController } from "./ShortcutsController";
 import { PyInterop } from "../../PyInterop";
-import { Router } from "decky-frontend-lib";
+import { Navigation } from "decky-frontend-lib";
 
 /**
  * Controller for managing plugin instances.
@@ -124,14 +124,16 @@ export class InstancesController {
     if (instance.shortcutIsApp) {
       const appId = instance.unAppID as number;
 
-      const res = true; //await this.shorcutsController.closeShortcut(appId);
+      const res = await this.shorcutsController.closeShortcut(appId);
 
-      Router.Navigate("/library/home");
+      Navigation.Navigate("/library/home");
+      Navigation.CloseSideMenus();
   
       if (res) {
         const success = await this.shorcutsController.removeShortcutById(appId);
   
         if (success) {
+          PyInterop.log(`Killed instance. Id: ${shortcutId} InstanceName: ${instance.steamShortcutName}`);
           delete this.instances[shortcutId];
           this.numInstances--;
           return true;

@@ -100,6 +100,11 @@ export class PluginController {
     return await this.instancesController.killInstance(shortcut.id);
   }
 
+  /**
+   * Checks if a shortcut is running.
+   * @param shorcut The shortcut to check for.
+   * @returns True if the shortcut is running.
+   */
   static checkIfRunning(shorcut: Shortcut) {
     return Object.keys(PluginController.instancesController.instances).includes(shorcut.id);
   }

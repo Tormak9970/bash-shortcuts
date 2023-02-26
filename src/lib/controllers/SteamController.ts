@@ -305,6 +305,7 @@ export class SteamController {
    */
   registerForAppLifetimeNotifications(appId: number, callback: (data: LifetimeNotification) => void) {
     const { unregister } = SteamClient.GameSessions.RegisterForAppLifetimeNotifications((data: LifetimeNotification) => {
+      console.log("Lifecycle id:", data.unAppID, appId);
       if (data.unAppID !== appId) return;
 
       callback(data);
@@ -321,13 +322,8 @@ export class SteamController {
   async waitForAppLifetimeNotifications(appId: number, options: { initialTimeout?: number, waitForStart?: boolean, waitUntilNewEnd?: boolean } = {}): Promise<boolean> {
     return new Promise<boolean>((resolve) => {
       let timeoutId: any = null;
-      let startAwaited: boolean = false;
       const unregister = this.registerForAppLifetimeNotifications(appId, (data: LifetimeNotification) => {
-        if (!startAwaited) {
-          startAwaited = data.bRunning;
-        }
-
-        if (options.waitForStart && !startAwaited) {
+        if (options.waitForStart && !data.bRunning) {
           return;
         }
 
@@ -336,10 +332,8 @@ export class SteamController {
           timeoutId = null;
         }
 
-        if (options.waitUntilNewEnd) {
-          if (!startAwaited || data.bRunning) {
-            return;
-          }
+        if (options.waitUntilNewEnd && data.bRunning) {
+          return;
         }
 
         unregister();

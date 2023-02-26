@@ -2,10 +2,10 @@ import {
   ButtonItem,
   definePlugin,
   gamepadDialogClasses,
+  Navigation,
   PanelSection,
   PanelSectionRow,
   quickAccessControlsClasses,
-  Router,
   ServerAPI,
   SidebarNavigation,
   staticClasses,
@@ -70,7 +70,7 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({ }) => {
       <div className="scope">
         <PanelSection>
           <PanelSectionRow>
-            <ButtonItem layout="below" onClick={() => { Router.CloseSideMenus(); Router.Navigate("/shortcuts-nav"); }} >
+            <ButtonItem layout="below" onClick={() => { Navigation.CloseSideMenus(); Navigation.Navigate("/shortcuts-nav"); }} >
               Manage Shortcuts
             </ButtonItem>
           </PanelSectionRow>
