@@ -9,9 +9,9 @@ enum ScriptStatus {
   UNEXPECTED_RETURN_CODE = -1,
   FINISHED = 0,
   DOES_NOT_EXIST = 1,
-  KILLED = 2,
-  FAILED = 3,
-  KILLED_BY_OTHER = 4
+  RUNNING = 2,
+  KILLED = 3,
+  FAILED = 4
 }
 
 /**

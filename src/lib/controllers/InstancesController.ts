@@ -25,45 +25,14 @@ export class InstancesController {
   }
 
   /**
-   * Launches an instance.
-   * @param shortcutId The id of the shortcut associated with the instance to launch.
-   * @returns A promise resolving to true if the instance is launched.
-   */
-  async launchInstance(shortcutId: string): Promise<boolean> {
-    const instance = this.instances[shortcutId];
-    
-    if (instance.shortcutIsApp) {
-      const res = await this.shorcutsController.launchShortcut(instance.unAppID as number);
-
-      if (!res) {
-        PyInterop.log(`Failed to launch instance. InstanceName: ${instance.steamShortcutName} ShortcutId: ${shortcutId}`);
-      }
-      
-      return res;
-    } else {
-      //TODO: handle launching non app shortcuts here
-      // const res = await PyInterop.runNonAppShortcut(shortcut);
-      // const status = typeof res.result == "boolean" && (res.result as boolean);
-      // if (status) {
-      //   shortcut.isRunning = true;
-        
-      //   PyInterop.toast("Success", "Command exited successfully!");
-      // }
-      // return status;
-      PyInterop.log(`Launching is not implemented for non app shortcuts yet.`);
-      return false;
-    }
-  }
-
-  /**
-   * Starts a new instance for a shortcut.
+   * Creates a new instance for a shortcut.
    * @param baseName The base name for instances.
    * @param shortcut The shortcut to make an instance for.
    * @param exec The exe for the shortcut.
    * @param startDir The start directory for the shortcut.
    * @returns A promise resolving to true if all the steamClient calls were successful.
    */
-  async startInstance(baseName: string, shortcut: Shortcut, exec: string, startDir: string): Promise<boolean> {
+  async createInstance(baseName: string, shortcut: Shortcut, exec: string, startDir: string): Promise<boolean> {
     this.numInstances++;
     const shortcutName = `${baseName} - Instance ${this.numInstances}`;
 
@@ -123,31 +92,79 @@ export class InstancesController {
 
     if (instance.shortcutIsApp) {
       const appId = instance.unAppID as number;
-
-      const res = await this.shorcutsController.closeShortcut(appId);
-
-      Navigation.Navigate("/library/home");
-      Navigation.CloseSideMenus();
+      const success = await this.shorcutsController.removeShortcutById(appId);
   
-      if (res) {
-        const success = await this.shorcutsController.removeShortcutById(appId);
-  
-        if (success) {
-          PyInterop.log(`Killed instance. Id: ${shortcutId} InstanceName: ${instance.steamShortcutName}`);
-          delete this.instances[shortcutId];
-          this.numInstances--;
-          return true;
-        } else {
-          PyInterop.log(`Failed to kill instance. Could not delete shortcut. Id: ${shortcutId} InstanceName: ${instance.steamShortcutName}`);
-          return false;
-        }
+      if (success) {
+        PyInterop.log(`Killed instance. Id: ${shortcutId} InstanceName: ${instance.steamShortcutName}`);
+        delete this.instances[shortcutId];
+        this.numInstances--;
+        return true;
       } else {
-        PyInterop.log(`Failed to kill instance. Could not close shortcut. Id: ${shortcutId} InstanceName: ${instance.steamShortcutName}`);
+        PyInterop.log(`Failed to kill instance. Could not delete shortcut. Id: ${shortcutId} InstanceName: ${instance.steamShortcutName}`);
         return false;
       }
     } else {
       //TODO: handle killing non app shortcuts here
       PyInterop.log(`Killing is not implemented for non app shortcuts yet.`);
+      return false;
+    }
+  }
+
+  /**
+   * Launches an instance.
+   * @param shortcutId The id of the shortcut associated with the instance to launch.
+   * @returns A promise resolving to true if the instance is launched.
+   */
+  async launchInstance(shortcutId: string): Promise<boolean> {
+    const instance = this.instances[shortcutId];
+    
+    if (instance.shortcutIsApp) {
+      const res = await this.shorcutsController.launchShortcut(instance.unAppID as number);
+
+      if (!res) {
+        PyInterop.log(`Failed to launch instance. InstanceName: ${instance.steamShortcutName} ShortcutId: ${shortcutId}`);
+      }
+      
+      return res;
+    } else {
+      //TODO: handle launching non app shortcuts here
+      // const res = await PyInterop.runNonAppShortcut(shortcut);
+      // const status = typeof res.result == "boolean" && (res.result as boolean);
+      // if (status) {
+      //   shortcut.isRunning = true;
+        
+      //   PyInterop.toast("Success", "Command exited successfully!");
+      // }
+      // return status;
+      PyInterop.log(`Launching is not implemented for non app shortcuts yet.`);
+      return false;
+    }
+  }
+
+  /**
+   * Stops an instance.
+   * @param shortcutId The id of the shortcut associated with the instance to stop.
+   * @returns A promise resolving to true if the instance is stopped.
+   */
+  async stopInstance(shortcutId: string): Promise<boolean> {
+    const instance = this.instances[shortcutId];
+
+    if (instance.shortcutIsApp) {
+      const appId = instance.unAppID as number;
+      const res = await this.shorcutsController.closeShortcut(appId);
+
+      Navigation.Navigate("/library/home");
+      Navigation.CloseSideMenus();
+  
+      if (!res) {
+        PyInterop.log(`Failed to stop instance. Could not close shortcut. Id: ${shortcutId} InstanceName: ${instance.steamShortcutName}`);
+        return false;
+      }
+      
+      return true;
+    } else {
+      //TODO: handle Stopping non app shortcuts here
+      PyInterop.log(`Stopping is not implemented for non app shortcuts yet.`);
       return false;
     }
   }

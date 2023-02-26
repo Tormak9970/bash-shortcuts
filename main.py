@@ -1,8 +1,8 @@
-import subprocess
 import logging
 import json
 import os
 from genericpath import exists
+from InstanceManager import InstanceManager
 
 logging.basicConfig(filename="/tmp/bash-shortcuts.log", format="[Bash Shortcuts] %(asctime)s %(levelname)s %(message)s", filemode="w+", force=True)
 logger=logging.getLogger()
@@ -27,9 +27,9 @@ class Shortcut:
 class Plugin:
   plugin_user = os.environ["DECKY_USER"]
   shortcuts = {}
-  runningProcesses = {}
   shortcutsPath = f"/home/{plugin_user}/.config/bash-shortcuts/shortcuts.json"
   shortcutsRunnerPath = f"\"/home/{plugin_user}/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh\""
+  instanceManager = InstanceManager(log, shortcutsRunnerPath)
 
   def serializeShortcuts(self):
     res = {}
@@ -98,6 +98,8 @@ class Plugin:
 
       with open(self.shortcutsPath, "w") as file:
         json.dump(data, file, indent=4)
+
+    self.instanceManager.listenForThreadEvents()
 
     pass
 
@@ -183,39 +185,8 @@ class Plugin:
     pass
 
   def _runNonAppShortcut(self, shortcut):
-    shortcutProcess = None
-
-    if (shortcut["id"] not in self.runningProcesses):
-      shortcutProcess = subprocess.Popen([self.shortcutsRunnerPath, shortcut["cmd"]], shell=True)
-      self.runningProcesses[shortcut["id"]] = shortcutProcess
-    else:
-      log(f"Process for shortcut {shortcut['name']} already exists")
-
-    return 3 if shortcutProcess == None else self._getProcessStatus(self, shortcut, shortcutProcess)
+    return self.instanceManager.createInstance(shortcut)
   
   def _killNonAppShortcut(self, shortcut):
-    shortcutProcess = None
-    
-    if (shortcut["id"] in self.runningProcesses):
-      shortcutProcess = self.runningProcesses[shortcut["id"]]
+    return self.instanceManager.killInstance(shortcut)
 
-      return self._getProcessStatus(self, shortcut, shortcutProcess)
-    else:
-      log(f"Process for shortcut {shortcut['name']} doesn't exists")
-      return 1
-    
-  def _getProcessStatus(self, shortcut, shortcutProcess):
-    shortcutProcess.Poll()
-
-    if (shortcutProcess.returnCode < 0):
-      return 4
-    elif (shortcutProcess.returnCode == 0):
-      return 0
-    elif (shortcutProcess.returnCode > 0):
-      return 3
-    elif (shortcutProcess.returnCode == None):
-      shortcutProcess.kill()
-      return 2
-    else:
-      log(f"Unexpected returnCode from process for shortcut. Id: {shortcut['id']} Name: {shortcut['name']}")
-      return -1

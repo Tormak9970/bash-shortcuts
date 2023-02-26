@@ -76,7 +76,7 @@ export class PluginController {
    * @returns A promise resolving to true if the shortcut was successfully launched.
    */
   static async launchShortcut(shortcut: Shortcut): Promise<boolean> {
-    const createdInstance = await this.instancesController.startInstance(PluginController.shortcutName, shortcut, PluginController.runnerPath, PluginController.startDir);
+    const createdInstance = await this.instancesController.createInstance(PluginController.shortcutName, shortcut, PluginController.runnerPath, PluginController.startDir);
     if (createdInstance) {
       PyInterop.log(`Created Instance for shortcut ${shortcut.name}`);
       return await this.instancesController.launchInstance(shortcut.id);
@@ -91,7 +91,13 @@ export class PluginController {
    * @returns A promise resolving to true if the shortcut was successfully closed.
    */
   static async closeShortcut(shortcut:Shortcut): Promise<boolean> {
-    return await this.instancesController.killInstance(shortcut.id);
+    const stoppedInstance = await this.instancesController.killInstance(shortcut.id);
+    if (stoppedInstance) {
+      PyInterop.log(`Stopped Instance for shortcut ${shortcut.name}`);
+      return await this.instancesController.killInstance(shortcut.id);
+    } else {
+      return false;
+    }
   }
 
   /**
