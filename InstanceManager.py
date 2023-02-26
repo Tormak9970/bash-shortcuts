@@ -11,15 +11,14 @@ callbackQueue = Queue()
 instancesShouldRun = {}
 
 class Instance:
-  def __init__(self, runnerPath, clonedShortcut, checkInterval):
-    self.runnerPath = runnerPath
+  def __init__(self, clonedShortcut, checkInterval):
     self.shortcut = clonedShortcut
     self.shortcutProcess = None
     self.checkInterval = checkInterval
 
   def createInstance(self):
     log(f"Created instance for shortcut {self.shortcut['name']} Id: {self.shortcut['id']}")
-    self.shortcutProcess = subprocess.Popen([self.runnerPath, self.shortcut["cmd"]], shell=True) #, stdout=subprocess.PIPE
+    self.shortcutProcess = subprocess.Popen([self.shortcut["cmd"]], shell=True) #, stdout=subprocess.PIPE
     status = 4 if self.shortcutProcess == None else self._getProcessStatus(self.shortcut, self.shortcutProcess)
     log(f"Status for command was {status}. Name: {self.shortcut['name']} Id: {self.shortcut['id']}")
     callbackQueue.put({
@@ -89,17 +88,15 @@ def cloneObject(object):
 
 class InstanceManager:
   threads = {}
-  shortcutsRunnerPath = ""
   checkInterval = 250
 
-  def __init__(self, shortcutsRunnerPath, checkInterval):
-    self.shortcutsRunnerPath = shortcutsRunnerPath
+  def __init__(self, checkInterval):
     self.checkInterval = checkInterval
 
   def createInstance(self, shortcut):
     log(f"Creating instance for {shortcut['name']} Id: {shortcut['id']}")
     instancesShouldRun[shortcut["id"]] = True
-    cmdThread = Thread(target=self.runInstanceInThread, args=[self.shortcutsRunnerPath, cloneObject(shortcut), self.checkInterval])
+    cmdThread = Thread(target=self.runInstanceInThread, args=[cloneObject(shortcut), self.checkInterval])
     self.threads[shortcut["id"]] = cmdThread
     cmdThread.start()
     pass
@@ -109,9 +106,9 @@ class InstanceManager:
     instancesShouldRun[shortcut["id"]] = False
     pass
 
-  def runInstanceInThread(self, runnerPath, clonedShortcut, checkInterval):
+  def runInstanceInThread(self, clonedShortcut, checkInterval):
     log(f"Running instance in thread for {clonedShortcut['name']} Id: {clonedShortcut['id']}")
-    instance = Instance(runnerPath, clonedShortcut, checkInterval)
+    instance = Instance(clonedShortcut, checkInterval)
     instance.createInstance()
     instance.listenForStatus()
     pass

@@ -29,7 +29,7 @@ class Plugin:
   shortcuts = {}
   shortcutsPath = f"/home/{plugin_user}/.config/bash-shortcuts/shortcuts.json"
   shortcutsRunnerPath = f"\"/home/{plugin_user}/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh\""
-  instanceManager = instanceManager.InstanceManager(shortcutsRunnerPath, 250)
+  instanceManager = instanceManager.InstanceManager(250)
 
   def serializeShortcuts(self):
     res = {}
