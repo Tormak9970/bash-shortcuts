@@ -104,9 +104,9 @@ export class InstancesController {
         return false;
       }
     } else {
-      //TODO: handle killing non app shortcuts here
-      PyInterop.log(`Killing is not implemented for non app shortcuts yet.`);
-      return false;
+      const res = await PyInterop.killNonAppShortcut(shortcutId);
+      console.log(res);
+      return true;
     }
   }
 
@@ -127,17 +127,9 @@ export class InstancesController {
       
       return res;
     } else {
-      //TODO: handle launching non app shortcuts here
-      // const res = await PyInterop.runNonAppShortcut(shortcut);
-      // const status = typeof res.result == "boolean" && (res.result as boolean);
-      // if (status) {
-      //   shortcut.isRunning = true;
-        
-      //   PyInterop.toast("Success", "Command exited successfully!");
-      // }
-      // return status;
-      PyInterop.log(`Launching is not implemented for non app shortcuts yet.`);
-      return false;
+      const res = await PyInterop.runNonAppShortcut(shortcutId);
+      console.log(res);
+      return true;
     }
   }
 
@@ -163,9 +155,10 @@ export class InstancesController {
       
       return true;
     } else {
-      //TODO: handle Stopping non app shortcuts here
-      PyInterop.log(`Stopping is not implemented for non app shortcuts yet.`);
-      return false;
+      //* atm nothing needed here
+      // const res = await PyInterop.killNonAppShortcut(shortcutId);
+      // console.log(res);
+      return true;
     }
   }
 }

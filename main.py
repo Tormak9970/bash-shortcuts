@@ -64,11 +64,11 @@ class Plugin:
     self._remShortcut(self, self.shortcutsPath, shortcut)
     return self.serializeShortcuts(self)
 
-  async def runNonAppShortcut(self, shortcut):
-    return self._runNonAppShortcut(self, shortcut)
+  async def runNonAppShortcut(self, shortcutId):
+    self._runNonAppShortcut(self, shortcutId)
 
-  async def killNonAppShortcut(self, shortcut):
-    return self._killNonAppShortcut(self, shortcut)
+  async def killNonAppShortcut(self, shortcutId):
+    self._killNonAppShortcut(self, shortcutId)
 
   async def getHomeDir(self):
     return self.plugin_user
@@ -188,9 +188,9 @@ class Plugin:
 
     pass
 
-  def _runNonAppShortcut(self, shortcut):
-    return self.instanceManager.createInstance(shortcut)
+  def _runNonAppShortcut(self, shortcutId):
+    self.instanceManager.createInstance(self.shortcuts[shortcutId])
   
-  def _killNonAppShortcut(self, shortcut):
-    return self.instanceManager.killInstance(shortcut)
+  def _killNonAppShortcut(self, shortcutId):
+    self.instanceManager.killInstance(self.shortcuts[shortcutId])
 

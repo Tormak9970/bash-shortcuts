@@ -116,21 +116,19 @@ export class PyInterop {
 
   /**
    * Runs a non app shortcut.
-   * @param shortcut The shortcut to run.
-   * @returns A promise resolving to the status of the shortcut.
+   * @param shortcutId The id of the shortcut to run.
    */
-  static async runNonAppShortcut(shortcut: Shortcut): Promise<ServerResponse<ScriptStatus>> {
-    const successful = await this.serverAPI.callPluginMethod<{ shortcut: Shortcut }, ScriptStatus>("runNonAppShortcut", { shortcut: shortcut });
+  static async runNonAppShortcut(shortcutId: string): Promise<ServerResponse<void>> {
+    const successful = await this.serverAPI.callPluginMethod<{ shortcutId: string }, void>("runNonAppShortcut", { shortcutId: shortcutId });
     return successful;
   }
 
   /**
    * Kills a non app shortcut.
-   * @param shortcut The shortcut to kill.
-   * @returns A promise resolving to the status of the shortcut.
+   * @param shortcutId The id of the shortcut to kill.
    */
-  static async killNonAppShortcut(shortcut: Shortcut): Promise<ServerResponse<ScriptStatus>> {
-    const successful = await this.serverAPI.callPluginMethod<{ shortcut: Shortcut }, ScriptStatus>("killNonAppShortcut", { shortcut: shortcut });
+  static async killNonAppShortcut(shortcutId: string): Promise<ServerResponse<void>> {
+    const successful = await this.serverAPI.callPluginMethod<{ shortcutId: string }, void>("killNonAppShortcut", { shortcutId: shortcutId });
     return successful;
   }
 }

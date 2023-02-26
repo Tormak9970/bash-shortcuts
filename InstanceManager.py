@@ -16,7 +16,15 @@ class Instance:
 
   def createInstance(self):
     self.shortcutProcess = subprocess.Popen([self.runnerPath, self.shortcut["cmd"]], shell=True) #, stdout=subprocess.PIPE
-    return 4 if self.shortcutProcess == None else self._getProcessStatus(self.shortcut, self.shortcutProcess)
+    status = 4 if self.shortcutProcess == None else self._getProcessStatus(self.shortcut, self.shortcutProcess)
+    callbackQueue.put({
+      "update": {
+        "status": status,
+        "shortcut": self.shortcut
+      }
+    })
+    callbackQueue.task_done()
+    return status
   
   def killInstance(self):
     status = self._getProcessStatus()
@@ -48,6 +56,13 @@ class Instance:
         status = self._getProcessStatus()
 
         if (status != 2):
+          callbackQueue.put({
+            "terminated": {
+              "status": status,
+              "shortcut": self.shortcut
+            }
+          })
+          callbackQueue.task_done()
           return status
         else:
           sleep(self.checkInterval)
@@ -59,9 +74,8 @@ class Instance:
             "shortcut": self.shortcut
           }
         })
+        callbackQueue.task_done()
         break
-
-
 
 def cloneObject(object):
   return deepcopy(object)
@@ -92,12 +106,12 @@ class InstanceManager:
     instance.listenForStatus()
     pass
   
-  def _onThreadUpdate(self, shortcut, data):
-    self.notifyFrontend(shortcut, { "update": data, "ended": False, "status": None })
+  def _onThreadUpdate(self, shortcut, status, data):
+    self.notifyFrontend(shortcut, { "update": data, "started": True, "ended": False, "status": status })
     pass
   
   def _onThreadEnd(self, shortcut, status):
-    self.notifyFrontend(shortcut, { "update": None, "ended": True, "status": status })
+    self.notifyFrontend(shortcut, { "update": None, "started": True, "ended": True, "status": status })
 
     if (shortcut["id"] not in instancesShouldRun):
       self.log(f"Missing instanceShouldRun for shortcut {shortcut['name']} with id {shortcut['id']}")
@@ -114,20 +128,22 @@ class InstanceManager:
   async def listenForThreadEvents(self):
     while True:
       if (not callbackQueue.empty()):
-        data = self.callbackQueue.get(False)
+        data = callbackQueue.get(False)
         
         if ("terminated" in data):
           self._onThreadEnd(data["shortcut"], data["status"])
         elif ("update" in data):
-          self._onThreadUpdate(data["shortcut"], data["data"])
+          self._onThreadUpdate(data["shortcut"], data["status"], data["data"])
+
+        callbackQueue.task_done()
 
       sleep(self.checkInterval)
 
   def notifyFrontend(self, shortcut, data):
     update = data["update"]
+    started = data["started"]
     ended = data["ended"]
     status = data["status"]
 
     self.log(f"Notifying frontend for shortcut {shortcut['name']} Id: {shortcut['id']} Status: {status}")
     pass
-
