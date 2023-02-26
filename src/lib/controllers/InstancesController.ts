@@ -124,9 +124,9 @@ export class InstancesController {
     if (instance.shortcutIsApp) {
       const appId = instance.unAppID as number;
 
-      const res = await this.shorcutsController.closeShortcut(appId);
+      const res = true; //await this.shorcutsController.closeShortcut(appId);
 
-      Router.Navigate("");
+      Router.Navigate("/library/home");
   
       if (res) {
         const success = await this.shorcutsController.removeShortcutById(appId);

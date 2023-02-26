@@ -272,12 +272,13 @@ export class SteamController {
       }
     }
 
-    const updated = await this.getAppOverview(appId);
-    if (updated != null) {
-      PyInterop.log(`Could not remove shortcut. [DEBUG INFO] appId: ${appId};`);
+    await this.waitForAppOverview(appId, (overview) => overview === null);
+    if (await this._getAppOverview(appId) !== null) {
+      PyInterop.log(`Could not remove shortcut (overview still exists). [DEBUG INFO] appId: ${appId};`);
       return false;
     }
 
+    PyInterop.log(`Removed shortcut. [DEBUG INFO] appId: ${appId};`);
     return true;
   }
 
@@ -302,7 +303,7 @@ export class SteamController {
    * @param callback The callback to run when an update is recieved.
    * @returns A function to call to unregister the hook.
    */
-  registerForGameLifetime(appId: number, callback: (data: LifetimeNotification) => void) {
+  registerForAppLifetimeNotifications(appId: number, callback: (data: LifetimeNotification) => void) {
     const { unregister } = SteamClient.GameSessions.RegisterForAppLifetimeNotifications((data: LifetimeNotification) => {
       if (data.unAppID !== appId) return;
 
@@ -317,11 +318,11 @@ export class SteamController {
    * @param options The options to determine when the function returns true.
    * @returns A promise resolving to true when the desired lifetime event occurs.
    */
-  async waitForGameLifetime(appId: number, options: { initialTimeout?: number, waitForStart?: boolean, waitUntilNewEnd?: boolean } = {}): Promise<boolean> {
+  async waitForAppLifetimeNotifications(appId: number, options: { initialTimeout?: number, waitForStart?: boolean, waitUntilNewEnd?: boolean } = {}): Promise<boolean> {
     return new Promise<boolean>((resolve) => {
       let timeoutId: any = null;
       let startAwaited: boolean = false;
-      const unregister = this.registerForGameLifetime(appId, (data: LifetimeNotification) => {
+      const unregister = this.registerForAppLifetimeNotifications(appId, (data: LifetimeNotification) => {
         if (!startAwaited) {
           startAwaited = data.bRunning;
         }
@@ -362,7 +363,7 @@ export class SteamController {
    * @returns A promise resolving once the app has been run or the request times out.
    */
   async runGame(appId: number, waitUntilGameStops: boolean): Promise<boolean> {
-    const gameStart = this.waitForGameLifetime(appId, { initialTimeout: 1500, waitForStart: true, waitUntilNewEnd: waitUntilGameStops });
+    const gameStart = this.waitForAppLifetimeNotifications(appId, { initialTimeout: 1500, waitForStart: true, waitUntilNewEnd: waitUntilGameStops });
     const gameId = await this.getGameId(appId);
     SteamClient.Apps.RunGame(gameId, "", -1, 100);
 
@@ -377,7 +378,7 @@ export class SteamController {
    * @returns A promise resolving once the app has been terminated or the request times out.
    */
   async terminateGame(appId: number): Promise<boolean> {
-    const gameEnd = this.waitForGameLifetime(appId, { initialTimeout: 1500, waitForStart: false, waitUntilNewEnd: true });
+    const gameEnd = this.waitForAppLifetimeNotifications(appId, { initialTimeout: 1500, waitForStart: false, waitUntilNewEnd: true });
     const gameId = await this.getGameId(appId);
     SteamClient.Apps.TerminateApp(gameId, false);
     
