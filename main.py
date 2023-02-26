@@ -1,4 +1,3 @@
-import logging
 import json
 import os
 from genericpath import exists
@@ -7,13 +6,7 @@ import sys
 sys.path.append(os.path.dirname(__file__))
 
 import instanceManager
-
-logging.basicConfig(filename="/tmp/bash-shortcuts.log", format="[Bash Shortcuts] %(asctime)s %(levelname)s %(message)s", filemode="w+", force=True)
-logger=logging.getLogger()
-logger.setLevel(logging.INFO) # can be changed to logging.DEBUG for debugging issues
-
-def log(txt):
-  logger.info(txt)
+from logger import log
 
 Initialized = False
 
@@ -26,14 +19,17 @@ class Shortcut:
     self.isApp = dict["isApp"] if "isApp" in dict else True
     
   def toJSON(self):
-    return json.dumps({ "id": self.id, "name": self.name, "cmd": self.cmd, "position": self.position, "isApp": self.isApp }, sort_keys=True, indent=4)
+    return json.dumps(self.toDict(), sort_keys=True, indent=4)
+  
+  def toDict(self):
+    return { "id": self.id, "name": self.name, "cmd": self.cmd, "position": self.position, "isApp": self.isApp }
 
 class Plugin:
   plugin_user = os.environ["DECKY_USER"]
   shortcuts = {}
   shortcutsPath = f"/home/{plugin_user}/.config/bash-shortcuts/shortcuts.json"
   shortcutsRunnerPath = f"\"/home/{plugin_user}/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh\""
-  instanceManager = instanceManager.InstanceManager(log, shortcutsRunnerPath)
+  instanceManager = instanceManager.InstanceManager(shortcutsRunnerPath, 250)
 
   def serializeShortcuts(self):
     res = {}
@@ -189,8 +185,8 @@ class Plugin:
     pass
 
   def _runNonAppShortcut(self, shortcutId):
-    self.instanceManager.createInstance(self.shortcuts[shortcutId])
+    self.instanceManager.createInstance(self.shortcuts[shortcutId].toDict())
   
   def _killNonAppShortcut(self, shortcutId):
-    self.instanceManager.killInstance(self.shortcuts[shortcutId])
+    self.instanceManager.killInstance(self.shortcuts[shortcutId].toDict())
 

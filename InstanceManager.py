@@ -4,6 +4,8 @@ from queue import Queue
 from time import sleep
 from copy import deepcopy
 
+from logger import log
+
 callbackQueue = Queue()
 instancesShouldRun = {}
 
@@ -85,41 +87,45 @@ class InstanceManager:
   shortcutsRunnerPath = ""
   checkInterval = 250
 
-  def __init__(self, log, shortcutsRunnerPath, checkInterval):
-    self.log = log
+  def __init__(self, shortcutsRunnerPath, checkInterval):
     self.shortcutsRunnerPath = shortcutsRunnerPath
     self.checkInterval = checkInterval
 
   def createInstance(self, shortcut):
+    log(f"Creating instance for {shortcut['name']} Id: {shortcut['id']}")
     instancesShouldRun[shortcut["id"]] = True
     cmdThread = Thread(target=self.runInstanceInThread, args=[self.shortcutsRunnerPath, cloneObject(shortcut)])
     self.threads[shortcut["id"]] = cmdThread
     pass
   
   def killInstance(self, shortcut):
+    log(f"Killing instance for {shortcut['name']} Id: {shortcut['id']}")
     instancesShouldRun[shortcut["id"]] = False
     pass
 
-  def runInstanceInThread(self, runnerPath, clonedShortcut, checkInterval):
+  def runInstanceInThread(self, runnerPath, clonedShortcut):
+    log(f"Running instance in thread for {clonedShortcut['name']} Id: {clonedShortcut['id']}")
     instance = Instance(runnerPath, clonedShortcut, self.checkInterval)
     instance.createInstance()
     instance.listenForStatus()
     pass
   
   def _onThreadUpdate(self, shortcut, status, data):
+    log(f"Recieved update event for instance. Name {shortcut['name']} Id: {shortcut['id']}")
     self.notifyFrontend(shortcut, { "update": data, "started": True, "ended": False, "status": status })
     pass
   
   def _onThreadEnd(self, shortcut, status):
+    log(f"Recieved terminate event for instance. Name {shortcut['name']} Id: {shortcut['id']}")
     self.notifyFrontend(shortcut, { "update": None, "started": True, "ended": True, "status": status })
 
     if (shortcut["id"] not in instancesShouldRun):
-      self.log(f"Missing instanceShouldRun for shortcut {shortcut['name']} with id {shortcut['id']}")
+      log(f"Missing instanceShouldRun for shortcut {shortcut['name']} with id {shortcut['id']}")
     else:
       del instancesShouldRun[shortcut["id"]]
       
     if (shortcut["id"] not in self.threads):
-      self.log(f"Missing thread for shortcut {shortcut['name']} with id {shortcut['id']}")
+      log(f"Missing thread for shortcut {shortcut['name']} with id {shortcut['id']}")
     else:
       del self.threads[shortcut["id"]]
     
@@ -145,5 +151,5 @@ class InstanceManager:
     ended = data["ended"]
     status = data["status"]
 
-    self.log(f"Notifying frontend for shortcut {shortcut['name']} Id: {shortcut['id']} Status: {status}")
+    log(f"Notifying frontend for shortcut {shortcut['name']} Id: {shortcut['id']} Status: {status}")
     pass
