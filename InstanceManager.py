@@ -96,6 +96,7 @@ class InstanceManager:
     instancesShouldRun[shortcut["id"]] = True
     cmdThread = Thread(target=self.runInstanceInThread, args=[self.shortcutsRunnerPath, cloneObject(shortcut)])
     self.threads[shortcut["id"]] = cmdThread
+    cmdThread.start()
     pass
   
   def killInstance(self, shortcut):
