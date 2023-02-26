@@ -4,7 +4,7 @@ import json
 import os
 from genericpath import exists
 
-logging.basicConfig(filename="/tmp/bash-shortcuts.log", format='[Bash Shortcuts] %(asctime)s %(levelname)s %(message)s', filemode='w+', force=True)
+logging.basicConfig(filename="/tmp/bash-shortcuts.log", format="[Bash Shortcuts] %(asctime)s %(levelname)s %(message)s", filemode="w+", force=True)
 logger=logging.getLogger()
 logger.setLevel(logging.INFO) # can be changed to logging.DEBUG for debugging issues
 
@@ -15,11 +15,11 @@ Initialized = False
 
 class Shortcut:
   def __init__(self, dict):
-    self.name = dict['name']
-    self.cmd = dict['cmd']
-    self.id = dict['id']
-    self.position = dict['position']
-    self.isApp = dict['isApp'] if 'isApp' in dict else True
+    self.name = dict["name"]
+    self.cmd = dict["cmd"]
+    self.id = dict["id"]
+    self.position = dict["position"]
+    self.isApp = dict["isApp"] if "isApp" in dict else True
     
   def toJSON(self):
     return json.dumps({ "id": self.id, "name": self.name, "cmd": self.cmd, "position": self.position, "isApp": self.isApp }, sort_keys=True, indent=4)
@@ -27,6 +27,7 @@ class Shortcut:
 class Plugin:
   plugin_user = os.environ["DECKY_USER"]
   shortcuts = {}
+  runningProcesses = {}
   shortcutsPath = f"/home/{plugin_user}/.config/bash-shortcuts/shortcuts.json"
   shortcutsRunnerPath = f"\"/home/{plugin_user}/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh\""
 
@@ -61,6 +62,9 @@ class Plugin:
 
   async def runNonAppShortcut(self, shortcut):
     return self._runNonAppShortcut(self, shortcut)
+
+  async def killNonAppShortcut(self, shortcut):
+    return self._killNonAppShortcut(self, shortcut)
 
   async def getHomeDir(self):
     return self.plugin_user
@@ -111,7 +115,7 @@ class Plugin:
 
           for k,v in shortcutsDict.items():
             log(f"Adding shortcut {v['name']}")
-            self.shortcuts[v['id']] = Shortcut(v)
+            self.shortcuts[v["id"]] = Shortcut(v)
             log(f"Added shortcut {v['name']}")
 
       except Exception as e:
@@ -123,8 +127,8 @@ class Plugin:
     pass
 
   def _addShortcut(self, path, shortcut):
-    if (shortcut['id'] not in self.shortcuts):
-      self.shortcuts[shortcut['id']] = Shortcut(shortcut)
+    if (shortcut["id"] not in self.shortcuts):
+      self.shortcuts[shortcut["id"]] = Shortcut(shortcut)
       log(f"Adding shortcut {shortcut['name']}")
       res = self.serializeShortcuts(self)
       jDat = json.dumps(res, indent=4)
@@ -138,8 +142,8 @@ class Plugin:
 
   def _setShortcuts(self, path, shortcuts):
     for shortcut in shortcuts:
-      if (shortcut['id'] in self.shortcuts):
-        self.shortcuts[shortcut['id']] = Shortcut(shortcut)
+      if (shortcut["id"] in self.shortcuts):
+        self.shortcuts[shortcut["id"]] = Shortcut(shortcut)
       else:
         log(f"Shortcut {shortcut['name']} does not exist")
         
@@ -152,8 +156,8 @@ class Plugin:
     pass
 
   def _modShortcut(self, path, shortcut):
-    if (shortcut['id'] in self.shortcuts):
-      self.shortcuts[shortcut['id']] = Shortcut(shortcut)
+    if (shortcut["id"] in self.shortcuts):
+      self.shortcuts[shortcut["id"]] = Shortcut(shortcut)
       res = self.serializeShortcuts(self)
       jDat = json.dumps(res, indent=4)
 
@@ -165,8 +169,8 @@ class Plugin:
     pass
 
   def _remShortcut(self, path, shortcut):
-    if (shortcut['id'] in self.shortcuts):
-      del self.shortcuts[shortcut['id']]
+    if (shortcut["id"] in self.shortcuts):
+      del self.shortcuts[shortcut["id"]]
       log(f"removing shortcut {shortcut['name']}")
       res = self.serializeShortcuts(self)
       jDat = json.dumps(res, indent=4)
@@ -179,8 +183,39 @@ class Plugin:
     pass
 
   def _runNonAppShortcut(self, shortcut):
-    res = subprocess.call([self.shortcutsRunnerPath, shortcut['cmd']], shell=True)
-    return res == 0
+    shortcutProcess = None
+
+    if (shortcut["id"] not in self.runningProcesses):
+      shortcutProcess = subprocess.Popen([self.shortcutsRunnerPath, shortcut["cmd"]], shell=True)
+      self.runningProcesses[shortcut["id"]] = shortcutProcess
+    else:
+      log(f"Process for shortcut {shortcut['name']} already exists")
+
+    return 3 if shortcutProcess == None else self._getProcessStatus(self, shortcut, shortcutProcess)
   
   def _killNonAppShortcut(self, shortcut):
-    return 0
+    shortcutProcess = None
+    
+    if (shortcut["id"] in self.runningProcesses):
+      shortcutProcess = self.runningProcesses[shortcut["id"]]
+
+      return self._getProcessStatus(self, shortcut, shortcutProcess)
+    else:
+      log(f"Process for shortcut {shortcut['name']} doesn't exists")
+      return 1
+    
+  def _getProcessStatus(self, shortcut, shortcutProcess):
+    shortcutProcess.Poll()
+
+    if (shortcutProcess.returnCode < 0):
+      return 4
+    elif (shortcutProcess.returnCode == 0):
+      return 0
+    elif (shortcutProcess.returnCode > 0):
+      return 3
+    elif (shortcutProcess.returnCode == None):
+      shortcutProcess.kill()
+      return 2
+    else:
+      log(f"Unexpected returnCode from process for shortcut. Id: {shortcut['id']} Name: {shortcut['name']}")
+      return -1

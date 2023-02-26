@@ -5,6 +5,15 @@ type ShortcutsDictionary = {
   [key: string]: Shortcut
 }
 
+enum ScriptStatus {
+  UNEXPECTED_RETURN_CODE = -1,
+  FINISHED = 0,
+  DOES_NOT_EXIST = 1,
+  KILLED = 2,
+  FAILED = 3,
+  KILLED_BY_OTHER = 4
+}
+
 /**
  * Class for frontend - backend communication.
  */
@@ -108,10 +117,20 @@ export class PyInterop {
   /**
    * Runs a non app shortcut.
    * @param shortcut The shortcut to run.
-   * @returns A promise resolving to true if the shortcut was run successfully.
+   * @returns A promise resolving to the status of the shortcut.
    */
-  static async runNonAppShortcut(shortcut: Shortcut): Promise<ServerResponse<boolean>> {
-    const successful = await this.serverAPI.callPluginMethod<{ shortcut: Shortcut }, boolean>("runNonAppShortcut", { shortcut: shortcut });
+  static async runNonAppShortcut(shortcut: Shortcut): Promise<ServerResponse<ScriptStatus>> {
+    const successful = await this.serverAPI.callPluginMethod<{ shortcut: Shortcut }, ScriptStatus>("runNonAppShortcut", { shortcut: shortcut });
+    return successful;
+  }
+
+  /**
+   * Kills a non app shortcut.
+   * @param shortcut The shortcut to kill.
+   * @returns A promise resolving to the status of the shortcut.
+   */
+  static async killNonAppShortcut(shortcut: Shortcut): Promise<ServerResponse<ScriptStatus>> {
+    const successful = await this.serverAPI.callPluginMethod<{ shortcut: Shortcut }, ScriptStatus>("killNonAppShortcut", { shortcut: shortcut });
     return successful;
   }
 }
