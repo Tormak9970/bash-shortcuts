@@ -3,7 +3,6 @@ import { ShortcutsController } from "./ShortcutsController";
 import { InstancesController } from "./InstancesController";
 import { PyInterop } from "../../PyInterop";
 import { SteamController } from "./SteamController";
-import { waitForServicesInitialized } from "../Services";
 import { Shortcut } from "../data-structures/Shortcut";
 
 /**
@@ -44,7 +43,7 @@ export class PluginController {
     });
 
     return this.steamController.registerForAuthStateChange(async () => {
-      if (await waitForServicesInitialized()) {
+      if (await this.steamController.waitForServicesToInitialize()) {
         PluginController.init("Bash Shortcuts");
       } else {
         PyInterop.toast("Error", "Failed to initialize, try restarting.");
