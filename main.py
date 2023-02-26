@@ -2,7 +2,11 @@ import logging
 import json
 import os
 from genericpath import exists
-from InstanceManager import InstanceManager
+import sys
+
+sys.path.append(os.path.dirname(__file__))
+
+import instanceManager
 
 logging.basicConfig(filename="/tmp/bash-shortcuts.log", format="[Bash Shortcuts] %(asctime)s %(levelname)s %(message)s", filemode="w+", force=True)
 logger=logging.getLogger()
@@ -29,7 +33,7 @@ class Plugin:
   shortcuts = {}
   shortcutsPath = f"/home/{plugin_user}/.config/bash-shortcuts/shortcuts.json"
   shortcutsRunnerPath = f"\"/home/{plugin_user}/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh\""
-  instanceManager = InstanceManager(log, shortcutsRunnerPath)
+  instanceManager = instanceManager.InstanceManager(log, shortcutsRunnerPath)
 
   def serializeShortcuts(self):
     res = {}
