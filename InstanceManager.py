@@ -1,3 +1,4 @@
+import json
 import subprocess
 from threading import Thread
 from queue import Queue
@@ -17,8 +18,10 @@ class Instance:
     self.checkInterval = checkInterval
 
   def createInstance(self):
+    log(f"Created instance for shortcut {self.shortcut['name']} Id: {self.shortcut['id']}")
     self.shortcutProcess = subprocess.Popen([self.runnerPath, self.shortcut["cmd"]], shell=True) #, stdout=subprocess.PIPE
     status = 4 if self.shortcutProcess == None else self._getProcessStatus(self.shortcut, self.shortcutProcess)
+    log(f"Status for command was {status}. Name: {self.shortcut['name']} Id: {self.shortcut['id']}")
     callbackQueue.put({
       "update": {
         "status": status,
@@ -29,6 +32,7 @@ class Instance:
     return status
   
   def killInstance(self):
+    log(f"Killing instance for shortcut {self.shortcut['name']} Id: {self.shortcut['id']}")
     status = self._getProcessStatus()
 
     if (status == 2):
@@ -38,6 +42,7 @@ class Instance:
       return status
 
   def _getProcessStatus(self):
+    log(f"Getting process status for instance. Name: {self.shortcut['name']} Id: {self.shortcut['id']}")
     if (self.shortcutProcess != None):
       self.shortcutProcess.Poll()
 
@@ -94,7 +99,7 @@ class InstanceManager:
   def createInstance(self, shortcut):
     log(f"Creating instance for {shortcut['name']} Id: {shortcut['id']}")
     instancesShouldRun[shortcut["id"]] = True
-    cmdThread = Thread(target=self.runInstanceInThread, args=[self.shortcutsRunnerPath, cloneObject(shortcut)])
+    cmdThread = Thread(target=self.runInstanceInThread, args=[self.shortcutsRunnerPath, cloneObject(shortcut), self.checkInterval])
     self.threads[shortcut["id"]] = cmdThread
     cmdThread.start()
     pass
@@ -104,9 +109,9 @@ class InstanceManager:
     instancesShouldRun[shortcut["id"]] = False
     pass
 
-  def runInstanceInThread(self, runnerPath, clonedShortcut):
+  def runInstanceInThread(self, runnerPath, clonedShortcut, checkInterval):
     log(f"Running instance in thread for {clonedShortcut['name']} Id: {clonedShortcut['id']}")
-    instance = Instance(runnerPath, clonedShortcut, self.checkInterval)
+    instance = Instance(runnerPath, clonedShortcut, checkInterval)
     instance.createInstance()
     instance.listenForStatus()
     pass
@@ -137,6 +142,7 @@ class InstanceManager:
       if (not callbackQueue.empty()):
         data = callbackQueue.get(False)
         
+        log(f"Data recieved: {json.dumps(data)}")
         if ("terminated" in data):
           self._onThreadEnd(data["shortcut"], data["status"])
         elif ("update" in data):
