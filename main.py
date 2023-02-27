@@ -2,6 +2,7 @@ import json
 import os
 from genericpath import exists
 import sys
+from copy import deepcopy
 
 from settings import SettingsManager
 
@@ -12,57 +13,36 @@ from logger import log
 
 Initialized = False
 
-class Shortcut:
-  def __init__(self, dict):
-    self.name = dict["name"]
-    self.cmd = dict["cmd"]
-    self.id = dict["id"]
-    self.position = dict["position"]
-    self.isApp = dict["isApp"] if "isApp" in dict else True
-    
-  def toJSON(self):
-    return json.dumps(self.toDict(), sort_keys=True, indent=4)
-  
-  def toDict(self):
-    return { "id": self.id, "name": self.name, "cmd": self.cmd, "position": self.position, "isApp": self.isApp }
-
 class Plugin:
   pluginUser = os.environ["DECKY_USER"]
   pluginSettingsDir = os.environ["DECKY_PLUGIN_SETTINGS_DIR"]
-  shortcuts = {}
-  shortcutsPath = f"/home/{pluginUser}/.config/bash-shortcuts/shortcuts.json"
+  
+  oldShortcutsPath = f"/home/{pluginUser}/.config/bash-shortcuts/shortcuts.json"
+
   shortcutsRunnerPath = f"\"/home/{pluginUser}/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh\""
+
   instanceManager = instanceManager.InstanceManager(250)
   settingsManager = SettingsManager(name='bash-shortcuts', settings_directory=os.path.join(pluginSettingsDir, "settings", "bash-shortcuts"))
 
-  def serializeShortcuts(self):
-    res = {}
-
-    for k,v in self.shortcuts.items():
-      res[k] = { "id": v.id, "name": v.name, "cmd": v.cmd, "position": v.position, "isApp": v.isApp }
-
-    return res
-
   # Normal methods: can be called from JavaScript using call_plugin_function("signature", argument)
   async def getShortcuts(self):
-    self._load(self)
-    return self.serializeShortcuts(self)
+    return self.settingsManager.settings.shortcuts
       
   async def addShortcut(self, shortcut):
-    self._addShortcut(self, self.shortcutsPath, shortcut)
-    return self.serializeShortcuts(self)
+    self._addShortcut(self, shortcut)
+    return self.settingsManager.settings.shortcuts
 
   async def setShortcuts(self, shortcuts):
-    self._setShortcuts(self, self.shortcutsPath, shortcuts)
-    return self.serializeShortcuts(self)
+    self._setShortcuts(self, shortcuts)
+    return self.settingsManager.settings.shortcuts
 
   async def modShortcut(self, shortcut):
-    self._modShortcut(self, self.shortcutsPath, shortcut)
-    return self.serializeShortcuts(self)
+    self._modShortcut(self, shortcut)
+    return self.settingsManager.settings.shortcuts
 
   async def remShortcut(self, shortcut):
-    self._remShortcut(self, self.shortcutsPath, shortcut)
-    return self.serializeShortcuts(self)
+    self._remShortcut(self, shortcut)
+    return self.settingsManager.settings.shortcuts
 
   async def runNonAppShortcut(self, shortcutId):
     self._runNonAppShortcut(self, shortcutId)
@@ -86,22 +66,19 @@ class Plugin:
 
     log("Initializing Shorcuts Plugin")
 
-    if not os.path.exists(self.shortcutsPath):
-      if not os.path.exists(os.path.dirname(self.shortcutsPath)):
-        os.mkdir(os.path.dirname(self.shortcutsPath))
-      
-      data = {
-        "fcba1cb4-4601-45d8-b919-515d152c56ef": {
-          "id": "fcba1cb4-4601-45d8-b919-515d152c56ef",
-          "name": "Konsole",
-          "cmd": "konsole",
-          "position": 1,
-          "isApp": True
-        }
-      }
-
-      with open(self.shortcutsPath, "w") as file:
-        json.dump(data, file, indent=4)
+    self.settingsManager.read()
+    
+    if "shortcuts" not in self.settingsManager.settings:
+      if (os.path.exists(self.oldShortcutsPath)):
+        try:
+          with open(self.oldShortcutsPath, "r") as file:
+            shortcutsDict = json.load(file)
+            self.settingsManager.setSetting("shortcuts", shortcutsDict)
+            
+        except Exception as e:
+          log(f"Exception while parsing shortcuts: {e}") # error reading json
+      else:
+        self.settingsManager.setSetting("shortcuts", { "fcba1cb4-4601-45d8-b919-515d152c56ef": { "id": "fcba1cb4-4601-45d8-b919-515d152c56ef", "name": "Konsole", "cmd": "konsole", "position": 1, "isApp": True } })
 
     self.instanceManager.listenForThreadEvents()
 
@@ -111,86 +88,45 @@ class Plugin:
     log("Plugin unloaded")
     pass
 
-  def _load(self):
-    log("Analyzing Shortcuts JSON")
-        
-    if (exists(self.shortcutsPath)):
-      try:
-        with open(self.shortcutsPath, "r") as file:
-          shortcutsDict = json.load(file)
-
-          for k,v in shortcutsDict.items():
-            log(f"Adding shortcut {v['name']}")
-            self.shortcuts[v["id"]] = Shortcut(v)
-            log(f"Added shortcut {v['name']}")
-
-      except Exception as e:
-        log(f"Exception while parsing shortcuts: {e}") # error reading json
-    else:
-      exception = Exception("Unabled to locate shortcuts.json: file does not exist")
-      raise exception
-
-    pass
-
-  def _addShortcut(self, path, shortcut):
+  def _addShortcut(self, shortcut):
     if (shortcut["id"] not in self.shortcuts):
-      self.shortcuts[shortcut["id"]] = Shortcut(shortcut)
       log(f"Adding shortcut {shortcut['name']}")
-      res = self.serializeShortcuts(self)
-      jDat = json.dumps(res, indent=4)
-
-      with open(path, "w") as outfile:
-        outfile.write(jDat)
+      self.settingsManager.settings.shortcuts[shortcut["id"]] = shortcut
+      self.settingsManager.commit()
     else:
       log(f"Shortcut {shortcut['name']} already exists")
 
     pass
 
-  def _setShortcuts(self, path, shortcuts):
-    for shortcut in shortcuts:
-      if (shortcut["id"] in self.shortcuts):
-        self.shortcuts[shortcut["id"]] = Shortcut(shortcut)
-      else:
-        log(f"Shortcut {shortcut['name']} does not exist")
-        
-    res = self.serializeShortcuts(self)
-    jDat = json.dumps(res, indent=4)
-
-    with open(path, "w") as outfile:
-      outfile.write(jDat)
+  def _setShortcuts(self, shortcuts):
+    log(f"Setting shortcuts...")
+    self.settingsManager.setSetting("shortcuts", shortcuts)
 
     pass
 
-  def _modShortcut(self, path, shortcut):
+  def _modShortcut(self, shortcut):
     if (shortcut["id"] in self.shortcuts):
-      self.shortcuts[shortcut["id"]] = Shortcut(shortcut)
-      res = self.serializeShortcuts(self)
-      jDat = json.dumps(res, indent=4)
-
-      with open(path, "w") as outfile:
-        outfile.write(jDat)
+      log(f"Modifying shortcut {shortcut['name']}")
+      self.settingsManager.settings.shortcuts[shortcut["id"]] = shortcut
+      self.settingsManager.commit()
     else:
       log(f"Shortcut {shortcut['name']} does not exist")
 
     pass
 
-  def _remShortcut(self, path, shortcut):
+  def _remShortcut(self, shortcut):
     if (shortcut["id"] in self.shortcuts):
-      del self.shortcuts[shortcut["id"]]
-      log(f"removing shortcut {shortcut['name']}")
-      res = self.serializeShortcuts(self)
-      jDat = json.dumps(res, indent=4)
-
-      with open(path, "w") as outfile:
-        outfile.write(jDat)
+      log(f"Removing shortcut {shortcut['name']}")
+      del self.settingsManager.settings.shortcuts[shortcut["id"]]
+      self.settingsManager.commit()
     else:
       log(f"Shortcut {shortcut['name']} does not exist")
 
     pass
 
   def _runNonAppShortcut(self, shortcutId):
-    self.instanceManager.createInstance(self.shortcuts[shortcutId].toDict())
+    self.instanceManager.createInstance(self.settingsManager.settings.shortcuts[shortcutId])
   
   def _killNonAppShortcut(self, shortcutId):
-    self.instanceManager.killInstance(self.shortcuts[shortcutId].toDict())
+    self.instanceManager.killInstance(self.settingsManager.settings.shortcuts[shortcutId])
 
