@@ -21,7 +21,7 @@ class Plugin:
   shortcutsRunnerPath = f"\"/home/{pluginUser}/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh\""
 
   jsInteropManager = JsInteropManager("", "")
-  instanceManager = InstanceManager(250, jsInteropManager)
+  instanceManager = InstanceManager(0.25, jsInteropManager)
   settingsManager = SettingsManager(name='bash-shortcuts', settings_directory=pluginSettingsDir)
 
   # Normal methods: can be called from JavaScript using call_plugin_function("signature", argument)

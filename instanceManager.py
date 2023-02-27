@@ -17,7 +17,7 @@ class Instance:
 
   def createInstance(self):
     log(f"Created instance for shortcut {self.shortcut['name']} Id: {self.shortcut['id']}")
-    self.shortcutProcess = subprocess.Popen([self.shortcut["cmd"]], shell=True) #, stdout=subprocess.PIPE
+    self.shortcutProcess = subprocess.Popen([self.shortcut["cmd"]]) #, shell=True , stdout=subprocess.PIPE
     # ! This log isnt running. figure out why
     log(f"Ran process for shortcut {self.shortcut['name']} Id: {self.shortcut['id']}. Attempting to fetch status")
     status = self._getProcessStatus(self.shortcut, self.shortcutProcess)
