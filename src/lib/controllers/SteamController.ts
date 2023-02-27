@@ -24,7 +24,6 @@ export class SteamController {
   async getShortcuts(): Promise<SteamAppDetails[]> {
     const appIds = this.getNonSteamAppIds();
     const res = await Promise.all(appIds.map((appId:number)=> this.getAppDetails(appId)));
-  
     
     PyInterop.log(`Got shortcuts. [DEBUG INFO] resultsLength: ${res.length};`);
 
