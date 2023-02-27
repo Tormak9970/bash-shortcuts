@@ -117,14 +117,14 @@ class InstanceManager:
     instance.listenForStatus()
     pass
   
-  def _onThreadUpdate(self, shortcut, status, data):
+  def _onThreadUpdate(self, jsInteropManager, shortcut, status, data):
     log(f"Recieved update event for instance. Name {shortcut['name']} Id: {shortcut['id']}")
-    self.notifyFrontend(shortcut, { "update": data, "started": True, "ended": False, "status": status })
+    self.notifyFrontend(jsInteropManager, shortcut, { "update": data, "started": True, "ended": False, "status": status })
     pass
   
-  def _onThreadEnd(self, shortcut, status):
+  def _onThreadEnd(self, jsInteropManager, shortcut, status):
     log(f"Recieved terminate event for instance. Name {shortcut['name']} Id: {shortcut['id']}")
-    self.notifyFrontend(shortcut, { "update": None, "started": True, "ended": True, "status": status })
+    self.notifyFrontend(jsInteropManager, shortcut, { "update": None, "started": True, "ended": True, "status": status })
 
     if (shortcut["id"] not in instancesShouldRun):
       log(f"Missing instanceShouldRun for shortcut {shortcut['name']} with id {shortcut['id']}")
@@ -138,22 +138,22 @@ class InstanceManager:
     
     pass
 
-  async def listenForThreadEvents(self):
+  async def listenForThreadEvents(self, jsInteropManager):
     while True:
       if (not callbackQueue.empty()):
         data = callbackQueue.get(False)
         
         log(f"Data recieved: {json.dumps(data)}")
         if ("terminated" in data):
-          self._onThreadEnd(data["shortcut"], data["status"])
+          self._onThreadEnd(jsInteropManager, data["shortcut"], data["status"])
         elif ("update" in data):
-          self._onThreadUpdate(data["shortcut"], data["status"], data["data"])
+          self._onThreadUpdate(jsInteropManager, data["shortcut"], data["status"], data["data"])
 
         callbackQueue.task_done()
 
       sleep(self.checkInterval)
 
-  def notifyFrontend(self, shortcut, data):
+  def notifyFrontend(self, jsInteropManager, shortcut, data):
     update = data["update"]
     started = data["started"]
     ended = data["ended"]

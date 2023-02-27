@@ -6,6 +6,7 @@ import sys
 sys.path.append(os.path.dirname(__file__))
 
 from instanceManager import InstanceManager
+from jsInterop import JsInteropManager
 from settings import SettingsManager
 from logger import log
 
@@ -20,6 +21,7 @@ class Plugin:
   shortcutsRunnerPath = f"\"/home/{pluginUser}/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh\""
 
   instanceManager = InstanceManager(250)
+  jsInteropManager = JsInteropManager("", "")
   settingsManager = SettingsManager(name='bash-shortcuts', settings_directory=pluginSettingsDir)
 
   # Normal methods: can be called from JavaScript using call_plugin_function("signature", argument)
@@ -81,8 +83,11 @@ class Plugin:
       else:
         log("Adding default shortcut.")
         self.settingsManager.setSetting("shortcuts", { "fcba1cb4-4601-45d8-b919-515d152c56ef": { "id": "fcba1cb4-4601-45d8-b919-515d152c56ef", "name": "Konsole", "cmd": "konsole", "position": 1, "isApp": True } })
+    else:
+      log(f"Shortcuts loaded from settings. Shortcuts: {json.dumps(self.settingsManager.getSetting('shortcuts', {}))}")
 
-    self.instanceManager.listenForThreadEvents()
+    # ! this await seems to have broken the settings manager
+    await self.instanceManager.listenForThreadEvents(self.jsInteropManager)
 
     pass
 
