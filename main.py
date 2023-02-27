@@ -8,7 +8,7 @@ from settings import SettingsManager
 
 sys.path.append(os.path.dirname(__file__))
 
-import instanceManager
+from instanceManager import InstanceManager
 from logger import log
 
 Initialized = False
@@ -21,7 +21,7 @@ class Plugin:
 
   shortcutsRunnerPath = f"\"/home/{pluginUser}/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh\""
 
-  instanceManager = instanceManager.InstanceManager(250)
+  instanceManager = InstanceManager(250)
   settingsManager = SettingsManager(name='bash-shortcuts', settings_directory=os.path.join(pluginSettingsDir, "settings", "bash-shortcuts"))
 
   # Normal methods: can be called from JavaScript using call_plugin_function("signature", argument)
