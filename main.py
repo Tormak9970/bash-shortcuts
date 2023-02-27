@@ -135,8 +135,10 @@ class Plugin:
     pass
 
   def _runNonAppShortcut(self, shortcutId):
-    self.instanceManager.createInstance(self.settingsManager.settings.shortcuts[shortcutId])
+    log(f"Running createInstance for shortcut with Id: {shortcutId}")
+    self.instanceManager.createInstance(self.settingsManager.getSetting("shortcuts", {})[shortcutId])
   
   def _killNonAppShortcut(self, shortcutId):
-    self.instanceManager.killInstance(self.settingsManager.settings.shortcuts[shortcutId])
+    log(f"Running killInstance for shortcut with Id: {shortcutId}")
+    self.instanceManager.killInstance(self.settingsManager.getSetting("shortcuts", {})[shortcutId])
 
