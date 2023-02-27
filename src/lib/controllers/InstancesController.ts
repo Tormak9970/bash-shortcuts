@@ -104,6 +104,7 @@ export class InstancesController {
         return false;
       }
     } else {
+      delete this.instances[shortcutId];
       const res = await PyInterop.killNonAppShortcut(shortcutId);
       console.log(res);
       return true;
