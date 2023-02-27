@@ -4,11 +4,10 @@ from genericpath import exists
 import sys
 from copy import deepcopy
 
-from settings import SettingsManager
-
 sys.path.append(os.path.dirname(__file__))
 
 from instanceManager import InstanceManager
+from settings import SettingsManager
 from logger import log
 
 Initialized = False
