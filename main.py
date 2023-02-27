@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import json
 import os
 from genericpath import exists
@@ -6,7 +7,7 @@ from copy import deepcopy
 
 sys.path.append(os.path.dirname(__file__))
 
-from instanceManager import InstanceManager
+from instaceManager import InstanceManager
 from settings import SettingsManager
 from logger import log
 
