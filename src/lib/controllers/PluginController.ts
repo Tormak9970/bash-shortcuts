@@ -91,7 +91,7 @@ export class PluginController {
    * @returns A promise resolving to true if the shortcut was successfully closed.
    */
   static async closeShortcut(shortcut:Shortcut): Promise<boolean> {
-    const stoppedInstance = await this.instancesController.killInstance(shortcut.id);
+    const stoppedInstance = await this.instancesController.stopInstance(shortcut.id);
     if (stoppedInstance) {
       PyInterop.log(`Stopped Instance for shortcut ${shortcut.name}`);
       return await this.instancesController.killInstance(shortcut.id);

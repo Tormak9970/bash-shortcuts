@@ -19,7 +19,7 @@ class Instance:
   def createInstance(self):
     log(f"Created instance for shortcut {self.shortcut['name']} Id: {self.shortcut['id']}")
     self.shortcutProcess = subprocess.Popen([self.shortcut["cmd"]], shell=True) #, stdout=subprocess.PIPE
-    status = 4 if self.shortcutProcess == None else self._getProcessStatus(self.shortcut, self.shortcutProcess)
+    status = self._getProcessStatus(self.shortcut, self.shortcutProcess)
     # ! This log isnt running. figure out why
     log(f"Status for command was {status}. Name: {self.shortcut['name']} Id: {self.shortcut['id']}")
     callbackQueue.put({
