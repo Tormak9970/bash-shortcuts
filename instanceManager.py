@@ -40,13 +40,13 @@ class Instance:
     if (self.shortcutProcess != None):
       self.shortcutProcess.poll()
 
-      if (self.shortcutProcess.returnCode < 0):
+      if (self.shortcutProcess.returncode < 0):
         return 4
-      elif (self.shortcutProcess.returnCode == 0):
+      elif (self.shortcutProcess.returncode == 0):
         return 0
-      elif (self.shortcutProcess.returnCode > 0):
+      elif (self.shortcutProcess.returncode > 0):
         return 3
-      elif (self.shortcutProcess.returnCode == None):
+      elif (self.shortcutProcess.returncode == None):
         return 2
     else:
       return 1
