@@ -3,6 +3,8 @@ import os
 from genericpath import exists
 import sys
 
+from settings import SettingsManager
+
 sys.path.append(os.path.dirname(__file__))
 
 import instanceManager
@@ -25,11 +27,13 @@ class Shortcut:
     return { "id": self.id, "name": self.name, "cmd": self.cmd, "position": self.position, "isApp": self.isApp }
 
 class Plugin:
-  plugin_user = os.environ["DECKY_USER"]
+  pluginUser = os.environ["DECKY_USER"]
+  pluginSettingsDir = os.environ["DECKY_PLUGIN_SETTINGS_DIR"]
   shortcuts = {}
-  shortcutsPath = f"/home/{plugin_user}/.config/bash-shortcuts/shortcuts.json"
-  shortcutsRunnerPath = f"\"/home/{plugin_user}/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh\""
+  shortcutsPath = f"/home/{pluginUser}/.config/bash-shortcuts/shortcuts.json"
+  shortcutsRunnerPath = f"\"/home/{pluginUser}/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh\""
   instanceManager = instanceManager.InstanceManager(250)
+  settingsManager = SettingsManager(name='bash-shortcuts', settings_directory=os.path.join(pluginSettingsDir, "settings", "bash-shortcuts"))
 
   def serializeShortcuts(self):
     res = {}
@@ -67,7 +71,7 @@ class Plugin:
     self._killNonAppShortcut(self, shortcutId)
 
   async def getHomeDir(self):
-    return self.plugin_user
+    return self.pluginUser
 
   async def logMessage(self, message):
     log(message)

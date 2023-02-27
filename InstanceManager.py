@@ -59,6 +59,8 @@ class Instance:
     
   async def listenForStatus(self):
     while True:
+      log(f"Checking status for shortcut {self.shortcut['name']}. shouldRun: {instancesShouldRun[self.shortcut['id']]}")
+
       if (instancesShouldRun[self.shortcut["id"]]):
         status = self._getProcessStatus()
 
