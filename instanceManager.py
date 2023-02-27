@@ -37,19 +37,16 @@ class Instance:
 
   def _getProcessStatus(self):
     log(f"Getting process status for instance. Name: {self.shortcut['name']} Id: {self.shortcut['id']}")
-    if (self.shortcutProcess != None):
-      self.shortcutProcess.poll()
+    status = self.shortcutProcess.poll()
 
-      if (self.shortcutProcess.returncode < 0):
-        return 4
-      elif (self.shortcutProcess.returncode == 0):
-        return 0
-      elif (self.shortcutProcess.returncode > 0):
-        return 3
-      elif (self.shortcutProcess.returncode == None):
-        return 2
-    else:
-      return 1
+    if (status == None):
+      return 2
+    elif (status < 0):
+      return 4
+    elif (status == 0):
+      return 0
+    elif (status > 0):
+      return 3
     
   def listenForStatus(self):
     while True:
@@ -97,8 +94,6 @@ def cloneObject(object):
   return deepcopy(object)
 
 class InstanceManager:
-  checkInterval = 250
-
   def __init__(self, checkInterval, jsInteropManager):
     self.checkInterval = checkInterval
     self.jsInteropManager = jsInteropManager

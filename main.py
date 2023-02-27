@@ -20,7 +20,7 @@ class Plugin:
 
   shortcutsRunnerPath = f"\"/home/{pluginUser}/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh\""
 
-  jsInteropManager = JsInteropManager("", "")
+  jsInteropManager = JsInteropManager("", 8000)
   instanceManager = InstanceManager(0.25, jsInteropManager)
   settingsManager = SettingsManager(name='bash-shortcuts', settings_directory=pluginSettingsDir)
 
@@ -86,9 +86,11 @@ class Plugin:
     else:
       log(f"Shortcuts loaded from settings. Shortcuts: {json.dumps(self.settingsManager.getSetting('shortcuts', {}))}")
 
-    pass
+    #* start websocket server
+    self.jsInteropManager.startServer()
 
   async def _unload(self):
+    self.jsInteropManager.stopServer()
     log("Plugin unloaded")
     pass
 
