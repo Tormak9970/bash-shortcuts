@@ -1,5 +1,5 @@
-import { DialogButton, Field, Focusable, gamepadDialogClasses } from "decky-frontend-lib";
-import { Fragment, VFC, useEffect, useState } from "react";
+import { DialogButton, Field, Focusable, Navigation, gamepadDialogClasses } from "decky-frontend-lib";
+import { Fragment, VFC, useState } from "react";
 import { Shortcut } from "../lib/data-structures/Shortcut";
 
 import { IoRocketSharp } from "react-icons/io5";
@@ -60,10 +60,6 @@ const ShortcutLabel: VFC<{ shortcut: Shortcut, isRunning: boolean}> = (props: { 
 export const ShortcutLauncher: VFC<ShortcutLauncherProps> = (props: ShortcutLauncherProps) => {
   const [ isRunning, setIsRunning ] = useState<boolean>(PluginController.checkIfRunning(props.shortcut));
 
-  useEffect(() => {
-    setIsRunning(PluginController.checkIfRunning(props.shortcut));
-  });
-
   /**
    * Determines which action to run when the interactable is selected.
    * @param shortcut The shortcut associated with this shortcutLauncher.
@@ -77,8 +73,17 @@ export const ShortcutLauncher: VFC<ShortcutLauncherProps> = (props: ShortcutLaun
         setIsRunning(false);
       }
     } else {
-      const res = await PluginController.launchShortcut(shortcut, () => {
-        if (isRunning) setIsRunning(false);
+      const res = await PluginController.launchShortcut(shortcut, async () => {
+        if (PluginController.checkIfRunning(shortcut) && shortcut.isApp) {
+          setIsRunning(false);
+          const killRes = await PluginController.killShortcut(shortcut);
+          if (killRes) {
+            Navigation.Navigate("/library/home");
+            Navigation.CloseSideMenus();
+          } else {
+            PyInterop.toast("Error", "Failed to kill shortcut.");
+          }
+        }
       });
       if (!res) {
         PyInterop.toast("Error", "Shortcut failed. Check the command.");

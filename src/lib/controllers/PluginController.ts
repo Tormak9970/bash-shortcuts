@@ -103,6 +103,15 @@ export class PluginController {
   }
 
   /**
+   * Kills a shortcut's instance.
+   * @param shortcut The shortcut to kill.
+   * @returns A promise resolving to true if the shortcut's instance was successfully killed.
+   */
+  static async killShortcut(shortcut: Shortcut): Promise<boolean> {
+    return await this.instancesController.killInstance(shortcut.id);
+  }
+
+  /**
    * Checks if a shortcut is running.
    * @param shorcut The shortcut to check for.
    * @returns True if the shortcut is running.
