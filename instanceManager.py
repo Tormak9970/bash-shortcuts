@@ -18,8 +18,9 @@ class Instance:
   def createInstance(self):
     log(f"Created instance for shortcut {self.shortcut['name']} Id: {self.shortcut['id']}")
     self.shortcutProcess = subprocess.Popen([self.shortcut["cmd"]], shell=True) #, stdout=subprocess.PIPE
-    status = self._getProcessStatus(self.shortcut, self.shortcutProcess)
     # ! This log isnt running. figure out why
+    log(f"Ran process for shortcut {self.shortcut['name']} Id: {self.shortcut['id']}. Attempting to fetch status")
+    status = self._getProcessStatus(self.shortcut, self.shortcutProcess)
     log(f"Status for command was {status}. Name: {self.shortcut['name']} Id: {self.shortcut['id']}")
     self._onUpdate(status, None)
     return status
@@ -96,7 +97,6 @@ def cloneObject(object):
   return deepcopy(object)
 
 class InstanceManager:
-  # threads = {}
   checkInterval = 250
 
   def __init__(self, checkInterval, jsInteropManager):
@@ -107,7 +107,6 @@ class InstanceManager:
     log(f"Creating instance for {shortcut['name']} Id: {shortcut['id']}")
     instancesShouldRun[shortcut["id"]] = True
     cmdThread = Thread(target=self.runInstanceInThread, args=[cloneObject(shortcut), self.checkInterval, self.jsInteropManager])
-    # self.threads[shortcut["id"]] = cmdThread
     cmdThread.start()
     pass
   
