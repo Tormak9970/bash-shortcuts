@@ -1,4 +1,5 @@
 from subprocess import Popen
+from logger import log
 
 class JsInteropManager:
   def __init__(self, hostName, port):
@@ -8,6 +9,7 @@ class JsInteropManager:
     pass
 
   def startServer(self):
+    log(f"Starting Websocket server on port {self.port}")
     self.serverProcess = Popen(["python", "./webSocketServer.py", self.hostName, self.port])
     pass
 
@@ -16,6 +18,8 @@ class JsInteropManager:
     pass
 
   def stopServer(self):
+    log(f"Killing Websocket server on port {self.port}")
+    self.serverProcess.kill()
     pass
 
         

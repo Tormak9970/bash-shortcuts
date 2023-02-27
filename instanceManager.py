@@ -20,7 +20,6 @@ class Instance:
     self.shortcutProcess = subprocess.Popen([self.shortcut["cmd"]], shell=True) # , stdout=subprocess.PIPE
     log(f"Ran process for shortcut {self.shortcut['name']} Id: {self.shortcut['id']}. Attempting to fetch status")
     status = self._getProcessStatus()
-    # ! This log isnt running. figure out why
     log(f"Status for command was {status}. Name: {self.shortcut['name']} Id: {self.shortcut['id']}")
     self._onUpdate(status, None)
     return status
