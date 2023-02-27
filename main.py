@@ -20,8 +20,8 @@ class Plugin:
 
   shortcutsRunnerPath = f"\"/home/{pluginUser}/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh\""
 
-  instanceManager = InstanceManager(250)
   jsInteropManager = JsInteropManager("", "")
+  instanceManager = InstanceManager(250, jsInteropManager)
   settingsManager = SettingsManager(name='bash-shortcuts', settings_directory=pluginSettingsDir)
 
   # Normal methods: can be called from JavaScript using call_plugin_function("signature", argument)
@@ -85,9 +85,6 @@ class Plugin:
         self.settingsManager.setSetting("shortcuts", { "fcba1cb4-4601-45d8-b919-515d152c56ef": { "id": "fcba1cb4-4601-45d8-b919-515d152c56ef", "name": "Konsole", "cmd": "konsole", "position": 1, "isApp": True } })
     else:
       log(f"Shortcuts loaded from settings. Shortcuts: {json.dumps(self.settingsManager.getSetting('shortcuts', {}))}")
-
-    # ! this await seems to have broken the settings manager
-    await self.instanceManager.listenForThreadEvents(self.jsInteropManager)
 
     pass
 
