@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import json
 import os
-from genericpath import exists
 import sys
 from copy import deepcopy
 
@@ -22,7 +21,7 @@ class Plugin:
   shortcutsRunnerPath = f"\"/home/{pluginUser}/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh\""
 
   instanceManager = InstanceManager(250)
-  settingsManager = SettingsManager(name='bash-shortcuts', settings_directory=os.path.join(pluginSettingsDir, "settings", "bash-shortcuts"))
+  settingsManager = SettingsManager(name='bash-shortcuts', settings_directory=pluginSettingsDir)
 
   # Normal methods: can be called from JavaScript using call_plugin_function("signature", argument)
   async def getShortcuts(self):
