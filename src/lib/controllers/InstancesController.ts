@@ -114,16 +114,23 @@ export class InstancesController {
   /**
    * Launches an instance.
    * @param shortcutId The id of the shortcut associated with the instance to launch.
+   * @param onExit The function to run when the shortcut closes.
    * @returns A promise resolving to true if the instance is launched.
    */
-  async launchInstance(shortcutId: string): Promise<boolean> {
+  async launchInstance(shortcutId: string, onExit: (data?: LifetimeNotification) => void): Promise<boolean> {
     const instance = this.instances[shortcutId];
     
     if (instance.shortcutIsApp) {
-      const res = await this.shorcutsController.launchShortcut(instance.unAppID as number);
+      const appId = instance.unAppID as number;
+      const res = await this.shorcutsController.launchShortcut(appId);
 
       if (!res) {
         PyInterop.log(`Failed to launch instance. InstanceName: ${instance.steamShortcutName} ShortcutId: ${shortcutId}`);
+      } else {
+        const { unregister } = this.shorcutsController.registerForShortcutExit(appId, (data: LifetimeNotification) => {
+          onExit(data)
+          unregister();
+        });
       }
       
       return res;

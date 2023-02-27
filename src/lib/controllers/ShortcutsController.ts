@@ -162,4 +162,18 @@ export class ShortcutsController {
       return false;
     }
   }
+
+  /**
+   * Registers for lifetime updates for a shortcut.
+   * @param appId The id of the shortcut to register for.
+   * @param onExit The function to run when the shortcut closes.
+   * @returns An Unregisterer function to call to unregister from updates.
+   */
+  registerForShortcutExit(appId: number, onExit: (data: LifetimeNotification) => void): Unregisterer {
+    return this.steamController.registerForAppLifetimeNotifications(appId, (data: LifetimeNotification) => {
+      if (data.bRunning) return;
+
+      onExit(data);
+    });
+  }
 }

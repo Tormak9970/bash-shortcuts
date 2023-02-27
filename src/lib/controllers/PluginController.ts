@@ -73,13 +73,14 @@ export class PluginController {
    * @param shortcutName The name of the steam shortcut to launch.
    * @param shortcut The shortcut to launch.
    * @param runnerPath The runner path for the shortcut.
+   * @param onExit An optional function to run when the instance closes.
    * @returns A promise resolving to true if the shortcut was successfully launched.
    */
-  static async launchShortcut(shortcut: Shortcut): Promise<boolean> {
+  static async launchShortcut(shortcut: Shortcut, onExit: (data?: LifetimeNotification) => void = () => {}): Promise<boolean> {
     const createdInstance = await this.instancesController.createInstance(PluginController.shortcutName, shortcut, PluginController.runnerPath, PluginController.startDir);
     if (createdInstance) {
       PyInterop.log(`Created Instance for shortcut ${shortcut.name}`);
-      return await this.instancesController.launchInstance(shortcut.id);
+      return await this.instancesController.launchInstance(shortcut.id, onExit);
     } else {
       return false;
     }

@@ -74,14 +74,16 @@ export const ShortcutLauncher: VFC<ShortcutLauncherProps> = (props: ShortcutLaun
       if (!res) {
         PyInterop.toast("Error", "Failed to close shortcut.");
       } else {
-        setIsRunning(!isRunning);
+        setIsRunning(false);
       }
     } else {
-      const res = await PluginController.launchShortcut(shortcut);
+      const res = await PluginController.launchShortcut(shortcut, () => {
+        if (isRunning) setIsRunning(false);
+      });
       if (!res) {
         PyInterop.toast("Error", "Shortcut failed. Check the command.");
       } else {
-        setIsRunning(!isRunning);
+        setIsRunning(true);
       }
     }
   }

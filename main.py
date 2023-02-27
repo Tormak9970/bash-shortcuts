@@ -7,7 +7,7 @@ from copy import deepcopy
 
 sys.path.append(os.path.dirname(__file__))
 
-from instaceManager import InstanceManager
+from instanceManager import InstanceManager
 from settings import SettingsManager
 from logger import log
 
