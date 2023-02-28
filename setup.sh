@@ -3,7 +3,7 @@
 echo "[INFO]: Running Setup..."
 
 if [ -d "./py_backend" ]; then
-  if [ ! -L "./py_backend" ];
+  if [ ! -L "./py_backend" ]; then
     echo "[INFO]: py_backend is not a symlink!"
     echo ""
     echo "[TASK]: removing py_backend..."
