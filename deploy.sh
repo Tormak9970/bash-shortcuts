@@ -15,9 +15,6 @@ echo "[INFO]: Loaded config"
 echo ""
 echo "[TASK]: Deploying plugin to deck..."
 
-# -r flag to copy a directory
-# format: scp -P $deck_port SRC_PATH deck@$deck_ip:DEST_PATH
-
 #? Copy general files
 echo "[TASK]: Copying general files..."
 genFiles=(LICENSE main.py package.json plugin.json README.md)
