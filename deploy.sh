@@ -35,7 +35,7 @@ files=($(ls ./defaults))
 
 for file in "${files[@]}"; do
   if [ -d $file ]; then
-    scp -r -P $deck_port ./defaults/$file deck@$deck_ip:$deck_home_dir/$file
+    scp -r -P $deck_port ./defaults/$file deck@$deck_ip:$deck_home_dir/
   else
     scp -P $deck_port ./defaults/$file deck@$deck_ip:$deck_home_dir/$file
   fi
