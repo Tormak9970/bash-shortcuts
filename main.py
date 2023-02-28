@@ -5,10 +5,10 @@ import sys
 
 sys.path.append(os.path.dirname(__file__))
 
-from instanceManager import InstanceManager
-from jsInterop import JsInteropManager
-from settings import SettingsManager
-from logger import log
+from py_backend.instanceManager import InstanceManager
+from py_backend.jsInterop import JsInteropManager
+from py_backend.settings import SettingsManager
+from py_backend.logger import log
 
 Initialized = False
 

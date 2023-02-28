@@ -9,7 +9,7 @@ from collections import deque
 from select import select
 
 from http.server import BaseHTTPRequestHandler  # pylint: disable=import-error
-from io import StringIO, BytesIO
+from io import BytesIO
 unicode = str  # pylint: disable=redefined-builtin
 
 
