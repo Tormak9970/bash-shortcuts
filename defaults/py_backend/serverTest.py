@@ -1,11 +1,11 @@
-# from subprocess import Popen
-# from time import sleep
-
-# from webSocketClient import Client as WebSocketClient
+from subprocess import Popen
 import webSocketClient as websocket
 
 def log(txt):
   print(txt)
+
+
+Popen(["python", "server.py", "localhost", "5000", "/home/deck/homebrew/logs/bash-shortcuts"], shell=True)
 
 websocket.enableTrace(True)
 ws = websocket.WebSocket()
