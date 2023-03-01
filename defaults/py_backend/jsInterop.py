@@ -18,15 +18,20 @@ class JsInteropManager:
     pass
 
   def sendMessage(self, message: str, data: str):
-    log(f"Sending message to frontend. Message: {data}")
-
     ws = WebSocketClient()
+    log(f"Connecting to websocket {self.hostName}:{self.port}...")
     ws.connect(f"ws://{self.hostName}:{self.port}")
-    ws.send(json.dumps({ "message": message, "data": data }))
-    # print(ws.recv())
-    ws.close()
+    log(f"Connected")
 
+    log(f"Sending message to frontend. Message: {data}")
+    ws.send(json.dumps({ "message": message, "data": data }))
     log(f"Message sent.")
+
+    # print(ws.recv())
+
+    log(f"Closing websocket...")
+    ws.close()
+    log(f"Closed.")
     pass
 
   def stopServer(self):
