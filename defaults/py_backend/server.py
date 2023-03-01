@@ -16,6 +16,7 @@ def log(txt):
 class InteropServer(WebSocket):
   def handle(self):
     log("Handling Message")
+    log(f"Data: {self.data}")
 
     for client in clients:
       if client != self:
