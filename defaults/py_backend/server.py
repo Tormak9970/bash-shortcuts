@@ -1,4 +1,4 @@
-from webSocketServer import WebSocketServer, WebSocket
+from .webSocketServer import WebSocketServer, WebSocket
 import sys
 
 class InteropServer(WebSocket):

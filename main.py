@@ -3,13 +3,10 @@ import json
 import os
 import sys
 
-sys.path.append(os.path.dirname(__file__))
-sys.path.append(os.path.join(os.path.dirname(__file__), "py_backend"))
-
-from py_backend.instanceManager import InstanceManager
-from py_backend.jsInterop import JsInteropManager
-from py_backend.settings import SettingsManager
-from py_backend.logger import log
+from .py_backend.instanceManager import InstanceManager
+from .py_backend.jsInterop import JsInteropManager
+from .py_backend.settings import SettingsManager
+from .py_backend.logger import log
 
 Initialized = False
 

@@ -1,7 +1,8 @@
 from subprocess import Popen
-from logger import log
-from webSocketClient import Client as WebSocketClient
+from .webSocketClient import Client as WebSocketClient
 import json
+
+from .logger import log
 
 class JsInteropManager:
   def __init__(self, hostName, port):
@@ -17,6 +18,7 @@ class JsInteropManager:
     pass
 
   def sendMessage(self, message: str, data: str):
+    log(f"Sending message to frontend. Message: {data}")
     self.client.send(json.dumps({ "message": message, "data": data }))
     pass
 

@@ -3,8 +3,9 @@ import subprocess
 from threading import Thread
 from time import sleep
 from copy import deepcopy
+import json
 
-from logger import log
+from .logger import log
 
 instancesShouldRun = {}
 
@@ -66,27 +67,20 @@ class Instance:
 
   def _onUpdate(self, status, data):
     log(f"Recieved update event for instance. Name {self.shortcut['name']} Id: {self.shortcut['id']}")
-    self.notifyFrontend({ "update": data, "started": True, "ended": False, "status": status })
+    log(f"Notifying frontend. Status: {status}")
+    self.jsInteropManager.sendMessage("update", json.dumps({ "update": data, "started": True, "ended": False, "status": status }))
     pass
   
   def _onTerminate(self, status):
     log(f"Recieved terminate event for instance. Name {self.shortcut['name']} Id: {self.shortcut['id']}")
-    self.notifyFrontend({ "update": None, "started": True, "ended": True, "status": status })
+    log(f"Notifying frontend. Status: {status}")
+    self.jsInteropManager.sendMessage("update", json.dumps({ "update": None, "started": True, "ended": True, "status": status }))
 
     if (self.shortcut["id"] not in instancesShouldRun):
       log(f"Missing instanceShouldRun for shortcut {self.shortcut['name']} with id {self.shortcut['id']}")
     else:
       del instancesShouldRun[self.shortcut["id"]]
     
-    pass
-
-  def notifyFrontend(self, data):
-    update = data["update"]
-    started = data["started"]
-    ended = data["ended"]
-    status = data["status"]
-
-    log(f"Notifying frontend for shortcut {self.shortcut['name']} Id: {self.shortcut['id']} Status: {status}")
     pass
 
 def cloneObject(object):
