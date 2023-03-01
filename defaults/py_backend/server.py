@@ -1,15 +1,16 @@
 #!/usr/bin/env python
-from .webSocketServer import WebSocketServer, WebSocket
+from webSocketServer import WebSocketServer, WebSocket
 import sys
 
 import logging
 import os
 
-logging.basicConfig(filename=os.path.join(os.environ["DECKY_PLUGIN_LOG_DIR"], "web-socket-wever.log"), format="[Server] %(asctime)s %(levelname)s %(message)s", filemode="w+", force=True)
+logging.basicConfig(filename=os.path.join(os.environ["DECKY_PLUGIN_LOG_DIR"], "web-socket-sever.log"), format="[Server] %(asctime)s %(levelname)s %(message)s", filemode="w+", force=True)
 logger=logging.getLogger()
 logger.setLevel(logging.INFO) # can be changed to logging.DEBUG for debugging issues
 
 def log(txt):
+  print(txt)
   logger.info(txt)
 
 class InteropServer(WebSocket):
