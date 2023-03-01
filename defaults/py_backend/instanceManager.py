@@ -68,13 +68,13 @@ class Instance:
   def _onUpdate(self, status, data):
     log(f"Recieved update event for instance. Name {self.shortcut['name']} Id: {self.shortcut['id']}")
     log(f"Notifying frontend. Status: {status}")
-    self.jsInteropManager.sendMessage("update", json.dumps({ "update": data, "started": True, "ended": False, "status": status }))
+    self.jsInteropManager.sendMessage(f"{self.shortcut['id']}", json.dumps({ "type": "update", "data": data, "started": True, "ended": False, "status": status }))
     pass
   
   def _onTerminate(self, status):
     log(f"Recieved terminate event for instance. Name {self.shortcut['name']} Id: {self.shortcut['id']}")
     log(f"Notifying frontend. Status: {status}")
-    self.jsInteropManager.sendMessage("update", json.dumps({ "update": None, "started": True, "ended": True, "status": status }))
+    self.jsInteropManager.sendMessage(f"{self.shortcut['id']}", json.dumps({ "type": "end", "data": None, "started": True, "ended": True, "status": status }))
 
     if (self.shortcut["id"] not in instancesShouldRun):
       log(f"Missing instanceShouldRun for shortcut {self.shortcut['name']} with id {self.shortcut['id']}")

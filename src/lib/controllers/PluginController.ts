@@ -4,6 +4,7 @@ import { InstancesController } from "./InstancesController";
 import { PyInterop } from "../../PyInterop";
 import { SteamController } from "./SteamController";
 import { Shortcut } from "../data-structures/Shortcut";
+import { WebSocketClient } from "../../WebsocketClient";
 
 /**
  * Main controller class for the plugin.
@@ -16,6 +17,7 @@ export class PluginController {
   private static steamController: SteamController;
   private static shortcutsController: ShortcutsController;
   private static instancesController: InstancesController;
+  private static webSocketClient: WebSocketClient;
 
   private static shortcutName: string;
   private static runnerPath = "\"/home/deck/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh\"";
@@ -29,7 +31,8 @@ export class PluginController {
     this.server = server;
     this.steamController = new SteamController();
     this.shortcutsController = new ShortcutsController(this.steamController);
-    this.instancesController = new InstancesController(this.shortcutsController);
+    this.webSocketClient = new WebSocketClient("localhost", "5000");
+    this.instancesController = new InstancesController(this.shortcutsController, this.webSocketClient);
   }
 
   /**
@@ -66,6 +69,8 @@ export class PluginController {
         await this.shortcutsController.removeShortcutById(instance.unAppID);
       }
     }
+
+    this.webSocketClient.connect();
   }
 
   /**
@@ -121,9 +126,19 @@ export class PluginController {
   }
 
   /**
+   * Registers a callback to run when WebSocket messages of a given type are recieved.
+   * @param type The type of message to register for.
+   * @param callback The callback to run.
+   */
+  static onWebSocketEvent(type: string, callback: (data: any) => void) {
+    this.webSocketClient.on(type, callback);
+  }
+
+  /**
    * Function to run when the plugin dismounts.
    */
   static onDismount(): void {
     this.shortcutsController.onDismount();
+    this.webSocketClient.disconnect();
   }
 }

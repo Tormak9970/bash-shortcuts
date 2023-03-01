@@ -3,12 +3,14 @@ import { Shortcut } from "../data-structures/Shortcut";
 import { ShortcutsController } from "./ShortcutsController";
 import { PyInterop } from "../../PyInterop";
 import { Navigation } from "decky-frontend-lib";
+import { WebSocketClient } from "../../WebsocketClient";
 
 /**
  * Controller for managing plugin instances.
  */
 export class InstancesController {
   private shorcutsController:ShortcutsController;
+  private webSocketClient: WebSocketClient;
 
   numInstances: number;
   instances: { [uuid:string]: Instance };
@@ -17,8 +19,9 @@ export class InstancesController {
    * Creates a new InstancesController.
    * @param shortcutsController The shortcuts controller used by this class.
    */
-  constructor(shortcutsController: ShortcutsController) {
+  constructor(shortcutsController: ShortcutsController, webSocketClient: WebSocketClient) {
     this.shorcutsController = shortcutsController;
+    this.webSocketClient = webSocketClient;
 
     this.numInstances = 0;
     this.instances = {};
@@ -78,6 +81,18 @@ export class InstancesController {
       PyInterop.log(`Shortcut is not an app. Skipping instance shortcut creation. ShortcutId: ${shortcut.id} ShortcutName: ${shortcut.name}`);
       this.instances[shortcut.id] = new Instance(null, shortcutName, shortcut.id, shortcut.isApp);
 
+      PyInterop.log(`Adding websocket listener for message type ${shortcut.id}`);
+      this.webSocketClient.on(shortcut.id, (data: any) => {
+        if (data.type === "end") {
+          delete this.instances[shortcut.id];
+          PyInterop.log(`Removed non app instance for shortcut with Id: ${shortcut.id} because end was detected.`);
+          setTimeout(() => {
+            PyInterop.log(`Removing websocket listener for message type ${shortcut.id}`);
+            this.webSocketClient.deleteListeners(shortcut.id);
+          }, 2000);
+        }
+      });
+
       return true;
     }
   }
@@ -98,6 +113,7 @@ export class InstancesController {
         PyInterop.log(`Killed instance. Id: ${shortcutId} InstanceName: ${instance.steamShortcutName}`);
         delete this.instances[shortcutId];
         this.numInstances--;
+
         return true;
       } else {
         PyInterop.log(`Failed to kill instance. Could not delete shortcut. Id: ${shortcutId} InstanceName: ${instance.steamShortcutName}`);
@@ -107,6 +123,9 @@ export class InstancesController {
       delete this.instances[shortcutId];
       const res = await PyInterop.killNonAppShortcut(shortcutId);
       console.log(res);
+
+      PyInterop.log(`Removing websocket listener for message type ${instance.shortcutId}`);
+      this.webSocketClient.deleteListeners(instance.shortcutId);
       return true;
     }
   }

@@ -89,6 +89,12 @@ export const ShortcutLauncher: VFC<ShortcutLauncherProps> = (props: ShortcutLaun
         PyInterop.toast("Error", "Shortcut failed. Check the command.");
       } else {
         setIsRunning(true);
+        PluginController.onWebSocketEvent(shortcut.id, (data: any) => {
+          if (data.type == "end") {
+            setIsRunning(false);
+            PyInterop.log(`Set shortcutLauncher with Id: ${shortcut.id} to false.`);
+          }
+        })
       }
     }
   }
