@@ -41,10 +41,10 @@ class InteropServer(WebSocket):
     for client in clients:
       client.send_message(self.address[0] + u' - disconnected')
 
-if (len(args) >= 3):
+if (len(args) >= 4):
   server = WebSocketServer(args[1], args[2], InteropServer)
   log(f"Starting server on {args[1]}:{args[2]}")
   server.serve_forever()
 else:
-  Exception(f"Expected two arguments but only found {len(sys.argv)}")
+  Exception(f"Expected three arguments but only found {len(sys.argv)}")
       

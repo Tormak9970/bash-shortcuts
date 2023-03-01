@@ -27,8 +27,6 @@ class JsInteropManager:
     ws.send(json.dumps({ "message": message, "data": data }))
     log(f"Message sent.")
 
-    # print(ws.recv())
-
     log(f"Closing websocket...")
     ws.close()
     log(f"Closed.")
