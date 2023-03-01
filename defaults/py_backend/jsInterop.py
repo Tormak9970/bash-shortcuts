@@ -19,11 +19,11 @@ class JsInteropManager:
     for i in range(5):
       try:
         self.client = WebSocketClient(f"ws://{self.hostName}:{self.port}")
-        log(f"Attempt: {i} :: Connection to {self.hostName}:{self.port} was successful")
+        log(f"Attempt: {i+1} :: Connection to {self.hostName}:{self.port} was successful")
         self.client.handshake()
         break
       except ConnectionRefusedError:
-        log(f"Attempt: {i} :: Connection to {self.hostName}:{self.port} was refused")
+        log(f"Attempt: {i+1} :: Connection to {self.hostName}:{self.port} was refused")
         sleep(0.2)
     pass
 
