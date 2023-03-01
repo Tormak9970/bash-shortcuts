@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from .webSocketServer import WebSocketServer, WebSocket
 import sys
 

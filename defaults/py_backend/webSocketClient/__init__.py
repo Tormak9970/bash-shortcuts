@@ -1,11 +1,18 @@
+"""
+webSocketClient
+~~~~~~~
+
+Simple websocket client for python
+"""
+
 import selectors
 import socket
 import ssl
 from time import time
 from urllib.parse import urlsplit
 
-from wsproto import ConnectionType, WSConnection
-from wsproto.events import (
+from .wsproto import ConnectionType, WSConnection
+from .wsproto.events import (
     AcceptConnection,
     RejectConnection,
     CloseConnection,
@@ -16,9 +23,9 @@ from wsproto.events import (
     TextMessage,
     BytesMessage,
 )
-from wsproto.extensions import PerMessageDeflate
-from wsproto.frame_protocol import CloseReason
-from wsproto.utilities import LocalProtocolError
+from .wsproto.extensions import PerMessageDeflate
+from .wsproto.frame_protocol import CloseReason
+from .wsproto.utilities import LocalProtocolError
 
 
 class ConnectionError(RuntimeError):  # pragma: no cover

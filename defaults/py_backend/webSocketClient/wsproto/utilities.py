@@ -9,7 +9,7 @@ import hashlib
 import os
 from typing import Dict, List, Optional, Union
 
-from h11._headers import Headers as H11Headers
+from .h11._headers import Headers as H11Headers
 
 from .events import Event
 from .typing import Headers

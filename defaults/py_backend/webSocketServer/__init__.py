@@ -1,3 +1,10 @@
+"""
+webSocketServer
+~~~~~~~
+
+Simple websocket server for python
+"""
+
 import hashlib
 import base64
 import socket

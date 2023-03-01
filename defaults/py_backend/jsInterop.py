@@ -1,7 +1,8 @@
+#!/usr/bin/env python
 from subprocess import Popen
-from .webSocketClient import Client as WebSocketClient
 import json
 
+from .webSocketClient import Client as WebSocketClient
 from .logger import log
 
 class JsInteropManager:
