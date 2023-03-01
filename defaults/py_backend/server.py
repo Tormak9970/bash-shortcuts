@@ -8,7 +8,7 @@ import os
 args = sys.argv
 numArgs = len(args)
 
-logging.basicConfig(filename=os.path.join(args[3], "web-socket-sever.log"), format="[Server] %(asctime)s %(levelname)s %(message)s", filemode="w+", force=True)
+logging.basicConfig(filename=os.path.join(args[3], "server.log"), format="[Server] %(asctime)s %(levelname)s %(message)s", filemode="w+", force=True)
 logger=logging.getLogger()
 logger.setLevel(logging.INFO)
 

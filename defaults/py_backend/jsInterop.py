@@ -2,6 +2,7 @@
 from subprocess import Popen
 import json
 import os
+import sys
 
 from .webSocketClient import WebSocket as WebSocketClient
 from .logger import log
@@ -14,7 +15,8 @@ class JsInteropManager:
 
   def startServer(self):
     log(f"Starting Websocket server on port {self.port}")
-    self.serverProcess = Popen(["python", "server.py", self.hostName, self.port, os.environ["DECKY_PLUGIN_LOG_DIR"]], shell=True)
+    # self.serverProcess = Popen(["python", "server.py", self.hostName, self.port, os.environ["DECKY_PLUGIN_LOG_DIR"]], shell=True)
+    self.serverProcess = Popen([sys.executable, "server.py", "localhost", "5000", "/home/deck/homebrew/logs/bash-shortcuts"])
     pass
 
   def sendMessage(self, message: str, data: str):
