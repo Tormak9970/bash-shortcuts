@@ -1,5 +1,5 @@
 """
-__init__.py
+_ssl_compat.py
 websocket - WebSocket client library for Python
 
 Copyright 2022 engn33r
@@ -16,11 +16,24 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from ._abnf import *
-from ._app import WebSocketApp, setReconnect
-from ._core import *
-from ._exceptions import *
-from ._logging import *
-from ._socket import *
+__all__ = ["HAVE_SSL", "ssl", "SSLError", "SSLWantReadError", "SSLWantWriteError"]
 
-__version__ = "1.5.1"
+try:
+    import ssl
+    from ssl import SSLError
+    from ssl import SSLWantReadError
+    from ssl import SSLWantWriteError
+    HAVE_SSL = True
+except ImportError:
+    # dummy class of SSLError for environment without ssl support
+    class SSLError(Exception):
+        pass
+
+    class SSLWantReadError(Exception):
+        pass
+
+    class SSLWantWriteError(Exception):
+        pass
+
+    ssl = None
+    HAVE_SSL = False
