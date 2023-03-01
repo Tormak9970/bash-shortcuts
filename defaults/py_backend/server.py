@@ -5,9 +5,14 @@ import sys
 import logging
 import os
 
-logging.basicConfig(filename=os.path.join(os.environ["DECKY_PLUGIN_LOG_DIR"], "web-socket-sever.log"), format="[Server] %(asctime)s %(levelname)s %(message)s", filemode="w+", force=True)
+args = sys.argv
+numArgs = len(args)
+
+logging.basicConfig(filename=os.path.join(args[3], "web-socket-sever.log"), format="[Server] %(asctime)s %(levelname)s %(message)s", filemode="w+", force=True)
 logger=logging.getLogger()
-logger.setLevel(logging.INFO) # can be changed to logging.DEBUG for debugging issues
+logger.setLevel(logging.INFO)
+
+clients = []
 
 def log(txt):
   print(txt)
@@ -35,12 +40,6 @@ class InteropServer(WebSocket):
 
     for client in clients:
       client.send_message(self.address[0] + u' - disconnected')
-
-
-clients = []
-
-args = sys.argv
-numArgs = len(args)
 
 if (len(args) >= 3):
   server = WebSocketServer(args[1], args[2], InteropServer)

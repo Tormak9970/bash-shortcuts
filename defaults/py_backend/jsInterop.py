@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from subprocess import Popen
 import json
+import os
 
 from .webSocketClient import WebSocket as WebSocketClient
 from .logger import log
@@ -13,7 +14,7 @@ class JsInteropManager:
 
   def startServer(self):
     log(f"Starting Websocket server on port {self.port}")
-    self.serverProcess = Popen(["python", "./server.py", self.hostName, self.port])
+    self.serverProcess = Popen(["python", "./server.py", self.hostName, self.port, os.environ["DECKY_PLUGIN_LOG_DIR"]])
     pass
 
   def sendMessage(self, message: str, data: str):
