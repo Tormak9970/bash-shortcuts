@@ -9,12 +9,12 @@ class JsInteropManager:
   def __init__(self, hostName, port):
     self.hostName = hostName
     self.port = port
-    self.client = WebSocketClient(f"ws://{self.hostname}:{self.port}/")
     pass
 
   def startServer(self):
     log(f"Starting Websocket server on port {self.port}")
     self.serverProcess = Popen(["python", "./server.py", self.hostName, self.port])
+    self.client = WebSocketClient(f"ws://{self.hostName}:{self.port}/")
     self.client.handshake()
     pass
 
@@ -24,10 +24,15 @@ class JsInteropManager:
     pass
 
   def stopServer(self):
+    log(f"Closing Websocket client")
+    self.client.close()
+    log(f"Closed Websocket client")
+
     log(f"Killing Websocket server on port {self.port}")
     self.serverProcess.kill()
-    log(f"Killing Websocket client")
-    self.client.close()
+    log("Waiting for Websocket server to die")
+    self.serverProcess.wait()
+    log("Websocket server died")
     pass
 
         

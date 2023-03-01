@@ -17,7 +17,7 @@ from typing import (
     Union,
 )
 
-import h11
+from . import h11
 
 from .connection import Connection, ConnectionState, ConnectionType
 from .events import AcceptConnection, Event, RejectConnection, RejectData, Request
