@@ -23,15 +23,21 @@ export class WebSocketClient {
   port: string;
   ws: WebSocket|null;
   listeners = new Map<string, Listener[]>();
+  reconnectInterval: number;
+  numRetries: number | null;
 
   /**
    * Creates a new WebSocketClient.
    * @param hostName The host name of the WebSocket.
    * @param port The port of the WebSocket.
+   * @param reconnectInterval The time between reconnect attempts.
+   * @param numRetries The number of times to try to reconnect. If null there is no cap. Defaults to null.
    */
-  constructor(hostName: string, port: string) {
+  constructor(hostName: string, port: string, reconnectInterval: number, numRetries = null) {
     this.hostName = hostName;
     this.port = port;
+    this.reconnectInterval = reconnectInterval;
+    this.numRetries = numRetries;
     this.ws = null;
   }
 
@@ -106,6 +112,16 @@ export class WebSocketClient {
     // const reason = e.reason;
     // const wasClean = e.wasClean;
     console.log(`WebSocket onClose triggered:`, e);
+    
+    const closedByUser = false;
+
+    if (!closedByUser) {
+      // const interval = setInterval(() => {
+
+      // }, this.reconnectInterval);
+    } else {
+
+    }
   }
 
   /**

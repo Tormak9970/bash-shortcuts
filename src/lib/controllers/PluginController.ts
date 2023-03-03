@@ -31,7 +31,7 @@ export class PluginController {
     this.server = server;
     this.steamController = new SteamController();
     this.shortcutsController = new ShortcutsController(this.steamController);
-    this.webSocketClient = new WebSocketClient("localhost", "5000");
+    this.webSocketClient = new WebSocketClient("localhost", "5000", 1000);
     this.instancesController = new InstancesController(this.shortcutsController, this.webSocketClient);
   }
 
