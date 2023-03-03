@@ -76,7 +76,8 @@ export class WebSocketClient {
     
     try {
       const info = JSON.parse(e.data);
-      // info.data = JSON.parse(info.data);
+      
+      PyInterop.log(`WebSocketClient recieved message containing JSON data. Message: ${JSON.stringify(e)} Data: ${JSON.stringify(info)}`);
 
       if (this.listeners.has(info.type)) {
         const registeredListeners = this.listeners.get(info.message) as Listener[];
@@ -85,8 +86,8 @@ export class WebSocketClient {
           listener(info.data);
         }
       }
-    } catch (e: any) {
-      PyInterop.log(`WebSocketClient recieved message containing no JSON data. Message: ${JSON.stringify(e)}`);
+    } catch (err: any) {
+      PyInterop.log(`WebSocketClient recieved message containing no JSON data. Message: ${JSON.stringify(e)} Error: ${JSON.stringify(err)}`);
     }
   }
 
