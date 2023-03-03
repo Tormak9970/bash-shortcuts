@@ -80,7 +80,7 @@ export class WebSocketClient {
       PyInterop.log(`WebSocketClient recieved message containing JSON data. Message: ${JSON.stringify(e)} Data: ${JSON.stringify(info)}`);
 
       if (this.listeners.has(info.type)) {
-        const registeredListeners = this.listeners.get(info.message) as Listener[];
+        const registeredListeners = this.listeners.get(info.type) as Listener[];
 
         for (const listener of registeredListeners) {
           listener(info.data);
