@@ -48,10 +48,10 @@ export class WebSocketClient {
     PyInterop.log(`WebSocket client connecting to ${this.hostName}:${this.port}...`);
 
     this.ws = new WebSocket(`ws://${this.hostName}:${this.port}`);
-    this.ws.onopen = this.onOpen;
-    this.ws.onmessage = this.listen;
-    this.ws.onerror = this.onError;
-    this.ws.onclose = this.onClose;
+    this.ws.onopen = this.onOpen.bind(this);
+    this.ws.onmessage = this.listen.bind(this);
+    this.ws.onerror = this.onError.bind(this);
+    this.ws.onclose = this.onClose.bind(this);
 
     PyInterop.log(`WebSocket client connected to ${this.hostName}:${this.port}.`);
   }
