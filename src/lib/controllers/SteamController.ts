@@ -424,7 +424,7 @@ export class SteamController {
     }
   
     return (await (window as WindowEx).App?.WaitForServicesInitialized?.().then((success: boolean) => {
-      PyInterop.log(`Services initialized.`);
+      PyInterop.log(`Services initialized. Success: ${success}`);
       return success;
     })) ?? false;
   }

@@ -26,8 +26,8 @@ done
 
 #? Copy frontend
 echo "[TASK]: Copying frontend..."
-scp -r -P $deck_port ./dist deck@$deck_ip:$deck_home_dir/dist
-echo "[INFO]: Copied ./dist to $deck_home_dir/dist"
+scp -r -P $deck_port ./dist deck@$deck_ip:$deck_home_dir
+echo "[INFO]: Copied ./dist to $deck_home_dir"
 
 #? Copy default files
 echo "[TASK]: Copying defaults..."
