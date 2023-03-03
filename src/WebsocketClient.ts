@@ -3,6 +3,19 @@ import { PyInterop } from "./PyInterop";
 type Listener = (data: any) => void
 
 /**
+ * Enum for return values from running scripts.
+ */
+// @ts-ignore
+enum ScriptStatus {
+  UNEXPECTED_RETURN_CODE = -1,
+  FINISHED = 0,
+  DOES_NOT_EXIST = 1,
+  RUNNING = 2,
+  KILLED = 3,
+  FAILED = 4
+}
+
+/**
  * WebSocketClient class for connecting to a WebSocket.
  */
 export class WebSocketClient {
@@ -26,22 +39,34 @@ export class WebSocketClient {
    * Connects the client to the WebSocket.
    */
   connect(): void {
+    PyInterop.log(`WebSocket client connecting to ${this.hostName}:${this.port}...`);
+
     this.ws = new WebSocket(`ws://${this.hostName}:${this.port}`);
+    this.ws.onopen = this.onOpen;
     this.ws.onmessage = this.listen;
+    this.ws.onerror = this.onError;
+    this.ws.onclose = this.onClose;
+
+    PyInterop.log(`WebSocket client connected to ${this.hostName}:${this.port}.`);
   }
 
   /**
    * Disconnects the client from the WebSocket.
    */
   disconnect(): void {
+    PyInterop.log(`WebSocket client disconnecting from ${this.hostName}:${this.port}...`);
+
     this.ws?.close();
+    
+    PyInterop.log(`WebSocket client disconnected from ${this.hostName}:${this.port}.`);
   }
 
   /**
    * Listens to the WebSocket for messages.
    * @param e The MessageEvent.
    */
-  listen(e:MessageEvent): void {
+  private listen(e: MessageEvent): void {
+    PyInterop.log(`Recieved message ${JSON.stringify(e)}`);
     const info = JSON.parse(e.data);
 
     if (this.listeners.has(info.type)) {
@@ -51,6 +76,36 @@ export class WebSocketClient {
         listener(info.data);
       }
     }
+  }
+
+  /**
+   * Handler for WebSocket errors.
+   * @param e The Event.
+   */
+  private onError(e: Event) {
+    console.log(`WebSocket onError triggered:`, e);
+    PyInterop.log(`Websocket recieved and error: ${e}`)
+  }
+
+  /**
+   * Handler for when WebSocket opens.
+   * @param e The Event.
+   */
+  private onOpen(e: Event) {
+    console.log(`WebSocket onOpen triggered:`, e);
+    this.ws?.send("Hello server from TS!");
+    PyInterop.log(`WebSocket server opened. Event: ${e}`);
+  }
+
+  /**
+   * Handler for when WebSocket closes.
+   * @param e The CloseEvent.
+   */
+  private onClose(e: CloseEvent) {
+    // const returnCode = e.code;
+    // const reason = e.reason;
+    // const wasClean = e.wasClean;
+    console.log(`WebSocket onClose triggered:`, e);
   }
 
   /**
@@ -76,6 +131,7 @@ export class WebSocketClient {
    */
   deleteListeners(type: string): void {
     this.listeners.delete(type);
+    PyInterop.log(`Removed listeners for message of type: ${type}.`);
   }
 
   /**

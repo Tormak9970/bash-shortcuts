@@ -5,15 +5,6 @@ type ShortcutsDictionary = {
   [key: string]: Shortcut
 }
 
-enum ScriptStatus {
-  UNEXPECTED_RETURN_CODE = -1,
-  FINISHED = 0,
-  DOES_NOT_EXIST = 1,
-  RUNNING = 2,
-  KILLED = 3,
-  FAILED = 4
-}
-
 /**
  * Class for frontend - backend communication.
  */

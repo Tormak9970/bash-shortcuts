@@ -59,6 +59,7 @@ export class PluginController {
    * @param name The name of the main shortcut.
    */
   static async init(name: string): Promise<void> {
+    PyInterop.log("PluginController initializing...");
     this.shortcutName = name;
 
     //* clean out all shortcuts with names that start with "Bash Shortcuts - Instance"
@@ -71,6 +72,8 @@ export class PluginController {
     }
 
     this.webSocketClient.connect();
+    
+    PyInterop.log("PluginController initialized.");
   }
 
   /**
@@ -138,7 +141,11 @@ export class PluginController {
    * Function to run when the plugin dismounts.
    */
   static onDismount(): void {
+    PyInterop.log("PluginController dismounting...");
+
     this.shortcutsController.onDismount();
     this.webSocketClient.disconnect();
+    
+    PyInterop.log("PluginController dismounted.");
   }
 }

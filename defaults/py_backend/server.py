@@ -32,6 +32,7 @@ class InteropServer(WebSocket):
 
     for client in clients:
       client.send_message(self.address[0] + u' - connected')
+      
     clients.append(self)
 
   def handle_close(self):
