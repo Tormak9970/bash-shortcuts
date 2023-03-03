@@ -76,7 +76,7 @@ export class WebSocketClient {
     
     try {
       const info = JSON.parse(e.data);
-      info.data = JSON.parse(info.data);
+      // info.data = JSON.parse(info.data);
 
       if (this.listeners.has(info.type)) {
         const registeredListeners = this.listeners.get(info.message) as Listener[];

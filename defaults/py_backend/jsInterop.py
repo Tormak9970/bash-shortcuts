@@ -2,7 +2,6 @@
 from subprocess import Popen
 import json
 import os
-import sys
 
 from .webSocketClient import WebSocket as WebSocketClient
 from .logger import log
