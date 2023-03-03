@@ -95,7 +95,7 @@ class Plugin:
     pass
 
   def _addShortcut(self, shortcut):
-    if (shortcut["id"] not in self.shortcuts):
+    if (shortcut["id"] not in self.settingsManager.getSetting("shortcuts", {})):
       log(f"Adding shortcut {shortcut['name']}")
       shortcutsDict = self.settingsManager.getSetting("shortcuts", {})
       shortcutsDict[shortcut["id"]] = shortcut
@@ -113,7 +113,7 @@ class Plugin:
     pass
 
   def _modShortcut(self, shortcut):
-    if (shortcut["id"] in self.shortcuts):
+    if (shortcut["id"] in self.settingsManager.getSetting("shortcuts", {})):
       log(f"Modifying shortcut {shortcut['name']}")
       shortcutsDict = self.settingsManager.getSetting("shortcuts", {})
       shortcutsDict[shortcut["id"]] = shortcut
@@ -125,7 +125,7 @@ class Plugin:
     pass
 
   def _remShortcut(self, shortcut):
-    if (shortcut["id"] in self.shortcuts):
+    if (shortcut["id"] in self.settingsManager.getSetting("shortcuts", {})):
       log(f"Removing shortcut {shortcut['name']}")
       shortcutsDict = self.settingsManager.getSetting("shortcuts", {})
       del shortcutsDict[shortcut["id"]]

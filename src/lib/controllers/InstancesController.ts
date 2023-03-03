@@ -124,8 +124,14 @@ export class InstancesController {
       const res = await PyInterop.killNonAppShortcut(shortcutId);
       console.log(res);
 
-      PyInterop.log(`Removing websocket listener for message type ${instance.shortcutId}`);
-      this.webSocketClient.deleteListeners(instance.shortcutId);
+      this.webSocketClient.on(shortcutId, (data:any) => {
+        if (data.type == "end") {
+          setTimeout(() => {
+            PyInterop.log(`Removing websocket listener for message type ${shortcutId}`);
+            this.webSocketClient.deleteListeners(shortcutId);
+          }, 2000);
+        }
+      });
       return true;
     }
   }

@@ -105,7 +105,7 @@ export class PluginController {
       PyInterop.log(`Stopped Instance for shortcut ${shortcut.name}`);
       return await this.instancesController.killInstance(shortcut.id);
     } else {
-      PyInterop.log(`Failed to stop instance for shortcut ${shortcut.name}. Id: ${shortcut.id}`)
+      PyInterop.log(`Failed to stop instance for shortcut ${shortcut.name}. Id: ${shortcut.id}`);
       return false;
     }
   }

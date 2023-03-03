@@ -71,7 +71,6 @@ export const ShortcutLauncher: VFC<ShortcutLauncherProps> = (props: ShortcutLaun
         PyInterop.toast("Error", "Failed to close shortcut.");
       } else {
         setIsRunning(false);
-        // TODO: delete listener if it doesn't get called.
       }
     } else {
       const res = await PluginController.launchShortcut(shortcut, async () => {
@@ -89,16 +88,19 @@ export const ShortcutLauncher: VFC<ShortcutLauncherProps> = (props: ShortcutLaun
       if (!res) {
         PyInterop.toast("Error", "Shortcut failed. Check the command.");
       } else {
-        
-        console.log(shortcut.isApp);
         if (!shortcut.isApp) {
           PyInterop.log(`Registering for WebSocket messages of type: ${shortcut.id}...`);
 
           PluginController.onWebSocketEvent(shortcut.id, (data: any) => {
             PyInterop.log(`Listener for event type: ${shortcut.id} called. Data: ${JSON.stringify(data)}`);
             if (data.type == "end") {
+              if (data.status == 0) {
+                PyInterop.toast(shortcut.name, "Shortcut execution finished.");
+              } else {
+                PyInterop.toast(shortcut.name, "Shortcut execution was canceled.");
+              }
+
               setIsRunning(false);
-              PyInterop.log(`Set shortcutLauncher with Id: ${shortcut.id} to false.`);
             }
           });
         }

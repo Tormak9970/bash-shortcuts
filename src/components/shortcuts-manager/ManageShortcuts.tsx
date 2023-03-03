@@ -32,6 +32,7 @@ const ActionButtion: VFC<ActionButtonProps<Shortcut>> = (props:ActionButtonProps
               let shorts = shortcuts;
               shorts[shortcut.id] = updated;
               setShortcuts(shorts);
+              PyInterop.toast("Success", `Updated shortcut ${props.entry.data?.name}.`);
             }} shortcut={shortcut} />
           );
         }}>Edit</MenuItem>
@@ -42,6 +43,7 @@ const ActionButtion: VFC<ActionButtonProps<Shortcut>> = (props:ActionButtonProps
               let shorts = shortcuts;
               delete shorts[shortcut.id];
               setShortcuts(shorts);
+              PyInterop.toast("Success", `Removed shortcut ${props.entry.data?.name}.`);
             }} bDestructiveWarning={true}>
               Are you sure you want to delete this shortcut?
             </ConfirmModal>
