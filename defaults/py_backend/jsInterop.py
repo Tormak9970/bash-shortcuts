@@ -19,7 +19,7 @@ class JsInteropManager:
     self.serverProcess = Popen(f"python {os.path.join(os.path.dirname(__file__), 'server.py')} \"{self.hostName}\" \"{self.port}\" \"{os.environ['DECKY_PLUGIN_LOG_DIR']}\"", shell=True)
     pass
 
-  def sendMessage(self, type: str, data: str):
+  def sendMessage(self, type: str, data: dict):
     ws = WebSocketClient()
     log(f"Connecting to websocket {self.hostName}:{self.port}...")
     ws.connect(f"ws://{self.hostName}:{self.port}")

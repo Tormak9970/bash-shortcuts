@@ -72,15 +72,21 @@ export class WebSocketClient {
    * @param e The MessageEvent.
    */
   private listen(e: MessageEvent): void {
-    PyInterop.log(`Recieved message ${JSON.stringify(e)}`);
-    const info = JSON.parse(e.data);
+    PyInterop.log(`Recieved message: ${JSON.stringify(e)}`);
+    
+    try {
+      const info = JSON.parse(e.data);
+      info.data = JSON.parse(info.data);
 
-    if (this.listeners.has(info.type)) {
-      const registeredListeners = this.listeners.get(info.message) as Listener[];
+      if (this.listeners.has(info.type)) {
+        const registeredListeners = this.listeners.get(info.message) as Listener[];
 
-      for (const listener of registeredListeners) {
-        listener(info.data);
+        for (const listener of registeredListeners) {
+          listener(info.data);
+        }
       }
+    } catch (e: any) {
+      PyInterop.log(`WebSocketClient recieved message containing no JSON data. Message: ${JSON.stringify(e)}`);
     }
   }
 
@@ -90,7 +96,7 @@ export class WebSocketClient {
    */
   private onError(e: Event) {
     console.log(`WebSocket onError triggered:`, e);
-    PyInterop.log(`Websocket recieved and error: ${e}`)
+    PyInterop.log(`Websocket recieved and error: ${JSON.stringify(e)}`)
   }
 
   /**
@@ -100,7 +106,7 @@ export class WebSocketClient {
   private onOpen(e: Event) {
     console.log(`WebSocket onOpen triggered:`, e);
     this.ws?.send("Hello server from TS!");
-    PyInterop.log(`WebSocket server opened. Event: ${e}`);
+    PyInterop.log(`WebSocket server opened. Event: ${JSON.stringify(e)}`);
   }
 
   /**
@@ -111,7 +117,7 @@ export class WebSocketClient {
     // const returnCode = e.code;
     // const reason = e.reason;
     // const wasClean = e.wasClean;
-    console.log(`WebSocket onClose triggered:`, e);
+    console.log(`WebSocket onClose triggered: ${JSON.stringify(e)}`);
     
     const closedByUser = false;
 

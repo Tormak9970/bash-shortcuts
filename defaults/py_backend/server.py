@@ -25,7 +25,7 @@ class InteropServer(WebSocket):
 
     for client in clients:
       if client != self:
-        client.send_message(self.address[0] + u' - ' + self.data)
+        client.send_message(self.data)
 
   def connected(self):
     log(f"{self.address} connected")
