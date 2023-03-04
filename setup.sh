@@ -14,8 +14,7 @@ if [ -d "./py_backend" ]; then
     echo ""
     echo "[TASK]: creating symlink..."
 
-    mkdir ./py_backend
-    ln -s ./py_backend ./defaults/py_backend
+    ln -s ./defaults/py_backend ./py_backend
 
     echo "[INFO]: py_backend symlink created!"
   else
@@ -26,8 +25,7 @@ else
   echo ""
   echo "[TASK]: creating symlink..."
 
-  mkdir ./py_backend
-    ln -s ./py_backend ./defaults/py_backend
+  ln -s ./defaults/py_backend ./py_backend
 
   echo "[INFO]: py_backend symlink created!"
 fi
