@@ -143,7 +143,7 @@ export default definePlugin((serverApi: ServerAPI) => {
   // const guidePages: GuidePages = 
   PyInterop.getGuides().then(res => {
     console.log("Guides:", res);
-  })
+  });
 
   return {
     title: <div className={staticClasses.Title}>Bash Shortcuts</div>,
