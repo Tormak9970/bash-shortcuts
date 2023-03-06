@@ -1,6 +1,6 @@
 {
   "name": "bash-shortcuts",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "description": "A plugin for creating and managing shortcuts that can be launched from the Quick Access Menu. Uses bash to run shortcuts, hence the name.",
   "scripts": {
     "build": "shx rm -rf dist && rollup -c",
@@ -34,27 +34,26 @@
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^13.3.0",
     "@rollup/plugin-replace": "^4.0.0",
-    "@rollup/plugin-typescript": "^8.3.3",
+    "@rollup/plugin-typescript": "^8.5.0",
     "@types/markdown-it": "^12.2.3",
     "@types/react": "16.14.0",
     "@types/uuid": "^8.3.4",
     "@types/webpack": "^5.28.0",
-    "rollup": "^2.77.1",
-    "rollup-plugin-import-assets": "^1.1.1",
-    "shx": "^0.3.4",
-    "tslib": "^2.4.0",
-    "typescript": "^4.7.4"
-  },
-  "dependencies": {
-    "decky-frontend-lib": "^3.19.1",
     "markdown-it": "^13.0.1",
     "markdown-it-anchor": "^8.6.7",
     "markdown-it-attrs": "^4.1.6",
     "markdown-it-container": "^3.0.0",
-    "markdown-it-imsize": "^2.0.1",
     "markdown-it-multimd-table": "^4.2.0",
     "markdown-it-toc-done-right": "^4.2.0",
-    "react-icons": "^4.4.0",
+    "rollup": "^2.79.1",
+    "rollup-plugin-import-assets": "^1.1.1",
+    "shx": "^0.3.4",
+    "tslib": "^2.5.0",
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "decky-frontend-lib": "^3.19.1",
+    "react-icons": "^4.8.0",
     "uuid": "^9.0.0"
   },
   "pnpm": {

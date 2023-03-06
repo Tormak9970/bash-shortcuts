@@ -7,12 +7,15 @@ import {
   PanelSectionRow,
   quickAccessControlsClasses,
   ServerAPI,
+  ServerResponse,
   SidebarNavigation,
   staticClasses,
 } from "decky-frontend-lib";
 import { VFC, Fragment, useRef } from "react";
-import { IoApps } from "react-icons/io5";
-import { About } from "./components/plugin-config-ui/About";
+import { IoApps, IoSettingsSharp } from "react-icons/io5";
+import { HiViewGridAdd } from "react-icons/hi";
+import { FaEdit } from "react-icons/fa";
+import { MdNumbers } from "react-icons/md";
 import { AddShortcut } from "./components/plugin-config-ui/AddShortcut";
 import { ShortcutLauncher } from "./components/ShortcutLanucher";
 import { ManageShortcuts } from "./components/plugin-config-ui/ManageShortcuts";
@@ -21,6 +24,8 @@ import { PyInterop } from "./PyInterop";
 import { Shortcut } from "./lib/data-structures/Shortcut";
 import { ShortcutsContextProvider, ShortcutsState, useShortcutsState } from "./state/ShortcutsState";
 import { PluginController } from "./lib/controllers/PluginController";
+import { Settings } from "./components/plugin-config-ui/Settings";
+import { GuidePage } from "./components/plugin-config-ui/guides/GuidePage";
 
 declare global {
   var SteamClient: SteamClient;
@@ -100,27 +105,49 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({ }) => {
   );
 };
 
-const ShortcutsManagerRouter: VFC = () => {
+const ShortcutsManagerRouter: VFC<{ guides: GuidePages }> = ({ guides }) => {
+  const guidePages = {}
+  Object.entries(guides).map(([ guideName, guide ]) => {
+    guidePages[guideName] = {
+      title: guideName,
+      content: <GuidePage content={guide} />,
+      route: `/bash-shortcuts-nav/guides-${guideName.toLowerCase().replace(/ /g, "-")}`,
+      icon: <MdNumbers />,
+      hideTitle: true
+    }
+  });
+
   return (
     <SidebarNavigation
       title="Plugin Config"
       showTitle
       pages={[
         {
-          title: "Add a Shortcut",
+          title: "Add Shortcut",
           content: <AddShortcut />,
           route: "/bash-shortcuts-nav/add",
+          icon: <HiViewGridAdd />
         },
         {
           title: "Manage Shortcuts",
           content: <ManageShortcuts />,
           route: "/bash-shortcuts-nav/manage",
+          icon: <FaEdit />
         },
         {
-          title: "About",
-          content: <About />,
-          route: "/bash-shortcuts-nav/about",
+          title: "Settings",
+          content: <Settings />,
+          route: "/bash-shortcuts-nav/settings",
+          icon: <IoSettingsSharp />
         },
+        // TODO: Need a seperator here
+        guidePages["Overview"],
+        guidePages["Adding Shortcuts"],
+        guidePages["Editing Shortcuts"],
+        guidePages["Bash Tips"],
+        guidePages["Custom Scripts"],
+        guidePages["Background Tasks"],
+        guidePages["Using Hooks"]
       ]}
     />
   );
@@ -134,15 +161,15 @@ export default definePlugin((serverApi: ServerAPI) => {
 
   const loginHook = PluginController.initOnLogin();
 
-  serverApi.routerHook.addRoute("/bash-shortcuts-nav", () => (
-    <ShortcutsContextProvider shortcutsStateClass={state}>
-      <ShortcutsManagerRouter />
-    </ShortcutsContextProvider>
-  ));
+  PyInterop.getGuides().then((res: ServerResponse<GuidePages>) => {
+    const guides = res.result as GuidePages;
+    console.log("Guides:", guides);
 
-  // const guidePages: GuidePages = 
-  PyInterop.getGuides().then(res => {
-    console.log("Guides:", res);
+    serverApi.routerHook.addRoute("/bash-shortcuts-nav", () => (
+      <ShortcutsContextProvider shortcutsStateClass={state}>
+        <ShortcutsManagerRouter guides={guides} />
+      </ShortcutsContextProvider>
+    ));
   });
 
   return {
