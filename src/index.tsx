@@ -140,11 +140,10 @@ const ShortcutsManagerRouter: VFC<{ guides: GuidePages }> = ({ guides }) => {
           route: "/bash-shortcuts-nav/settings",
           icon: <IoSettingsSharp />
         },
-        // TODO: Need a seperator here
+        "separator",
         guidePages["Overview"],
         guidePages["Adding Shortcuts"],
         guidePages["Editing Shortcuts"],
-        guidePages["Bash Tips"],
         guidePages["Custom Scripts"],
         guidePages["Background Tasks"],
         guidePages["Using Hooks"]
