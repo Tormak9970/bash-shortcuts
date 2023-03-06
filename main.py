@@ -146,8 +146,8 @@ class Plugin:
   def _getGuides(self):
     for guideFileName in os.listdir(self.guidesDirPath):
       with open(os.path.join(self.guidesDirPath, guideFileName), 'r') as guideFile:
-        guideName = guideFileName.replace("_", " ")
-        self.guides[guideName] = "\n".join(guideFile.readLines())
+        guideName = guideFileName.replace("_", " ").replace(".md", "")
+        self.guides[guideName] = "\n".join(guideFile.readlines())
 
     pass
 
