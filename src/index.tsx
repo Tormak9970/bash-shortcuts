@@ -77,7 +77,7 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({ }) => {
       <div className="bash-shortcuts-scope">
         <PanelSection>
           <PanelSectionRow>
-            <ButtonItem layout="below" onClick={() => { Navigation.CloseSideMenus(); Navigation.Navigate("/bash-shortcuts-nav"); }} >
+            <ButtonItem layout="below" onClick={() => { Navigation.CloseSideMenus(); Navigation.Navigate("/bash-shortcuts-config"); }} >
               Plugin Config
             </ButtonItem>
           </PanelSectionRow>
@@ -111,7 +111,7 @@ const ShortcutsManagerRouter: VFC<{ guides: GuidePages }> = ({ guides }) => {
     guidePages[guideName] = {
       title: guideName,
       content: <GuidePage content={guide} />,
-      route: `/bash-shortcuts-nav/guides-${guideName.toLowerCase().replace(/ /g, "-")}`,
+      route: `/bash-shortcuts-config/guides-${guideName.toLowerCase().replace(/ /g, "-")}`,
       icon: <MdNumbers />,
       hideTitle: true
     }
@@ -125,19 +125,19 @@ const ShortcutsManagerRouter: VFC<{ guides: GuidePages }> = ({ guides }) => {
         {
           title: "Add Shortcut",
           content: <AddShortcut />,
-          route: "/bash-shortcuts-nav/add",
+          route: "/bash-shortcuts-config/add",
           icon: <HiViewGridAdd />
         },
         {
           title: "Manage Shortcuts",
           content: <ManageShortcuts />,
-          route: "/bash-shortcuts-nav/manage",
+          route: "/bash-shortcuts-config/manage",
           icon: <FaEdit />
         },
         {
           title: "Settings",
           content: <Settings />,
-          route: "/bash-shortcuts-nav/settings",
+          route: "/bash-shortcuts-config/settings",
           icon: <IoSettingsSharp />
         },
         "separator",
@@ -164,7 +164,7 @@ export default definePlugin((serverApi: ServerAPI) => {
     const guides = res.result as GuidePages;
     console.log("Guides:", guides);
 
-    serverApi.routerHook.addRoute("/bash-shortcuts-nav", () => (
+    serverApi.routerHook.addRoute("/bash-shortcuts-config", () => (
       <ShortcutsContextProvider shortcutsStateClass={state}>
         <ShortcutsManagerRouter guides={guides} />
       </ShortcutsContextProvider>
@@ -181,7 +181,7 @@ export default definePlugin((serverApi: ServerAPI) => {
     icon: <IoApps />,
     onDismount() {
       loginHook.unregister();
-      serverApi.routerHook.removeRoute("/bash-shortcuts-nav");
+      serverApi.routerHook.removeRoute("/bash-shortcuts-config");
       PluginController.onDismount();
     },
     alwaysRender: true

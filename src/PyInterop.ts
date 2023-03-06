@@ -70,6 +70,34 @@ export class PyInterop {
   }
 
   /**
+   * Gets the plugin's guides.
+   * @returns The guides.
+   */
+  static async getGuides(): Promise<ServerResponse<GuidePages>> {
+    return await this.serverAPI.callPluginMethod<{}, GuidePages>("getGuides", {});
+  }
+
+  /**
+   * Gets the value of a plugin's setting.
+   * @param key The key of the setting to get.
+   * @param defaultVal The default value of the setting.
+   * @returns A promise resolving to the setting's value.
+   */
+  static async getSetting<T>(key: string, defaultVal: T): Promise<T> {
+    return (await this.serverAPI.callPluginMethod<{ key: string, defaultVal: T }, T>("getSetting", { key: key, defaultVal: defaultVal })).result as T;
+  }
+
+  /**
+   * Sets the value of a plugin's setting.
+   * @param key The key of the setting to set.
+   * @param newVal The new value for the setting.
+   * @returns A void promise resolving once the setting is set.
+   */
+  static async setSetting<T>(key: string, newVal: T): Promise<ServerResponse<void>> {
+    return await this.serverAPI.callPluginMethod<{ key: string, newVal : T}, void>("setSettings", { key: key, newVal: newVal });
+  }
+
+  /**
    * Adds a new shortcut on the backend and returns the updated shortcuts dictionary.
    * @param shortcut The shortcut to add.
    * @returns A promise resolving to a server response containing the updated shortcuts dictionary.
@@ -103,14 +131,6 @@ export class PyInterop {
    */
   static async remShortcut(shortcut: Shortcut): Promise<ServerResponse<ShortcutsDictionary>> {
     return await this.serverAPI.callPluginMethod<{ shortcut: Shortcut }, ShortcutsDictionary>("remShortcut", { shortcut: shortcut });
-  }
-
-  /**
-   * Gets the plugin's guides.
-   * @returns The guides.
-   */
-  static async getGuides(): Promise<ServerResponse<GuidePages>> {
-    return await this.serverAPI.callPluginMethod<{}, GuidePages>("getGuides", {});
   }
 
   /**

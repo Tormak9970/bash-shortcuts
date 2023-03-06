@@ -5,7 +5,7 @@ import { Shortcut } from "../../lib/data-structures/Shortcut";
 
 import { EditModal } from "./EditModal";
 import { useShortcutsState } from "../../state/ShortcutsState";
-import { Menu, MenuItem, showContextMenu } from "./MenuProxy";
+import { Menu, MenuItem, showContextMenu } from "./utils/MenuProxy";
 import { FaEllipsisH } from "react-icons/fa"
 
 type ActionButtonProps<T> = {

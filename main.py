@@ -21,8 +21,6 @@ class Plugin:
   shortcutsRunnerPath = f"\"/home/{pluginUser}/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh\""
   guidesDirPath = f"/home/{pluginUser}/homebrew/plugins/bash-shortcuts/guides"
 
-  jsInteropManager = JsInteropManager("localhost", "5000")
-  instanceManager = InstanceManager(0.25, jsInteropManager)
   settingsManager = SettingsManager(name='bash-shortcuts', settings_directory=pluginSettingsDir)
 
   guides = {}
@@ -30,7 +28,19 @@ class Plugin:
   # Normal methods: can be called from JavaScript using call_plugin_function("signature", argument)
   async def getShortcuts(self):
     return self.settingsManager.getSetting("shortcuts", {})
-      
+
+  async def getGuides(self):
+    self._getGuides(self)
+    return self.guides
+  
+  async def getSetting(self, key, defaultVal):
+    return self.settingsManager.getSetting(key, defaultVal)
+
+  async def setSetting(self, key, newVal):
+    self.settingsManager.setSetting(key, newVal)
+    log(f"Set setting {key} to {newVal}")
+    pass
+
   async def addShortcut(self, shortcut):
     self._addShortcut(self, shortcut)
     return self.settingsManager.getSetting("shortcuts", {})
@@ -52,10 +62,6 @@ class Plugin:
 
   async def killNonAppShortcut(self, shortcutId):
     self._killNonAppShortcut(self, shortcutId)
-
-  async def getGuides(self):
-    self._getGuides(self)
-    return self.guides
 
   async def getHomeDir(self):
     return self.pluginUser
@@ -92,6 +98,16 @@ class Plugin:
         self.settingsManager.setSetting("shortcuts", { "fcba1cb4-4601-45d8-b919-515d152c56ef": { "id": "fcba1cb4-4601-45d8-b919-515d152c56ef", "name": "Konsole", "cmd": "konsole", "position": 1, "isApp": True } })
     else:
       log(f"Shortcuts loaded from settings. Shortcuts: {json.dumps(self.settingsManager.getSetting('shortcuts', {}))}")
+
+    if "webSocketPort" not in self.settingsManager.settings:
+      log("No WebSocket port detected in settings.")
+      self.settingsManager.setSetting("webSocketPort", "5000")
+      log("Set WebSocket port to default; \"5000\"")
+    else:
+      log(f"WebSocket port loaded from settings. Port: {self.settingsManager.getSetting('webSocketPort', '')}")
+      
+    self.jsInteropManager = JsInteropManager("localhost", self.settingsManager.getSetting("webSocketPort", "5000"))
+    self.instanceManager = InstanceManager(0.25, self.jsInteropManager)
 
     #* start websocket server
     self.jsInteropManager.startServer()

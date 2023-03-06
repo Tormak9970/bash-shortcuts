@@ -36,13 +36,13 @@ export const AddShortcut: VFC = () => {
   return (
     <>
       <style>{`
-          .scoper .${quickAccessControlsClasses.PanelSection} {
+          .bash-shortcuts-scoper .${quickAccessControlsClasses.PanelSection} {
             width: inherit;
             height: inherit;
             padding: 0px;
           }
         `}</style>
-      <div className="scoper">
+      <div className="bash-shortcuts-scoper">
         <PanelSection>
           <PanelSectionRow>
             <Field
