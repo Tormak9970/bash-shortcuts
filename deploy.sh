@@ -20,20 +20,25 @@ function scpDirRecursive() {
   # $2 to dir
   files=($(ls $1))
 
-  for file in "${files[@]}"; do
-    if [ -d "$1/$file" ]; then
-      scpDirRecursive "$1/$file" "$2/$file"
-    else
-      diff=$(ssh deck@$deck_ip "cat $2/$file" | diff - $1/$file)
-
-      if [ "$diff" != "" ]; then
-        scp -P $deck_port $1/$file deck@$deck_ip:$2/$file
-        echo "[INFO]: Copied $1/$file to $2/$file"
+  if ssh -q deck@$deck_ip "[ -d $2 ]"; then
+    for file in "${files[@]}"; do
+      if [ -d "$1/$file" ]; then
+        scpDirRecursive "$1/$file" "$2/$file"
       else
-        echo "[INFO]: Skipping $1/$file. No changes detected."
+        diff=$(ssh deck@$deck_ip "cat $2/$file" | diff - $1/$file)
+
+        if [ "$diff" != "" ]; then
+          scp -P $deck_port $1/$file deck@$deck_ip:$2/$file
+          echo "[INFO]: Copied $1/$file to $2/$file"
+        else
+          echo "[INFO]: Skipping $1/$file. No changes detected."
+        fi
       fi
-    fi
-  done
+    done
+  else
+    scp -r -P $deck_port $1 deck@$deck_ip:$2
+    echo "[INFO]: Copied $1 to $2"
+  fi
 }
 
 #? Copy general files

@@ -106,6 +106,14 @@ export class PyInterop {
   }
 
   /**
+   * Gets the plugin's guides.
+   * @returns The guides.
+   */
+  static async getGuides(): Promise<ServerResponse<GuidePages>> {
+    return await this.serverAPI.callPluginMethod<{}, GuidePages>("getGuides", {});
+  }
+
+  /**
    * Runs a non app shortcut.
    * @param shortcutId The id of the shortcut to run.
    */

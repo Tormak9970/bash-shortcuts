@@ -153,7 +153,7 @@ export class InstancesController {
         PyInterop.log(`Failed to launch instance. InstanceName: ${instance.steamShortcutName} ShortcutId: ${shortcutId}`);
       } else {
         const { unregister } = this.shorcutsController.registerForShortcutExit(appId, (data: LifetimeNotification) => {
-          onExit(data)
+          onExit(data);
           unregister();
         });
       }

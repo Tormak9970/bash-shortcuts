@@ -12,10 +12,10 @@ import {
 } from "decky-frontend-lib";
 import { VFC, Fragment, useRef } from "react";
 import { IoApps } from "react-icons/io5";
-import { About } from "./components/shortcuts-manager/About";
-import { AddShortcut } from "./components/shortcuts-manager/AddShortcut";
+import { About } from "./components/plugin-config-ui/About";
+import { AddShortcut } from "./components/plugin-config-ui/AddShortcut";
 import { ShortcutLauncher } from "./components/ShortcutLanucher";
-import { ManageShortcuts } from "./components/shortcuts-manager/ManageShortcuts";
+import { ManageShortcuts } from "./components/plugin-config-ui/ManageShortcuts";
 
 import { PyInterop } from "./PyInterop";
 import { Shortcut } from "./lib/data-structures/Shortcut";
@@ -73,7 +73,7 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({ }) => {
         <PanelSection>
           <PanelSectionRow>
             <ButtonItem layout="below" onClick={() => { Navigation.CloseSideMenus(); Navigation.Navigate("/bash-shortcuts-nav"); }} >
-              Manage Shortcuts
+              Plugin Config
             </ButtonItem>
           </PanelSectionRow>
           {
@@ -103,7 +103,7 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({ }) => {
 const ShortcutsManagerRouter: VFC = () => {
   return (
     <SidebarNavigation
-      title="Shortcuts Manager"
+      title="Plugin Config"
       showTitle
       pages={[
         {
@@ -117,7 +117,7 @@ const ShortcutsManagerRouter: VFC = () => {
           route: "/bash-shortcuts-nav/manage",
         },
         {
-          title: "About Shortcuts",
+          title: "About",
           content: <About />,
           route: "/bash-shortcuts-nav/about",
         },
@@ -139,6 +139,11 @@ export default definePlugin((serverApi: ServerAPI) => {
       <ShortcutsManagerRouter />
     </ShortcutsContextProvider>
   ));
+
+  // const guidePages: GuidePages = 
+  PyInterop.getGuides().then(res => {
+    console.log("Guides:", res);
+  })
 
   return {
     title: <div className={staticClasses.Title}>Bash Shortcuts</div>,

@@ -19,10 +19,13 @@ class Plugin:
   oldShortcutsPath = f"/home/{pluginUser}/.config/bash-shortcuts/shortcuts.json"
 
   shortcutsRunnerPath = f"\"/home/{pluginUser}/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh\""
+  guidesDirPath = f"/home/{pluginUser}/homebrew/plugins/bash-shortcuts/guides"
 
   jsInteropManager = JsInteropManager("localhost", "5000")
   instanceManager = InstanceManager(0.25, jsInteropManager)
   settingsManager = SettingsManager(name='bash-shortcuts', settings_directory=pluginSettingsDir)
+
+  guides = {}
 
   # Normal methods: can be called from JavaScript using call_plugin_function("signature", argument)
   async def getShortcuts(self):
@@ -49,6 +52,10 @@ class Plugin:
 
   async def killNonAppShortcut(self, shortcutId):
     self._killNonAppShortcut(self, shortcutId)
+
+  async def getGuides(self):
+    self._getGuides(self)
+    return self.guides
 
   async def getHomeDir(self):
     return self.pluginUser
@@ -133,6 +140,14 @@ class Plugin:
       self.settingsManager.setSetting("shortcuts", shortcutsDict)
     else:
       log(f"Shortcut {shortcut['name']} does not exist")
+
+    pass
+
+  def _getGuides(self):
+    for guideFileName in os.listdir(self.guidesDirPath):
+      with open(os.path.join(self.guidesDirPath, guideFileName), 'r') as guideFile:
+        guideName = guideFileName.replace("_", " ")
+        self.guides[guideName] = "\n".join(guideFile.readLines())
 
     pass
 
