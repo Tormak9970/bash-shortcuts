@@ -49,7 +49,7 @@ for genFile in "${genFiles[@]}"; do
   diff=$(ssh deck@$deck_ip "cat $deck_home_dir/$genFile" | diff - $genFile)
 
   if [ "$diff" != "" ]; then
-    # scp -P $deck_port $genFile deck@$deck_ip:$deck_home_dir/$genFile
+    scp -P $deck_port $genFile deck@$deck_ip:$deck_home_dir/$genFile
     echo "[INFO]: Copied ./$genFile to $deck_home_dir/$genFile"
   else
     echo "[INFO]: Skipping $genFile. No changes detected."
