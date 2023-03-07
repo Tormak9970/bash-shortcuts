@@ -3,8 +3,8 @@
   "author": "Tormak",
   "flags": [],
   "publish": {
-    "tags": ["shortcuts", "convenience"],
-    "description": "Manager for shortcuts in the Quick Access Menu! Use Bash under the hood.",
+    "tags": ["shortcuts", "convenience", "scripting"],
+    "description": "Manager for shortcuts in the Quick Access Menu! Uses Bash under the hood.",
     "image": "https://raw.githubusercontent.com/Tormak9970/bash-shortcuts/main/assets/thumbnail.png"
   }
 }
