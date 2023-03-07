@@ -118,17 +118,7 @@ export class WebSocketClient {
     // const returnCode = e.code;
     // const reason = e.reason;
     // const wasClean = e.wasClean;
-    console.log(`WebSocket onClose triggered: ${JSON.stringify(e)}`);
-    
-    const closedByUser = false;
-
-    if (!closedByUser) {
-      // const interval = setInterval(() => {
-
-      // }, this.reconnectInterval);
-    } else {
-
-    }
+    PyInterop.log(`WebSocket onClose triggered: ${JSON.stringify(e)}`);
   }
 
   /**
