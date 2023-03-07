@@ -15,10 +15,8 @@ These guides serve as a reference for questions you may have, and a resource for
 ### Table of Contents
  - Overview
    - General overview of the plugin and guides. **You are here**
- - Adding Shortcuts
-   - Guide on the process of creating a shortcut.
- - Editing Shortcuts
-   - Guide on the process of editing and deleting a shortcut.
+ - Managing Shortcuts
+   - Guide on the process of adding, editing, and removing shortcuts.
  - Custom Scripts
    - Guide and tips for writing scripts to run.
  - Background Tasks

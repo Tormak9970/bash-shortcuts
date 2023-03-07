@@ -16,7 +16,6 @@ specifiers:
   markdown-it-attrs: ^4.1.6
   markdown-it-container: ^3.0.0
   markdown-it-multimd-table: ^4.2.0
-  markdown-it-toc-done-right: ^4.2.0
   react-icons: ^4.8.0
   rollup: ^2.79.1
   rollup-plugin-import-assets: ^1.1.1
@@ -45,7 +44,6 @@ devDependencies:
   markdown-it-attrs: 4.1.6_markdown-it@13.0.1
   markdown-it-container: 3.0.0
   markdown-it-multimd-table: 4.2.0
-  markdown-it-toc-done-right: 4.2.0
   rollup: 2.79.1
   rollup-plugin-import-assets: 1.1.1_rollup@2.79.1
   shx: 0.3.4
@@ -689,10 +687,6 @@ packages:
 
   /markdown-it-multimd-table/4.2.0:
     resolution: {integrity: sha512-wFpb8TSQ9josQrAlOg1toEAHHSGYQZ4krBKfpejPQ+lq3oudnxCNW4S6gYMcRbkrtrfX/ND2njr4belnKt3fBg==}
-    dev: true
-
-  /markdown-it-toc-done-right/4.2.0:
-    resolution: {integrity: sha512-UB/IbzjWazwTlNAX0pvWNlJS8NKsOQ4syrXZQ/C72j+jirrsjVRT627lCaylrKJFBQWfRsPmIVQie8x38DEhAQ==}
     dev: true
 
   /markdown-it/13.0.1:
