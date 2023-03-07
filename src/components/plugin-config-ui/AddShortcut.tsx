@@ -70,7 +70,6 @@ export const AddShortcut: VFC = () => {
             <ToggleField label="Does this launch an app?" onChange={(e) => { setIsApp(e) }} checked />
           </PanelSectionRow>
           <PanelSectionRow>
-            {/* @ts-ignore */}
             <ButtonItem layout="below" onClick={saveShortcut} disabled={!ableToSave} bottomSeparator='none'>
               Save
             </ButtonItem>

@@ -94,7 +94,7 @@ export class PyInterop {
    * @returns A void promise resolving once the setting is set.
    */
   static async setSetting<T>(key: string, newVal: T): Promise<ServerResponse<void>> {
-    return await this.serverAPI.callPluginMethod<{ key: string, newVal : T}, void>("setSettings", { key: key, newVal: newVal });
+    return await this.serverAPI.callPluginMethod<{ key: string, newVal : T}, void>("setSetting", { key: key, newVal: newVal });
   }
 
   /**

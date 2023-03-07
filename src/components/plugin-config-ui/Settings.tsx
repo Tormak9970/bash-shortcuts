@@ -1,5 +1,5 @@
 import { Field, PanelSection, PanelSectionRow, quickAccessControlsClasses, TextField } from "decky-frontend-lib";
-import { VFC, Fragment } from "react";
+import { VFC, Fragment, useState, useEffect } from "react";
 import { PyInterop } from "../../PyInterop";
 import { useSetting } from "./utils/hooks/useSetting";
 
@@ -19,22 +19,24 @@ type SettingsFieldProps = {
 
 const SettingsField: VFC<SettingsFieldProps> = ({ field }) => {
   const [ setting, setSetting ] = useSetting<string>(field.settingsKey, field.default);
+  const [ fieldVal, setFieldVal ] = useState(setting);
 
-  const onChange = async (event: any) => {
-    const newVal = event.target.value;
+  useEffect(() => {
+    setFieldVal(setting);
+  }, [setting]);
+
+  const onChange = (e: any) => {
+    const newVal = e.target.value;
+    setFieldVal(newVal);
     
     PyInterop.log(`Checking newVal for ${field.settingsKey}. Result was: ${field.validator(newVal)} for value ${newVal}`);
     if (field.validator(newVal)) {
-      await setSetting(newVal);
-      PyInterop.log(`Set value of setting ${field.settingsKey} to ${newVal}`);
-    } else {
-      PyInterop.log(`Resetting value of setting ${field.settingsKey} to ${setting}`);
-      event.target.value = setting;
+      setSetting(newVal).then(() => PyInterop.log(`Set value of setting ${field.settingsKey} to ${newVal}`));
     }
   }
 
   return (
-    <TextField label={field.shortTitle} value={setting} onChange={onChange} description={field.description} mustBeNumeric={field.mustBeNumeric} />
+    <TextField label={field.shortTitle} value={fieldVal} onChange={onChange} description={field.description} mustBeNumeric={field.mustBeNumeric} />
   );
 }
 
