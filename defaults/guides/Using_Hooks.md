@@ -34,123 +34,134 @@ Listed below are all the different hookable events. Each hook has a description 
 
 #### Log In
 Run whenever a user logs into the steamdeck.
-<br/>
-**Flags:** <br/>
-(-h) hook_name - "Log In" <br/>
-(-u) username - The username of the user. <br/>
-(-t) time - The time that the user logged in at.
-<br/>
+
+| Flag | Value    |
+| ---- | -------- |
+| -h   | "Log In" |
+| -u   | The username of the user |
+| -t   | The time that the user logged in at |
+
 <br/>
 
 #### Log Out
 Run whenever a user logs out of the steamdeck.
-<br/>
-**Flags:** <br/>
-(-h) hook_name - "Log Out" <br/>
-(-u) username - The username of the user. <br/>
-(-t) time - The time that the user logged out at.
-<br/>
+
+| Flag | Value    |
+| ---- | -------- |
+| -h   | "Log Out" |
+| -u   | The username of the user |
+| -t   | The time that the user logged out at |
+
 <br/>
 
 #### Game Start
 Run whenever a game is started.
-<br/>
-**Flags:** <br/>
-(-h) hook_name - "Game Start" <br/>
-(-i) game_id - The id of the game that was started. <br/>
-(-n) game_name - The name of the game that was started.
-<br/>
+
+| Flag | Value    |
+| ---- | -------- |
+| -h   | "Game Start" |
+| -i   | The id of the game that was started |
+| -n   | The name of the game that was started |
+
 <br/>
 
 #### Game End
 Run whenever a game ends.
-<br/>
-**Flags:** <br/>
-(-h) hook_name - "Game End" <br/>
-(-i) game_id - The id of the game that was ended. <br/>
-(-n) game_name - The name of the game that was ended.
-<br/>
+
+| Flag | Value    |
+| ---- | -------- |
+| -h   | "Game End" |
+| -i   | The id of the game that was ended |
+| -n   | The name of the game that was ended |
+
 <br/>
 
 #### Game Install
 Run whenever a game is installed.
-<br/>
-**Flags:** <br/>
-(-h) hook_name - "Game Install" <br/>
-(-i) game_id - The id of the game that was installed. <br/>
-(-n) game_name - The name of the game that was installed.
-<br/>
+
+| Flag | Value    |
+| ---- | -------- |
+| -h   | "Game Install" |
+| -i   | The id of the game that was installed |
+| -n   | The name of the game that was installed |
+
 <br/>
 
 #### Game Uninstall
 Run whenever a game is uninstalled.
-<br/>
-**Flags:** <br/>
-(-h) hook_name - "Game Uninstall" <br/>
-(-i) game_id - The id of the game that was uninstalled. <br/>
-(-n) game_name - The name of the game that was uninstalled.
-<br/>
+
+| Flag | Value    |
+| ---- | -------- |
+| -h   | "Game Uninstall" |
+| -i   | The id of the game that was uninstalled |
+| -n   | The name of the game that was uninstalled |
+
 <br/>
 
 #### Game Achievement Unlock
 Run whenever an achievement is unlocked in a game.
-<br/>
-**Flags:** <br/>
-(-h) hook_name - "Game Achievement Unlock" <br/>
-(-i) game_id - The id of the current game. <br/>
-(-n) game_name - The name of the current game. <br/>
-(-a) achievement_name - The name of the unlocked achievement <br/>
-(-t) time - The time the achievement was unlocked at.
-<br/>
+
+| Flag | Value    |
+| ---- | -------- |
+| -h   | "Game Achievement Unlock" |
+| -i   | The id of the current game |
+| -n   | The name of the current game |
+| -a   | The name of the unlocked achievement |
+| -t   | The time the achievement was unlocked at |
+
 <br/>
 
 #### Screenshot Taken
 Run whenever a screenshot is taken.
-<br/>
-**Flags:** <br/>
-(-h) hook_name - "Game Achievement Taken" <br/>
-(-i) game_id - The id of the current game. <br/>
-(-n) game_name - The name of the current game. <br/>
-(-p) path - The path to the screenshot. <br/>
-(-t) time - The time the achievement was unlocked at.
-<br/>
+
+| Flag | Value    |
+| ---- | -------- |
+| -h   | "Screenshot Taken" |
+| -i   | The id of the current game |
+| -n   | The name of the current game |
+| -p   | The path to the screenshot |
+| -t   | The time the screenshot was taken at |
+
 <br/>
 
 #### Message Recieved
 Run whenever a chat message is recieved.
-<br/>
-**Flags:** <br/>
-(-h) hook_name - "Message Recieved" <br/>
-(-f) from - The name of the user the message is from. <br/>
-(-c) content - The content of the message. 
-<br/>
+
+| Flag | Value    |
+| ---- | -------- |
+| -h   | "Message Recieved" |
+| -f   | The name of the user the message is from |
+| -c   | The content of the message|
+
 <br/>
 
 #### SteamOS Update Available
 Run whenever a new SteamOS update is available for the current channel.
-<br/>
-**Flags:** <br/>
-(-h) hook_name - "SteamOS Update Available" <br/>
-(-l) channel - The current update channel. <br/>
-(-v) version - The update's version. 
-<br/>
+
+| Flag | Value    |
+| ---- | -------- |
+| -h   | "SteamOS Update Available" |
+| -l   | The current update channel |
+| -v   | The update's version number
+
 <br/>
 
 #### Deck Sleep
 Run before the Deck goes to sleep.
-<br/>
-**Flags:** <br/>
-(-h) hook_name - "Deck Sleep"
-<br/>
+
+| Flag | Value    |
+| ---- | -------- |
+| -h   | "Deck Sleep" |
+
 <br/>
 
 #### Deck Shutdown
 Run before the Deck shuts down.
-<br/>
-**Flags:** <br/>
-(-h) hook_name - "Deck Shutdown"
-<br/>
-<br/>
+
+| Flag | Value    |
+| ---- | -------- |
+| -h   | "Deck Shutdown" |
+
 <br/>
 
 ###### © Travis Lane (Tormak)

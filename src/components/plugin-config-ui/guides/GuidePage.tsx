@@ -1,16 +1,12 @@
 import { VFC, Fragment } from "react";
 
 import MarkDownIt from "markdown-it";
-import mdItAnchor from "markdown-it-anchor";
 import mdAttr from "markdown-it-attrs";
 import mdContainer from "markdown-it-container";
-import mdMultiTable from "markdown-it-multimd-table";
 
 const mdIt = new MarkDownIt()
-  .use(mdItAnchor)
   .use(mdAttr)
-  .use(mdContainer)
-  .use(mdMultiTable);
+  .use(mdContainer);
 
 export const GuidePage: VFC<{ content: string }> = ({ content }) => {
   return (
