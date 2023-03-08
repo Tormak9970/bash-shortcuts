@@ -28,7 +28,7 @@ Hooks are a more complex way to run your shortcuts, and allow you to automate ru
 ### Hookable Events
 Listed below are all the different hookable events. Each hook has a description of when it occurs, and what flag(s) it will provide your shortcut with. These flags can be accessed by checking for them in your script, as well as a flag containing the hook name. Scan the QR code below or click [here](https://linuxconfig.org/bash-script-flags-usage-with-arguments-examples) to learn more:
 
-<img title="Bash Flags Reference QR Code" src="https://raw.githubusercontent.com/tormak9970/bash-shortcuts/master/defaults/guides/images/bash-flags-ref-qrcode.png" width=178 height = 178 />
+<img title="Bash Flags Reference QR Code" src="https://raw.githubusercontent.com/tormak9970/bash-shortcuts/master/assets/bash-flags-ref-qrcode.png" width=178 height = 178 />
 <br/>
 <br/>
 
