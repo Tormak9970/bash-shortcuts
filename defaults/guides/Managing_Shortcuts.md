@@ -14,7 +14,7 @@
 
 ### Overview
 txt here
-
+<br/>
 <br/>
 <br/>
 
@@ -39,6 +39,7 @@ txt here
 #### Changing Existing Shortcuts
 <!-- Add image of UI -->
 txt here
+<br/>
 <br/>
 <br/>
 

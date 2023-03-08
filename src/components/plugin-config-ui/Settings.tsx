@@ -48,7 +48,7 @@ export const Settings: VFC<{}> = ({}) => {
       settingsKey: "webSocketPort",
       default: "",
       description: "Set the port the WebSocket uses. Change requires a restart to take effect.",
-      validator: (newVal: string) => newVal.length == 4,
+      validator: (newVal: string) => parseInt(newVal) <= 65535,
       mustBeNumeric: true
     }
   ];

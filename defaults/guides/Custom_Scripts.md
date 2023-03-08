@@ -14,9 +14,11 @@
 text here
 <br/>
 <br/>
+<br/>
 
 ### Scripting in Bash
 text here
+<br/>
 <br/>
 <br/>
 
@@ -25,14 +27,17 @@ text here
 text here
 <br/>
 <br/>
+<br/>
 
 ### Testing and Debugging
 text here
 <br/>
 <br/>
+<br/>
 
 ### Common Issues
 text here
+<br/>
 <br/>
 <br/>
 

@@ -13,12 +13,6 @@ declare module "*.jpg" {
   export default content;
 }
 
-
-declare module "markdown-it-imsize" {
-  const mdImgSize: MarkdownIt.PluginWithOptions<any>;
-  export default mdImgSize;
-}
-
 declare module "markdown-it-attrs" {
   const mdAttr: MarkdownIt.PluginWithOptions<any>;
   export default mdAttr;
