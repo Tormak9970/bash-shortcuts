@@ -144,7 +144,6 @@ const ShortcutsManagerRouter: VFC<{ guides: GuidePages }> = ({ guides }) => {
         guidePages["Overview"],
         guidePages["Managing Shortcuts"],
         guidePages["Custom Scripts"],
-        guidePages["Background Tasks"],
         guidePages["Using Hooks"]
       ]}
     />

@@ -21,8 +21,6 @@ These guides serve as a reference for questions you may have, and a resource for
    - Guide on the process of adding, editing, and removing shortcuts.
  - Custom Scripts
    - Guide and tips for writing scripts to run.
- - Background Tasks
-   - Guide on creating shortcuts that run in the background.
  - Using Hooks
    - Guide on using hooks to run shortcuts when specific events occur.
 <br/>
