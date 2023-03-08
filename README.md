@@ -14,7 +14,7 @@ The plugin has a default shortcut to launch Konsole (the default teminal install
 
 
 # Using the plugin
-If you have questions about using the plugin and/or its features, there is a built in guide in the config menu, which is also available [here](defaults/guides/Overview.md)
+If you have questions about using the plugin and/or its features, there is a built in guide in the config menu, which is also available [here](defaults/guides)
 
 # Installation
 1. [Install the Decky plugin loader](https://github.com/SteamDeckHomebrew/decky-loader#installation)
