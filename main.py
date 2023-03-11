@@ -96,7 +96,15 @@ class Plugin:
           log(f"Exception while parsing shortcuts: {e}") # error reading json
       else:
         log("Adding default shortcut.")
-        self.settingsManager.setSetting("shortcuts", { "fcba1cb4-4601-45d8-b919-515d152c56ef": { "id": "fcba1cb4-4601-45d8-b919-515d152c56ef", "name": "Konsole", "cmd": "konsole", "position": 1, "isApp": True } })
+        self.settingsManager.setSetting("shortcuts", {
+          "fcba1cb4-4601-45d8-b919-515d152c56ef": {
+          "id": "fcba1cb4-4601-45d8-b919-515d152c56ef",
+          "name": "Konsole",
+          "cmd": "LD_PRELOAD= QT_SCALE_FACTOR=1.25 konsole",
+          "position": 1,
+          "isApp": True
+          }
+        })
     else:
       log(f"Shortcuts loaded from settings. Shortcuts: {json.dumps(self.settingsManager.getSetting('shortcuts', {}))}")
 
