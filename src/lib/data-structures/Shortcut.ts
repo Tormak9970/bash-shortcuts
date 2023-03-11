@@ -1,3 +1,5 @@
+import { Hook } from "../controllers/HookController";
+
 /**
  * Contains all of the nessesary information on each shortcut.
  */
@@ -7,6 +9,7 @@ export class Shortcut {
   cmd: string;
   position: number;
   isApp: boolean;
+  hooks: Hook[];
 
   /**
    * Creates a new Shortcut.
@@ -15,13 +18,15 @@ export class Shortcut {
    * @param cmd The command the shortcut runs.
    * @param position The position of the shortcut in the list of shortcuts.
    * @param isApp Whether the shortcut is an app or not.
+   * @param hooks The list of hooks for this shortcut.
    */
-  constructor(id: string, name: string, cmd: string, position: number, isApp: boolean) {
+  constructor(id: string, name: string, cmd: string, position: number, isApp: boolean, hooks: Hook[]) {
     this.id = id;
     this.name = name;
     this.cmd = cmd;
     this.position = position;
     this.isApp = isApp;
+    this.hooks = hooks;
   }
 
   /**
@@ -30,6 +35,6 @@ export class Shortcut {
    * @returns A new Shortcut.
    */
   static fromJSON(json: any): Shortcut {
-    return new Shortcut(json.id, json.name, json.cmd, json.position, json.isApp);
+    return new Shortcut(json.id, json.name, json.cmd, json.position, json.isApp, json.hooks);
   }
 }

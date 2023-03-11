@@ -28,7 +28,19 @@ class Plugin:
 
   # Normal methods: can be called from JavaScript using call_plugin_function("signature", argument)
   async def getShortcuts(self):
-    return self.settingsManager.getSetting("shortcuts", {})
+    shortcuts:dict = self.settingsManager.getSetting("shortcuts", {})
+
+    needToSet = False
+
+    for key in shortcuts.keys():
+      if not shortcuts[key].hasKey("hooks"):
+        shortcuts[key]["hooks"] = []
+        needToSet = True
+
+    if needToSet:
+      self.settingsManager.setSetting("shortcuts", shortcuts)
+
+    return shortcuts
 
   async def getGuides(self):
     self._getGuides(self)
@@ -98,11 +110,12 @@ class Plugin:
         log("Adding default shortcut.")
         self.settingsManager.setSetting("shortcuts", {
           "fcba1cb4-4601-45d8-b919-515d152c56ef": {
-          "id": "fcba1cb4-4601-45d8-b919-515d152c56ef",
-          "name": "Konsole",
-          "cmd": "LD_PRELOAD= QT_SCALE_FACTOR=1.25 konsole",
-          "position": 1,
-          "isApp": True
+            "id": "fcba1cb4-4601-45d8-b919-515d152c56ef",
+            "name": "Konsole",
+            "cmd": "LD_PRELOAD= QT_SCALE_FACTOR=1.25 konsole",
+            "position": 1,
+            "isApp": True,
+            "hooks": []
           }
         })
     else:
