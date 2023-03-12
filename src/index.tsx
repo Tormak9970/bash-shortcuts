@@ -31,6 +31,7 @@ declare global {
   var SteamClient: SteamClient;
   var collectionStore: CollectionStore;
   var appStore: any;
+  var loginStore: LoginStore;
 }
 
 const Content: VFC<{ serverAPI: ServerAPI }> = ({ }) => {

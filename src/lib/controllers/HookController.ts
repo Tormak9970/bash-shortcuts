@@ -73,6 +73,27 @@ export class HookController {
   }
 
   /**
+   * Gets the current date and time.
+   * @returns A tuple containing [date, time] in US standard format.
+   */
+  private getDatetime(): [string, string] {
+    const date = new Date();
+
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
+
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const seconds = date.getSeconds();
+
+    return [
+      `${month}-${day}-${year}`,
+      `${hours}:${minutes}:${seconds}`
+    ];
+  }
+
+  /**
    * Registers a hook for a shortcut.
    * @param shortcut The shortcut to register the hook for.
    * @param hook The hook to register.
@@ -83,11 +104,13 @@ export class HookController {
     switch (hook) {
       case Hook.LOG_IN:
         unregister = this.steamController.registerForAuthStateChange(async (username: string) => {
+          const [ date, time ] = this.getDatetime();
           //TODO: Launch shortcut here
         }, null, false);
         break;
       case Hook.LOG_OUT:
         unregister = this.steamController.registerForAuthStateChange(null, async (username: string) => {
+          const [ date, time ] = this.getDatetime();
           //TODO: Launch shortcut here
         }, false);
         break;
@@ -106,28 +129,44 @@ export class HookController {
         });
         break;
       case Hook.GAME_INSTALL:
-        unregister = { unregister: () => {} };
+        unregister = this.steamController.registerForGameInstallStateChange(() => {
+
+        });
         break;
       case Hook.GAME_UNINSTALL:
-        unregister = { unregister: () => {} };
+        unregister = this.steamController.registerForGameInstallStateChange(() => {
+
+        });
         break;
       case Hook.GAME_ACHIEVEMENT_UNLOCKED:
-        unregister = { unregister: () => {} };
+        unregister = this.steamController.registerForGameAchievementNotification(() => {
+
+        });
         break;
       case Hook.SCREENSHOT_TAKEN:
-        unregister = { unregister: () => {} };
+        unregister = this.steamController.registerForScreenshotNotification(() => {
+
+        });
         break;
       case Hook.MESSAGE_RECIEVED:
-        unregister = { unregister: () => {} };
+        unregister = this.steamController.registerForMessageRecieved(() => {
+
+        });
         break;
       case Hook.STEAMOS_UPDATE_AVAILABLE:
-        unregister = { unregister: () => {} };
+        unregister = this.steamController.registerSteamOSUpdateAvailable(() => {
+
+        });
         break;
       case Hook.DECK_SLEEP:
-        unregister = { unregister: () => {} };
+        unregister = this.steamController.registerForSleepStart(() => {
+
+        });
         break;
       case Hook.DECK_SHUTDOWN:
-        unregister = { unregister: () => {} };
+        unregister = this.steamController.registerForShutdownStart(() => {
+
+        });
         break;
       default:
         PyInterop.log(`Unrecognized hook ${hook}`);

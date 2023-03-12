@@ -40,6 +40,7 @@ Run whenever a user logs into the steamdeck.
 | -h   | "Log In" |
 | -u   | The username of the user |
 | -t   | The time that the user logged in at |
+| -d   | The date that the user logged in on |
 
 <br/>
 
@@ -51,6 +52,7 @@ Run whenever a user logs out of the steamdeck.
 | -h   | "Log Out" |
 | -u   | The username of the user |
 | -t   | The time that the user logged out at |
+| -d   | The date that the user logged out on |
 
 <br/>
 
@@ -108,6 +110,7 @@ Run whenever an achievement is unlocked in a game.
 | -n   | The name of the current game |
 | -a   | The name of the unlocked achievement |
 | -t   | The time the achievement was unlocked at |
+| -d   | The date the achievement was unlocked on |
 
 <br/>
 
@@ -121,6 +124,7 @@ Run whenever a screenshot is taken.
 | -n   | The name of the current game |
 | -p   | The path to the screenshot |
 | -t   | The time the screenshot was taken at |
+| -d   | The date the screenshot was taken on |
 
 <br/>
 
@@ -152,6 +156,8 @@ Run before the Deck goes to sleep.
 | Flag | Value    |
 | ---- | -------- |
 | -h   | "Deck Sleep" |
+| -t   | The time the deck went to sleep at |
+| -d   | The date the deck went to sleep on |
 
 <br/>
 
@@ -161,6 +167,8 @@ Run before the Deck shuts down.
 | Flag | Value    |
 | ---- | -------- |
 | -h   | "Deck Shutdown" |
+| -t   | The time the deck shutdown at |
+| -d   | The date the deck shutdown on |
 
 <br/>
 

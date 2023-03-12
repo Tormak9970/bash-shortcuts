@@ -1,3 +1,59 @@
+type Apps = {
+  RegisterForAchievementChanges: (callback: () => void) => Unregisterer,
+  RunGame: (gameId: string, unk1: string, unk2: number, unk3: number) => void,
+  RemoveShortcut: (appId: number) => void,
+  RegisterForAppDetails: (appId: number, callback: (details: SteamAppDetails) => void) => Unregisterer,
+  TerminateApp: (gameId: string, unk1: boolean) => void,
+  SetAppLaunchOptions: (appId: number, options: string) => void,
+  SetShortcutStartDir: (appId: number, startDir: string) => void,
+  SetShortcutExe: (appId: number, exePath: string) => void,
+  AddShortcut: (appName: string, exePath: string) => number,
+}
+
+type Downloads = {
+  RegisterForDownloadItems: (callback: () => void) => Unregisterer,
+  RegisterForDownloadOverview: (callback: () => void) => Unregisterer,
+}
+
+type GameSession = {
+  RegisterForAchievementNotification: (callback: () => void) => Unregisterer,
+  RegisterForAppLifetimeNotifications: (callback: (data: LifetimeNotification) => void) => Unregisterer,
+  RegisterForScreenshotNotification: (callback: () => void) => Unregisterer,
+}
+
+type Messaging = {
+  PostMessage: () => void,
+  RegisterForMessages: (callback: () => void) => Unregisterer
+}
+
+type Notifications = {
+  RegisterForNotifications: (callback: () => void) => Unregisterer
+}
+
+type Screenshot = any;
+
+type Screenshots = {
+  GetLastScreenshotTake: () => Screenshot,
+}
+
+type System = {
+  RegisterForOnSuspendRequest: (callback: () => void) => Unregisterer,
+}
+
+type Updates = {
+  RegisterForUpdateStateChanges: (callback: () => void) => Unregisterer
+  GetCurrentOSBranch: () => any
+}
+
+type User = {
+  RegisterForCurrentUserChanges: (callback: () => void) => Unregisterer,
+  RegisterForLoginStateChange: (callback: (username: string) => void) => Unregisterer,
+  RegisterForPrepareForSystemSuspendProgress: (callback: () => void) => Unregisterer,
+  RegisterForShutdownStart: (callback: () => void) => Unregisterer,
+  RegisterForShutdownDone: (callback: () => void) => Unregisterer,
+  StartRestart: () => void
+}
+
 interface SteamClient {
   Apps: Apps,
   Browser: any,
@@ -5,34 +61,34 @@ interface SteamClient {
   ClientNotifications: any,
   Cloud: any,
   Console: any,
-  Downloads: any,
+  Downloads: Downloads,
   FamilySharing: any,
   FriendSettings: any,
   Friends: any,
-  GameSessions: any,
+  GameSessions: GameSession,
   Input: any,
   InstallFolder: any,
   Installs: any,
   MachineStorage: any,
-  Messaging: any,
-  Notifications: any,
+  Messaging: Messaging,
+  Notifications: Notifications,
   OpenVR: any,
   Overlay: any,
   Parental: any,
   RegisterIFrameNavigatedCallback: any,
   RemotePlay: any,
   RoamingStorage: any,
-  Screenshots: any,
+  Screenshots: Screenshots,
   Settings: any,
   SharedConnection: any,
   Stats: any,
   Storage: any,
   Streaming: any,
-  System: any,
+  System: System,
   UI: any,
   URL: any,
-  Updates: any,
-  User: any,
+  Updates: Updates,
+  User: User,
   WebChat: any,
   Window: Window
 }
@@ -253,8 +309,25 @@ type SteamCollection = {
 type CollectionStore = {
   deckDesktopApps: Collection;
   userCollections: Collection[];
+  localGamesCollection: LocalCollection;
   BIsHidden: (appId: number) => boolean;
   SetAppsAsHidden: (appIds: number[], hide: boolean) => void;
+}
+
+type LocalCollection = {
+  AsDeletableCollection: () => null,
+  AsDragDropCollection: () => null,
+  AsEditableCollection: () => null,
+  GetAppCountWithToolsFilter: (t) => any,
+  allApps: SteamAppOverview[],
+  apps: Map<number, SteamAppOverview>,
+  bAllowsDragAndDrop: boolean,
+  bIsDeletable: boolean,
+  bIsDynamic: boolean,
+  bIsEditable: boolean,
+  displayName: string,
+  id: string,
+  visibleApps: SteamAppOverview[]
 }
 
 type Collection = {
@@ -266,4 +339,8 @@ type Collection = {
     has: (appId: number) => boolean;
   };
   bAllowsDragAndDrop: boolean;
+}
+
+type LoginStore = {
+  m_strAccountName: string
 }

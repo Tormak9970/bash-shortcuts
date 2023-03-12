@@ -366,7 +366,7 @@ export class SteamController {
   async runGame(appId: number, waitUntilGameStops: boolean): Promise<boolean> {
     const gameStart = this.waitForAppLifetimeNotifications(appId, { initialTimeout: 1500, waitForStart: true, waitUntilNewEnd: waitUntilGameStops });
     const gameId = await this.getGameId(appId);
-    SteamClient.Apps.RunGame(gameId, "", -1, 100);
+    SteamClient.Apps.RunGame(gameId as string, "", -1, 100);
 
     PyInterop.log(`Running app/game. [DEBUG INFO] appId: ${appId}; gameId: ${gameId};`);
 
@@ -381,7 +381,7 @@ export class SteamController {
   async terminateGame(appId: number): Promise<boolean> {
     const gameEnd = this.waitForAppLifetimeNotifications(appId, { initialTimeout: 1500, waitForStart: false, waitUntilNewEnd: true });
     const gameId = await this.getGameId(appId);
-    SteamClient.Apps.TerminateApp(gameId, false);
+    SteamClient.Apps.TerminateApp(gameId as string, false);
     
     PyInterop.log(`Terminating app/game. [DEBUG INFO] appId: ${appId}; gameId: ${gameId};`);
 
@@ -398,10 +398,11 @@ export class SteamController {
   registerForAuthStateChange(onLogin: ((username:string) => Promise<void>) | null, onLogout: ((username:string) => Promise<void>) | null, once: boolean): Unregisterer {
     try {
       let isLoggedIn: boolean | null = null;
+      const currentUsername = loginStore.m_strAccountName;
       return SteamClient.User.RegisterForLoginStateChange((username: string) => {
         if (username === "") {
           if (isLoggedIn !== false && (once ? !this.hasLoggedOut : true)) {
-            if (onLogout) onLogout(username);
+            if (onLogout) onLogout(currentUsername);
             PyInterop.log("User logged out.");
           }
           isLoggedIn = false;
@@ -438,6 +439,58 @@ export class SteamController {
       PyInterop.log(`Services initialized. Success: ${success}`);
       return success;
     })) ?? false;
+  }
+
+
+  registerForGameInstallStateChange(callback: () => void): Unregisterer {
+    const installedGames = collectionStore.localGamesCollection;
+    // RegisterForDownloadOverview?
+    // RegisterForDownloadItems?
+    // Notifications.RegisterForNotifications?
+    return { unregister: () => {} }
+  }
+
+
+  registerForGameAchievementNotification(callback: () => void): Unregisterer {
+    return SteamClient.GameSessions.RegisterForAchievementNotification(() => {
+
+    });
+  }
+
+
+  registerForScreenshotNotification(callback: () => void): Unregisterer {
+    return SteamClient.GameSessions.RegisterForScreenshotNotification(() => {
+
+    });
+  }
+
+
+  registerForMessageRecieved(callback: () => void): Unregisterer {
+    return SteamClient.Messaging.RegisterForMessages(() => {
+
+    });
+  }
+
+
+  registerSteamOSUpdateAvailable(callback: () => void): Unregisterer {
+    return SteamClient.Updates.RegisterForUpdateStateChanges(() => {
+
+    });
+  }
+
+
+  registerForSleepStart(callback: () => void): Unregisterer {
+    // also can try System.RegisterForOnSystemSuspendRequest();
+    return SteamClient.User.RegisterForPrepareForSystemSuspendProgress(() => {
+
+    });
+  }
+
+
+  registerForShutdownStart(callback: () => void): Unregisterer {
+    return SteamClient.User.RegisterForShutdownStart(() => {
+
+    });
   }
 
   /**
