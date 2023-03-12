@@ -1,5 +1,4 @@
 import { VFC } from "react";
-import { Field, Focusable, PanelSection, PanelSectionRow } from "decky-frontend-lib";
 
 import MarkDownIt from "markdown-it";
 import { ScrollArea, Scrollable, scrollableRef } from "../utils/Scrollable";

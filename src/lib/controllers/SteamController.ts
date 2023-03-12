@@ -310,6 +310,17 @@ export class SteamController {
   }
 
   /**
+   * Registers for all lifecycle updates for steam apps.
+   * @param callback The callback to run when an update is recieved.
+   * @returns A function to call to unregister the hook.
+   */
+  registerForAllAppLifetimeNotifications(callback: (appId: number, data: LifetimeNotification) => void): Unregisterer {
+    return SteamClient.GameSessions.RegisterForAppLifetimeNotifications((data: LifetimeNotification) => {
+      callback(data.unAppID, data);
+    });
+  }
+
+  /**
    * Waits for a game lifetime event to occur.
    * @param appId The id of the app to wait for.
    * @param options The options to determine when the function returns true.
@@ -384,13 +395,13 @@ export class SteamController {
    * @param once Whether the hook should run once.
    * @returns A function to unregister the hook.
    */
-  registerForAuthStateChange(onLogin: ((username?:string) => Promise<void>) | null, onLogout: (() => Promise<void>) | null, once: boolean): Unregisterer {
+  registerForAuthStateChange(onLogin: ((username:string) => Promise<void>) | null, onLogout: ((username:string) => Promise<void>) | null, once: boolean): Unregisterer {
     try {
       let isLoggedIn: boolean | null = null;
       return SteamClient.User.RegisterForLoginStateChange((username: string) => {
         if (username === "") {
           if (isLoggedIn !== false && (once ? !this.hasLoggedOut : true)) {
-            if (onLogout) onLogout();
+            if (onLogout) onLogout(username);
             PyInterop.log("User logged out.");
           }
           isLoggedIn = false;

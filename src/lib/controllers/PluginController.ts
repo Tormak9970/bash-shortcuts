@@ -155,7 +155,7 @@ export class PluginController {
    * @param shortcut The shortcut to remove the hooks for.
    */
   static removeHooks(shortcut: Shortcut): void {
-    this.hooksController.removeHooks(shortcut);
+    this.hooksController.unregisterAllHooks(shortcut);
   }
 
   /**
