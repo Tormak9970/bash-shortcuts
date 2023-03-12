@@ -1,24 +1,20 @@
-import { VFC, Fragment } from "react";
+import { VFC } from "react";
+import { Field, Focusable, PanelSection, PanelSectionRow } from "decky-frontend-lib";
 
+import MarkDownIt from "markdown-it";
+import { ScrollArea, Scrollable, scrollableRef } from "../utils/Scrollable";
 
-import {marked} from "marked";
-// import MarkDownIt from "markdown-it";
-// import mdAttr from "markdown-it-attrs";
-// import mdContainer from "markdown-it-container";
-import { Focusable } from "decky-frontend-lib";
-
-// const mdIt = new MarkDownIt({
-//   html: true
-// })
-//   .use(mdAttr)
-//   .use(mdContainer);
+const mdIt = new MarkDownIt({
+  html: true
+});
 
 export const GuidePage: VFC<{ content: string }> = ({ content }) => {
+  const ref = scrollableRef();
   return (
-    <>
-      <Focusable dangerouslySetInnerHTML={{ __html: marked.parse(content) }}>
-
-      </Focusable>
-    </>
+    <Scrollable ref={ref}>
+      <ScrollArea scrollable={ref}>
+        <div dangerouslySetInnerHTML={{ __html: mdIt.render(content) }} />
+      </ScrollArea>
+    </Scrollable>
   );
 }

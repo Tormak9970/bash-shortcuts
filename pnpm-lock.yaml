@@ -13,9 +13,6 @@ specifiers:
   '@types/webpack': ^5.28.0
   decky-frontend-lib: ^3.19.2
   markdown-it: ^13.0.1
-  markdown-it-attrs: ^4.1.6
-  markdown-it-container: ^3.0.0
-  marked: ^4.2.12
   react-icons: ^4.8.0
   rollup: ^2.79.1
   rollup-plugin-import-assets: ^1.1.1
@@ -41,9 +38,6 @@ devDependencies:
   '@types/uuid': 8.3.4
   '@types/webpack': 5.28.0
   markdown-it: 13.0.1
-  markdown-it-attrs: 4.1.6_markdown-it@13.0.1
-  markdown-it-container: 3.0.0
-  marked: 4.2.12
   rollup: 2.79.1
   rollup-plugin-import-assets: 1.1.1_rollup@2.79.1
   shx: 0.3.4
@@ -666,19 +660,6 @@ packages:
       sourcemap-codec: 1.4.8
     dev: true
 
-  /markdown-it-attrs/4.1.6_markdown-it@13.0.1:
-    resolution: {integrity: sha512-O7PDKZlN8RFMyDX13JnctQompwrrILuz2y43pW2GagcwpIIElkAdfeek+erHfxUOlXWPsjFeWmZ8ch1xtRLWpA==}
-    engines: {node: '>=6'}
-    peerDependencies:
-      markdown-it: '>= 9.0.0'
-    dependencies:
-      markdown-it: 13.0.1
-    dev: true
-
-  /markdown-it-container/3.0.0:
-    resolution: {integrity: sha512-y6oKTq4BB9OQuY/KLfk/O3ysFhB3IMYoIWhGJEidXt1NQFocFK2sA2t0NYZAMyMShAGL6x5OPIbrmXPIqaN9rw==}
-    dev: true
-
   /markdown-it/13.0.1:
     resolution: {integrity: sha512-lTlxriVoy2criHP0JKRhO2VDG9c2ypWCsT237eDiLqi09rmbKoUetyGHq2uOIRoRS//kfoJckS0eUzzkDR+k2Q==}
     hasBin: true
@@ -688,12 +669,6 @@ packages:
       linkify-it: 4.0.1
       mdurl: 1.0.1
       uc.micro: 1.0.6
-    dev: true
-
-  /marked/4.2.12:
-    resolution: {integrity: sha512-yr8hSKa3Fv4D3jdZmtMMPghgVt6TWbk86WQaWhDloQjRSQhMMYCAro7jP7VDJrjjdV8pxVxMssXS8B8Y5DZ5aw==}
-    engines: {node: '>= 12'}
-    hasBin: true
     dev: true
 
   /mdurl/1.0.1:

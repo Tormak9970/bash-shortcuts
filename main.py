@@ -185,7 +185,7 @@ class Plugin:
     for guideFileName in os.listdir(self.guidesDirPath):
       with open(os.path.join(self.guidesDirPath, guideFileName), 'r') as guideFile:
         guideName = guideFileName.replace("_", " ").replace(".md", "")
-        self.guides[guideName] = "\n".join(guideFile.readlines())
+        self.guides[guideName] = "".join(guideFile.readlines())
 
     pass
 
