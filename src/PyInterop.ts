@@ -107,12 +107,12 @@ export class PyInterop {
   }
 
   /**
-   * Sets the entire shortcuts list, and returns the updated dictionary.
-   * @param shortcuts The updated shortcuts list.
+   * Sets the entire shortcuts dictionary, and returns the updated dictionary.
+   * @param shortcuts The updated shortcuts dictionary.
    * @returns A promise resolving to a server response containing the updated shortcuts dictionary.
    */
-  static async setShortcuts(shortcuts: Shortcut[]): Promise<ServerResponse<ShortcutsDictionary>> {
-    return await this.serverAPI.callPluginMethod<{ shortcuts: Shortcut[] }, ShortcutsDictionary>("setShortcuts", { shortcuts: shortcuts });
+  static async setShortcuts(shortcuts: ShortcutsDictionary): Promise<ServerResponse<ShortcutsDictionary>> {
+    return await this.serverAPI.callPluginMethod<{ shortcuts: ShortcutsDictionary }, ShortcutsDictionary>("setShortcuts", { shortcuts: shortcuts });
   }
 
   /**

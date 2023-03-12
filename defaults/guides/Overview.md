@@ -15,14 +15,14 @@ These guides serve as a reference for questions you may have, and a resource for
 <br/>
 
 ### Table of Contents
- - Overview
-   - General overview of the plugin and guides. **You are here**
- - Managing Shortcuts
-   - Guide on the process of adding, editing, and removing shortcuts.
- - Custom Scripts
-   - Guide and tips for writing scripts to run.
- - Using Hooks
-   - Guide on using hooks to run shortcuts when specific events occur.
+* Overview
+  * General overview of the plugin and guides. **You are here**
+* Managing Shortcuts
+  * Guide on the process of adding, editing, and removing shortcuts.
+* Custom Scripts
+  * Guide and tips for writing scripts to run.
+* Using Hooks
+  * Guide on using hooks to run shortcuts when specific events occur.
 <br/>
 <br/>
 <br/>

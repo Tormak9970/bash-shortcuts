@@ -100,7 +100,7 @@ export const ManageShortcuts: VFC = () => {
     setShortcuts(data);
     
     PyInterop.log("Reordered shortcuts.");
-    PyInterop.setShortcuts(shortcutsList);
+    PyInterop.setShortcuts(data as ShortcutsDictionary);
   }
 
   if (shortcutsList.length === 0 && tries.current < 10) {
