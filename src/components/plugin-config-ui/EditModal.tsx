@@ -1,6 +1,8 @@
-import { Field, ConfirmModal, PanelSection, PanelSectionRow, TextField, ToggleField } from "decky-frontend-lib"
+import { Field, ConfirmModal, PanelSection, PanelSectionRow, TextField, ToggleField, DropdownOption } from "decky-frontend-lib"
 import { VFC, Fragment, useState } from "react"
 import { Shortcut } from "../../lib/data-structures/Shortcut"
+import { MultiSelect } from "./utils/MultiSelect"
+import { Hook, hookAsOptions } from "../../lib/controllers/HookController"
 
 type EditModalProps = {
   closeModal: () => void,
@@ -20,9 +22,10 @@ export const EditModal: VFC<EditModalProps> = ({
   shortcut,
   title = `Modifying: ${shortcut.name}`,
 }) => {
-  const [name, setName] = useState<string>(shortcut.name);
-  const [cmd, setCmd] = useState<string>(shortcut.cmd);
-  const [isApp, setIsApp] = useState<boolean>(shortcut.isApp);
+  const [ name, setName ] = useState<string>(shortcut.name);
+  const [ cmd, setCmd ] = useState<string>(shortcut.cmd);
+  const [ isApp, setIsApp ] = useState<boolean>(shortcut.isApp);
+  const [ hooks, setHooks ] = useState<Hook[]>(shortcut.hooks);
 
   return (
     <>
@@ -32,7 +35,7 @@ export const EditModal: VFC<EditModalProps> = ({
         onEscKeypress={closeModal}
 
         onOK={() => {
-          const updated = new Shortcut(shortcut.id, name, cmd, shortcut.position, isApp);
+          const updated = new Shortcut(shortcut.id, name, cmd, shortcut.position, isApp, hooks);
           onConfirm(updated);
           closeModal();
         }}>
@@ -55,6 +58,14 @@ export const EditModal: VFC<EditModalProps> = ({
                   value={cmd}
                   onChange={(e) => { setCmd(e?.target.value) }}
                 />}
+            />
+          </PanelSectionRow>
+          <PanelSectionRow>
+            <MultiSelect
+              label="Select a hook"
+              options={hookAsOptions}
+              selected={[]}
+              onChange={(selected:DropdownOption[]) => { setHooks(selected.map((s) => s.label as Hook)) }}
             />
           </PanelSectionRow>
           <PanelSectionRow>

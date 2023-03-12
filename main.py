@@ -28,12 +28,12 @@ class Plugin:
 
   # Normal methods: can be called from JavaScript using call_plugin_function("signature", argument)
   async def getShortcuts(self):
-    shortcuts:dict = self.settingsManager.getSetting("shortcuts", {})
+    shortcuts = self.settingsManager.getSetting("shortcuts", {})
 
     needToSet = False
 
     for key in shortcuts.keys():
-      if not shortcuts[key].hasKey("hooks"):
+      if not "hooks" in shortcuts[key]:
         shortcuts[key]["hooks"] = []
         needToSet = True
 

@@ -180,7 +180,7 @@ export default definePlugin((serverApi: ServerAPI) => {
     onDismount() {
       loginHook.unregister();
       serverApi.routerHook.removeRoute("/bash-shortcuts-config");
-      PluginController.onDismount();
+      PluginController.dismount();
     },
     alwaysRender: true
   };

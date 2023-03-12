@@ -7,6 +7,7 @@ import { EditModal } from "./EditModal";
 import { useShortcutsState } from "../../state/ShortcutsState";
 import { Menu, MenuItem, showContextMenu } from "./utils/MenuProxy";
 import { FaEllipsisH } from "react-icons/fa"
+import { PluginController } from "../../lib/controllers/PluginController";
 
 type ActionButtonProps<T> = {
   entry: ReorderableEntry<T>
@@ -29,6 +30,7 @@ const ActionButtion: VFC<ActionButtonProps<Shortcut>> = (props:ActionButtonProps
             // @ts-ignore
             <EditModal onConfirm={(updated: Shortcut) => {
               PyInterop.modShortcut(updated);
+              PluginController.updateHooks(updated);
               let shorts = shortcuts;
               shorts[shortcut.id] = updated;
               setShortcuts(shorts);
@@ -40,6 +42,7 @@ const ActionButtion: VFC<ActionButtonProps<Shortcut>> = (props:ActionButtonProps
           showModal(
             <ConfirmModal onOK={() => {
               PyInterop.remShortcut(shortcut);
+              PluginController.updateHooks(shortcut);
               let shorts = shortcuts;
               delete shorts[shortcut.id];
               setShortcuts(shorts);

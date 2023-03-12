@@ -19,6 +19,8 @@ export enum Hook {
   DECK_SLEEP = "Deck Sleep"
 }
 
+export const hookAsOptions = Object.values(Hook).map((entry) => { return { label: entry, data: entry } });
+
 /**
  * Controller for handling hook events.
  */
@@ -34,15 +36,31 @@ export class HookController {
     }
   }
 
-  registerHook(shortcut: Shortcut, hook: Hook) {
+  init(shortcuts: ShortcutsDictionary): void {
 
   }
 
-  unregisterHook(shortcut: Shortcut, hook: Hook) {
+  updateHooks(shortcut: Shortcut) {
+    
+  }
+
+  private registerHook(shortcut: Shortcut, hook: Hook): void {
 
   }
 
-  listen() {
+  removeHooks(shortcut: Shortcut) {
+
+  }
+
+  private unregisterHook(shortcut: Shortcut, hook: Hook): void {
+
+  }
+
+  listen(): void {
+
+  }
+
+  dismount(): void {
 
   }
 }

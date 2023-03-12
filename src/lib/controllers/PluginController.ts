@@ -5,6 +5,7 @@ import { PyInterop } from "../../PyInterop";
 import { SteamController } from "./SteamController";
 import { Shortcut } from "../data-structures/Shortcut";
 import { WebSocketClient } from "../../WebsocketClient";
+import { HookController } from "./HookController";
 
 /**
  * Main controller class for the plugin.
@@ -17,6 +18,7 @@ export class PluginController {
   private static steamController: SteamController;
   private static shortcutsController: ShortcutsController;
   private static instancesController: InstancesController;
+  private static hooksController: HookController;
   private static webSocketClient: WebSocketClient;
 
   private static shortcutName: string;
@@ -33,6 +35,7 @@ export class PluginController {
     this.shortcutsController = new ShortcutsController(this.steamController);
     this.webSocketClient = new WebSocketClient("localhost", "5000", 1000);
     this.instancesController = new InstancesController(this.shortcutsController, this.webSocketClient);
+    this.hooksController = new HookController(this.steamController);
   }
 
   /**
@@ -72,6 +75,8 @@ export class PluginController {
     }
 
     this.webSocketClient.connect();
+
+    this.hooksController.init(await PyInterop.getShortcuts());
     
     PyInterop.log("PluginController initialized.");
   }
@@ -138,13 +143,30 @@ export class PluginController {
   }
 
   /**
+   * Updates the hooks for a specific shortcut.
+   * @param shortcut The shortcut to update the hooks for.
+   */
+  static updateHooks(shortcut: Shortcut): void {
+    this.hooksController.updateHooks(shortcut);
+  }
+
+  /**
+   * Removes the hooks for a specific shortcut.
+   * @param shortcut The shortcut to remove the hooks for.
+   */
+  static removeHooks(shortcut: Shortcut): void {
+    this.hooksController.removeHooks(shortcut);
+  }
+
+  /**
    * Function to run when the plugin dismounts.
    */
-  static onDismount(): void {
+  static dismount(): void {
     PyInterop.log("PluginController dismounting...");
 
     this.shortcutsController.onDismount();
     this.webSocketClient.disconnect();
+    this.hooksController.dismount();
     
     PyInterop.log("PluginController dismounted.");
   }
