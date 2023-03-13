@@ -99,7 +99,7 @@ type Messaging = {
 }
 
 type Notifications = {
-  RegisterForNotifications: (callback: (data: any) => void) => Unregisterer
+  RegisterForNotifications: (callback: (unk1: number, unk2: number, unk3: ArrayBuffer) => void) => Unregisterer
 }
 
 type Screenshot = any;

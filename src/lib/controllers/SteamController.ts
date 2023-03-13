@@ -1,4 +1,4 @@
-import { SteamAppOverview, sleep } from "decky-frontend-lib";
+import { sleep } from "decky-frontend-lib";
 import { PyInterop } from "../../PyInterop";
 import { waitForCondition } from "../Utils";
 
@@ -441,59 +441,126 @@ export class SteamController {
     })) ?? false;
   }
 
-
-  registerForGameInstallStateChange(callback: () => void): Unregisterer {
+  /**
+   * Registers a callback for game uninstall events.
+   * @param callback The callback to run.
+   * @returns An Unregisterer for this hook.
+   */
+  registerForGameUninstall(callback: (appData: SteamAppOverview) => void): Unregisterer {
     const installedGames = collectionStore.localGamesCollection;
+    const actionQueue:{ data: any, action: string }[] = [];
 
-    // Notifications.RegisterForNotifications?
-    SteamClient.Notifications.RegisterForNotifications((...data: any) => {
-      console.log("notification:", data);
-    });
-
-    // Apps.RegisterForGameActionStart?
-    SteamClient.Apps.RegisterForGameActionStart((_: number, appId: string, action: string) => {
+    const startUnregisterer = SteamClient.Apps.RegisterForGameActionStart((_: number, appId: string, action: string) => {
       const appData = installedGames.apps.get(parseInt(appId));
-      console.log("GameActionStart:", appData);
+
       if (action === "UninstallApps") {
-        // add action to a queue
+        actionQueue.push({ "data": { "appData": appData }, "action": action });
+      } else {
+        actionQueue.push({ "data": null, "action": action });
       }
     });
 
-    // Apps.RegisterForGameActionEnd?
-    return SteamClient.Apps.RegisterForGameActionEnd((_: number) => {
-      // get action from a queue
+    const endUnregisterer = SteamClient.Apps.RegisterForGameActionEnd((_: number) => {
+      const actionInfo = actionQueue.shift();
+
+      if (actionInfo?.action === "UninstallApps") {
+        callback(actionInfo.data.appData);
+      }
+    });
+
+    return {
+      unregister: () => {
+        startUnregisterer.unregister();
+        endUnregisterer.unregister();
+      }
+    }
+  }
+
+  /**
+   * Registers a callback for game install events.
+   * @param callback The callback to run.
+   * @returns An Unregisterer for this hook.
+   */
+  registerForGameInstall(callback: (appData: SteamAppOverview, update: DownloadItem) => void): Unregisterer {
+    const installedGames = collectionStore.localGamesCollection;
+
+    return SteamClient.Downloads.RegisterForDownloadItems((_: boolean, downloadItems: DownloadItem[]) => {
+      const download = downloadItems[0];
+      const isInstall = false;
+
+      if (download.completed && isInstall) {
+        callback(installedGames.apps.get(download.appid) as SteamAppOverview, download);
+      }
     });
   }
 
+  /**
+   * Registers a callback for game update events.
+   * @param callback The callback to run.
+   * @returns An Unregisterer for this hook.
+   */
+  registerForGameUpdate(callback: (game: SteamAppOverview, update: DownloadItem) => void): Unregisterer {
+    const installedGames = collectionStore.localGamesCollection;
 
+    return SteamClient.Downloads.RegisterForDownloadItems((_: boolean, downloadItems: DownloadItem[]) => {
+      const download = downloadItems[0];
+      const isUpdate = false;
+
+      if (download.completed && isUpdate) {
+        callback(installedGames.apps.get(download.appid) as SteamAppOverview, download);
+      }
+    });
+  }
+
+  /**
+   * Registers a callback for achievement notification events.
+   * @param callback The callback to run.
+   * @returns An Unregisterer for this hook.
+   */
   registerForGameAchievementNotification(callback: () => void): Unregisterer {
     return SteamClient.GameSessions.RegisterForAchievementNotification(() => {
 
     });
   }
 
-
+  /**
+   * Registers a callback for screenshot notification events.
+   * @param callback The callback to run.
+   * @returns An Unregisterer for this hook.
+   */
   registerForScreenshotNotification(callback: () => void): Unregisterer {
     return SteamClient.GameSessions.RegisterForScreenshotNotification(() => {
 
     });
   }
 
-
+  /**
+   * Registers a callback for message recieved events.
+   * @param callback The callback to run.
+   * @returns An Unregisterer for this hook.
+   */
   registerForMessageRecieved(callback: () => void): Unregisterer {
     return SteamClient.Messaging.RegisterForMessages(() => {
 
     });
   }
 
-
+  /**
+   * Registers a callback for steamOS update events.
+   * @param callback The callback to run.
+   * @returns An Unregisterer for this hook.
+   */
   registerSteamOSUpdateAvailable(callback: () => void): Unregisterer {
     return SteamClient.Updates.RegisterForUpdateStateChanges(() => {
 
     });
   }
 
-
+  /**
+   * Registers a callback for deck sleep requested events.
+   * @param callback The callback to run.
+   * @returns An Unregisterer for this hook.
+   */
   registerForSleepStart(callback: () => void): Unregisterer {
     // also can try System.RegisterForOnSystemSuspendRequest();
     return SteamClient.User.RegisterForPrepareForSystemSuspendProgress(() => {
@@ -501,7 +568,11 @@ export class SteamController {
     });
   }
 
-
+  /**
+   * Registers a callback for deck shutdown requested events.
+   * @param callback The callback to run.
+   * @returns An Unregisterer for this hook.
+   */
   registerForShutdownStart(callback: () => void): Unregisterer {
     return SteamClient.User.RegisterForShutdownStart(() => {
 

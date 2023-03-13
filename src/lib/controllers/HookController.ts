@@ -129,13 +129,13 @@ export class HookController {
         });
         break;
       case Hook.GAME_INSTALL:
-        unregister = this.steamController.registerForGameInstallStateChange(() => {
+        unregister = this.steamController.registerForGameInstall(() => {
 
         });
         break;
       case Hook.GAME_UNINSTALL:
-        unregister = this.steamController.registerForGameInstallStateChange(() => {
-
+        unregister = this.steamController.registerForGameUninstall((appData: SteamAppOverview) => {
+          //TODO: Launch shortcut here
         });
         break;
       case Hook.GAME_ACHIEVEMENT_UNLOCKED:
@@ -160,12 +160,14 @@ export class HookController {
         break;
       case Hook.DECK_SLEEP:
         unregister = this.steamController.registerForSleepStart(() => {
-
+          const [ date, time ] = this.getDatetime();
+          //TODO: Launch shortcut here
         });
         break;
       case Hook.DECK_SHUTDOWN:
         unregister = this.steamController.registerForShutdownStart(() => {
-
+          const [ date, time ] = this.getDatetime();
+          //TODO: Launch shortcut here
         });
         break;
       default:
