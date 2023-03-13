@@ -8,26 +8,98 @@ type Apps = {
   SetShortcutStartDir: (appId: number, startDir: string) => void,
   SetShortcutExe: (appId: number, exePath: string) => void,
   AddShortcut: (appName: string, exePath: string) => number,
+
+  RegisterForGameActionEnd: (callback: (unk1: number) => void) => Unregisterer,
+  RegisterForGameActionStart: (callback: (unk1: number, appId: string, action: string) => void) => Unregisterer,
+  RegisterForGameActionTaskChange: (callback: (data: any) => void) => Unregisterer,
+  RegisterForGameActionUserRequest: (callback: (unk1: number, appId: string, action: string, requestedAction: string, appId_2: string) => void) => Unregisterer,
+}
+
+type InstallWizardInfo = {
+  bCanChangeInstallFolder: boolean,
+  bIsRetailInstall: boolean,
+  currentAppID: number,
+  eAppError: number,
+  eInstallState: number, //probably a LUT for install status
+  errorDetail: string,
+  iInstallFolder: number, //LUT for install folders
+  iUnmountedFolder: number,
+  nDiskSpaceAvailable: number,
+  nDiskSpaceRequired: number,
+  rgAppIDs: number[],
+}
+
+type Installs ={
+  RegisterForShowInstallWizard: (callback: (data: InstallWizardInfo) => void) => Unregisterer,
+}
+
+type UpdateTypeInfo = {
+  completed_update: boolean,
+  downloaded_bytes: number,
+  has_update: boolean,
+  total_bytes: number
+}
+
+type DownloadItem = {
+  active: boolean,
+  appid: number,
+  buildid: number,
+  completed: boolean,
+  completed_time: number,
+  deferred_time: number,
+  downloaded_bytes: number,
+  launch_on_completion: boolean,
+  paused: boolean,
+  queue_index: number,
+  target_buildid: number,
+  total_bytes: number,
+  update_error: string,
+  update_result: number,
+  update_type_info: UpdateTypeInfo[]
+}
+
+type DownloadOverview = {
+  lan_peer_hostname: string,
+  paused: boolean,
+  throttling_suspended: boolean,
+  update_appid: number,
+  update_bytes_downloaded: number,
+  update_bytes_processed: number,
+  update_bytes_staged: number,
+  update_bytes_to_download: number,
+  update_bytes_to_process: number,
+  update_bytes_to_stage: number,
+  update_disc_bytes_per_second: number,
+  update_is_install: boolean,
+  update_is_prefetch_estimate: boolean,
+  update_is_shader: boolean,
+  update_is_upload: boolean,
+  update_is_workshop: boolean,
+  update_network_bytes_per_second: number,
+  update_peak_network_bytes_per_second: number,
+  update_seconds_remaining: number,
+  update_start_time: number,
+  update_state: string
 }
 
 type Downloads = {
-  RegisterForDownloadItems: (callback: () => void) => Unregisterer,
-  RegisterForDownloadOverview: (callback: () => void) => Unregisterer,
+  RegisterForDownloadItems: (callback: (isDownloading: boolean, downloadItems: DownloadItem[]) => void) => Unregisterer,
+  RegisterForDownloadOverview: (callback: (data: DownloadOverview) => void) => Unregisterer,
 }
 
 type GameSession = {
-  RegisterForAchievementNotification: (callback: () => void) => Unregisterer,
+  RegisterForAchievementNotification: (callback: (data: any) => void) => Unregisterer,
   RegisterForAppLifetimeNotifications: (callback: (data: LifetimeNotification) => void) => Unregisterer,
-  RegisterForScreenshotNotification: (callback: () => void) => Unregisterer,
+  RegisterForScreenshotNotification: (callback: (data: any) => void) => Unregisterer,
 }
 
 type Messaging = {
   PostMessage: () => void,
-  RegisterForMessages: (callback: () => void) => Unregisterer
+  RegisterForMessages: (callback: (data: any) => void) => Unregisterer
 }
 
 type Notifications = {
-  RegisterForNotifications: (callback: () => void) => Unregisterer
+  RegisterForNotifications: (callback: (data: any) => void) => Unregisterer
 }
 
 type Screenshot = any;
@@ -37,20 +109,20 @@ type Screenshots = {
 }
 
 type System = {
-  RegisterForOnSuspendRequest: (callback: () => void) => Unregisterer,
+  RegisterForOnSuspendRequest: (callback: (data: any) => void) => Unregisterer,
 }
 
 type Updates = {
-  RegisterForUpdateStateChanges: (callback: () => void) => Unregisterer
+  RegisterForUpdateStateChanges: (callback: (data: any) => void) => Unregisterer
   GetCurrentOSBranch: () => any
 }
 
 type User = {
-  RegisterForCurrentUserChanges: (callback: () => void) => Unregisterer,
+  RegisterForCurrentUserChanges: (callback: (data: any) => void) => Unregisterer,
   RegisterForLoginStateChange: (callback: (username: string) => void) => Unregisterer,
-  RegisterForPrepareForSystemSuspendProgress: (callback: () => void) => Unregisterer,
-  RegisterForShutdownStart: (callback: () => void) => Unregisterer,
-  RegisterForShutdownDone: (callback: () => void) => Unregisterer,
+  RegisterForPrepareForSystemSuspendProgress: (callback: (data: any) => void) => Unregisterer,
+  RegisterForShutdownStart: (callback: (data: any) => void) => Unregisterer,
+  RegisterForShutdownDone: (callback: (data: any) => void) => Unregisterer,
   StartRestart: () => void
 }
 
@@ -68,7 +140,7 @@ interface SteamClient {
   GameSessions: GameSession,
   Input: any,
   InstallFolder: any,
-  Installs: any,
+  Installs: Installs,
   MachineStorage: any,
   Messaging: Messaging,
   Notifications: Notifications,

@@ -444,10 +444,25 @@ export class SteamController {
 
   registerForGameInstallStateChange(callback: () => void): Unregisterer {
     const installedGames = collectionStore.localGamesCollection;
-    // RegisterForDownloadOverview?
-    // RegisterForDownloadItems?
+
     // Notifications.RegisterForNotifications?
-    return { unregister: () => {} }
+    SteamClient.Notifications.RegisterForNotifications((...data: any) => {
+      console.log("notification:", data);
+    });
+
+    // Apps.RegisterForGameActionStart?
+    SteamClient.Apps.RegisterForGameActionStart((_: number, appId: string, action: string) => {
+      const appData = installedGames.apps.get(parseInt(appId));
+      console.log("GameActionStart:", appData);
+      if (action === "UninstallApps") {
+        // add action to a queue
+      }
+    });
+
+    // Apps.RegisterForGameActionEnd?
+    return SteamClient.Apps.RegisterForGameActionEnd((_: number) => {
+      // get action from a queue
+    });
   }
 
 

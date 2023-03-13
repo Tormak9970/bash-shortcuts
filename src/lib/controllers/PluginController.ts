@@ -76,7 +76,14 @@ export class PluginController {
 
     this.webSocketClient.connect();
 
-    this.hooksController.init(await PyInterop.getShortcuts());
+    const shortcuts = (await PyInterop.getShortcuts()).result;
+    if (typeof shortcuts === "string") {
+      PyInterop.log(`Failed to get shortcuts for hooks. Error: ${shortcuts}`);
+    } else {
+      this.hooksController.init(shortcuts);
+    }
+
+    this.steamController.registerForGameInstallStateChange(() => {});
     
     PyInterop.log("PluginController initialized.");
   }
