@@ -95,7 +95,7 @@ type GameSession = {
 
 type Messaging = {
   PostMessage: () => void,
-  RegisterForMessages: (callback: (data: any) => void) => Unregisterer
+  RegisterForMessages: (accountName: string, callback: (data: any) => void) => Unregisterer
 }
 
 type Notifications = {
@@ -121,8 +121,8 @@ type User = {
   RegisterForCurrentUserChanges: (callback: (data: any) => void) => Unregisterer,
   RegisterForLoginStateChange: (callback: (username: string) => void) => Unregisterer,
   RegisterForPrepareForSystemSuspendProgress: (callback: (data: any) => void) => Unregisterer,
-  RegisterForShutdownStart: (callback: (data: any) => void) => Unregisterer,
-  RegisterForShutdownDone: (callback: (data: any) => void) => Unregisterer,
+  RegisterForShutdownStart: (callback: () => void) => Unregisterer,
+  RegisterForShutdownDone: (callback: () => void) => Unregisterer,
   StartRestart: () => void
 }
 

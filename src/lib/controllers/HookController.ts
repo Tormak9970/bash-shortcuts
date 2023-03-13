@@ -11,11 +11,11 @@ export enum Hook {
   GAME_START = "Game Start",
   GAME_END = "Game End",
   GAME_INSTALL = "Game Install",
+  GAME_UPDATE = "Game Update",
   GAME_UNINSTALL = "Game Uninstall",
   GAME_ACHIEVEMENT_UNLOCKED = "Game Achievement Unlocked",
   SCREENSHOT_TAKEN = "Screenshot Taken",
   MESSAGE_RECIEVED = "Message Recieved",
-  STEAMOS_UPDATE_AVAILABLE = 'SteamOS Update Available',
   DECK_SHUTDOWN = "Deck Shutdown",
   DECK_SLEEP = "Deck Sleep"
 }
@@ -129,7 +129,12 @@ export class HookController {
         });
         break;
       case Hook.GAME_INSTALL:
-        unregister = this.steamController.registerForGameInstall(() => {
+        unregister = this.steamController.registerForGameInstall((appData: SteamAppOverview) => {
+
+        });
+        break;
+      case Hook.GAME_UPDATE:
+        unregister = this.steamController.registerForGameUpdate((appData: SteamAppOverview) => {
 
         });
         break;
@@ -150,11 +155,6 @@ export class HookController {
         break;
       case Hook.MESSAGE_RECIEVED:
         unregister = this.steamController.registerForMessageRecieved(() => {
-
-        });
-        break;
-      case Hook.STEAMOS_UPDATE_AVAILABLE:
-        unregister = this.steamController.registerSteamOSUpdateAvailable(() => {
 
         });
         break;

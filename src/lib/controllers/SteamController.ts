@@ -518,8 +518,8 @@ export class SteamController {
    * @returns An Unregisterer for this hook.
    */
   registerForGameAchievementNotification(callback: () => void): Unregisterer {
-    return SteamClient.GameSessions.RegisterForAchievementNotification(() => {
-
+    return SteamClient.GameSessions.RegisterForAchievementNotification((...data: any) => {
+      console.log("achievement:", data);
     });
   }
 
@@ -529,8 +529,8 @@ export class SteamController {
    * @returns An Unregisterer for this hook.
    */
   registerForScreenshotNotification(callback: () => void): Unregisterer {
-    return SteamClient.GameSessions.RegisterForScreenshotNotification(() => {
-
+    return SteamClient.GameSessions.RegisterForScreenshotNotification((...data: any) => {
+      console.log("screenshot:", data);
     });
   }
 
@@ -540,19 +540,8 @@ export class SteamController {
    * @returns An Unregisterer for this hook.
    */
   registerForMessageRecieved(callback: () => void): Unregisterer {
-    return SteamClient.Messaging.RegisterForMessages(() => {
-
-    });
-  }
-
-  /**
-   * Registers a callback for steamOS update events.
-   * @param callback The callback to run.
-   * @returns An Unregisterer for this hook.
-   */
-  registerSteamOSUpdateAvailable(callback: () => void): Unregisterer {
-    return SteamClient.Updates.RegisterForUpdateStateChanges(() => {
-
+    return SteamClient.Messaging.RegisterForMessages(loginStore.m_strAccountName, (...data: any) => {
+      console.log("message:", data);
     });
   }
 
@@ -562,9 +551,8 @@ export class SteamController {
    * @returns An Unregisterer for this hook.
    */
   registerForSleepStart(callback: () => void): Unregisterer {
-    // also can try System.RegisterForOnSystemSuspendRequest();
     return SteamClient.User.RegisterForPrepareForSystemSuspendProgress(() => {
-
+      callback();
     });
   }
 
@@ -575,8 +563,29 @@ export class SteamController {
    */
   registerForShutdownStart(callback: () => void): Unregisterer {
     return SteamClient.User.RegisterForShutdownStart(() => {
-
+      callback();
     });
+  }
+
+  registerForHookPropDetect(): Unregisterer {
+    SteamClient.Downloads.RegisterForDownloadItems((_: boolean, downloadItems: DownloadItem[]) => {
+      console.log("downloadItems:", downloadItems);
+    });
+    
+    SteamClient.Downloads.RegisterForDownloadOverview((downloadOverview: DownloadOverview) => {
+      console.log("downloadOverview:", downloadOverview);
+      // when downloadOverview.updateAppID === 0 download is complete
+    });
+
+    this.registerForGameAchievementNotification(() => {});
+    this.registerForScreenshotNotification(() => {});
+    this.registerForMessageRecieved(() => {});
+
+    return {
+      unregister: () => {
+
+      }
+    }
   }
 
   /**

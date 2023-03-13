@@ -89,6 +89,17 @@ Run whenever a game is installed.
 
 <br/>
 
+#### Game Update
+Run whenever a game is updated.
+
+| Flag | Value    |
+| ---- | -------- |
+| -h   | "Game Update" |
+| -i   | The id of the game that was updated |
+| -n   | The name of the game that was updated |
+
+<br/>
+
 #### Game Uninstall
 Run whenever a game is uninstalled.
 
@@ -135,18 +146,7 @@ Run whenever a chat message is recieved.
 | ---- | -------- |
 | -h   | "Message Recieved" |
 | -f   | The name of the user the message is from |
-| -c   | The content of the message|
-
-<br/>
-
-#### SteamOS Update Available
-Run whenever a new SteamOS update is available for the current channel.
-
-| Flag | Value    |
-| ---- | -------- |
-| -h   | "SteamOS Update Available" |
-| -l   | The current update channel |
-| -v   | The update's version number
+| -c   | The content of the message |
 
 <br/>
 
