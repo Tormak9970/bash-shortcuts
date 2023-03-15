@@ -24,7 +24,7 @@ export class PluginController {
   private static instancesController: InstancesController;
   // private static hooksController: HookController;
   private static webSocketClient: WebSocketClient;
-  // private static state: ShortcutsState;
+  private static state: ShortcutsState;
 
   /**
    * Sets the plugin's serverAPI.
@@ -32,7 +32,7 @@ export class PluginController {
    */
   static setup(server: ServerAPI, state: ShortcutsState): void {
     this.server = server;
-    // this.state = state;
+    this.state = state;
     this.steamController = new SteamController();
     this.shortcutsController = new ShortcutsController(this.steamController);
     this.webSocketClient = new WebSocketClient("localhost", "5000", 1000);
@@ -95,8 +95,7 @@ export class PluginController {
    * @returns The shortcut.
    */
   static getShortcutById(shortcutId: string): Shortcut {
-    // return this.state.getPublicState().shortcuts[shortcutId];
-    return null as any;
+    return this.state.getPublicState().shortcuts[shortcutId];
   }
 
   /**
@@ -105,7 +104,7 @@ export class PluginController {
    * @param value The new value.
    */
   static setIsRunning(shortcutId: string, value: boolean): void {
-    // this.state.setIsRunning(shortcutId, value);
+    this.state.setIsRunning(shortcutId, value);
   }
 
   /**

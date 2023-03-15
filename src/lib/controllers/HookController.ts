@@ -178,35 +178,35 @@ export class HookController {
       this.runShortcuts(Hook.LOG_IN, flags);
     }, false);
 
-    // this.registeredHooks[Hook.GAME_START] = this.steamController.registerForAllAppLifetimeNotifications((appId: number, data: LifetimeNotification) => {
-    //   if (data.bRunning && (collectionStore.allAppsCollection.apps.has(appId) || collectionStore.deckDesktopApps.apps.has(appId))) {
-    //     const app = collectionStore.allAppsCollection.apps.get(appId) ?? collectionStore.deckDesktopApps.apps.get(appId);
-    //     if (app) {
-    //       const [ date, time ] = this.getDatetime();
+    this.registeredHooks[Hook.GAME_START] = this.steamController.registerForAllAppLifetimeNotifications((appId: number, data: LifetimeNotification) => {
+      if (data.bRunning && (collectionStore.allAppsCollection.apps.has(appId) || collectionStore.deckDesktopApps.apps.has(appId))) {
+        const app = collectionStore.allAppsCollection.apps.get(appId) ?? collectionStore.deckDesktopApps.apps.get(appId);
+        if (app) {
+          const [ date, time ] = this.getDatetime();
           
-    //       const flags = { "t": time, "d": date };
-    //       flags["i"] = appId;
-    //       flags["n"] = app.display_name;
+          const flags = { "t": time, "d": date };
+          flags["i"] = appId;
+          flags["n"] = app.display_name;
           
-    //       this.runShortcuts(Hook.GAME_START, flags);
-    //     }
-    //   }
-    // });
+          this.runShortcuts(Hook.GAME_START, flags);
+        }
+      }
+    });
 
-    // this.registeredHooks[Hook.GAME_END] = this.steamController.registerForAllAppLifetimeNotifications((appId: number, data: LifetimeNotification) => {
-    //   if (!data.bRunning && (collectionStore.allAppsCollection.apps.has(appId) || collectionStore.deckDesktopApps.apps.has(appId))) {
-    //     const app = collectionStore.allAppsCollection.apps.get(appId) ?? collectionStore.deckDesktopApps.apps.get(appId);
-    //     if (app) {
-    //       const [ date, time ] = this.getDatetime();
+    this.registeredHooks[Hook.GAME_END] = this.steamController.registerForAllAppLifetimeNotifications((appId: number, data: LifetimeNotification) => {
+      if (!data.bRunning && (collectionStore.allAppsCollection.apps.has(appId) || collectionStore.deckDesktopApps.apps.has(appId))) {
+        const app = collectionStore.allAppsCollection.apps.get(appId) ?? collectionStore.deckDesktopApps.apps.get(appId);
+        if (app) {
+          const [ date, time ] = this.getDatetime();
           
-    //       const flags = { "t": time, "d": date };
-    //       flags["i"] = appId;
-    //       flags["n"] = app.display_name;
+          const flags = { "t": time, "d": date };
+          flags["i"] = appId;
+          flags["n"] = app.display_name;
           
-    //       this.runShortcuts(Hook.GAME_END, flags);
-    //     }
-    //   }
-    // });
+          this.runShortcuts(Hook.GAME_END, flags);
+        }
+      }
+    });
 
     this.registeredHooks[Hook.GAME_INSTALL] = this.steamController.registerForGameInstall((appData: SteamAppOverview) => {
       const [ date, time ] = this.getDatetime();
