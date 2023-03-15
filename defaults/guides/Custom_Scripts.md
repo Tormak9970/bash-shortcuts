@@ -6,14 +6,17 @@
  - Bash Tips
  - Testing and Debugging
  - Common Issues
+
 <br/>
 
 ### Overview
 text here
+
 <br/>
 
 ### Scripting in Bash
 text here
+
 <br/>
 
 ### Bash Tips
@@ -23,10 +26,12 @@ text here
 
 ### Testing and Debugging
 text here
+
 <br/>
 
 ### Common Issues
 text here
+
 <br/>
 
 ###### © Travis Lane (Tormak)

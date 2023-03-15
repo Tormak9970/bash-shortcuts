@@ -15,10 +15,12 @@
    - SteamOS Update Available
    - Deck Shutdown
    - Deck Sleep
+
 <br/>
 
 ### Overview
 Hooks are a more complex way to run your shortcuts, and allow you to automate running shortcuts. By adding a hook to a shortcut, it will be run each time the hook's associated event occurs, and will be passed the arguments for the hook event.
+
 <br/>
 
 ### Hookable Events

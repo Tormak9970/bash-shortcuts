@@ -1,12 +1,11 @@
 import { VFC } from "react";
 
 import MarkDownIt from "markdown-it";
-import MultimdTable from "markdown-it-multimd-table";
 import { ScrollArea, Scrollable, scrollableRef } from "../utils/Scrollable";
 
-const mdIt = new MarkDownIt({
+const mdIt = new MarkDownIt({ //try "commonmark"
   html: true
-}).use(MultimdTable);
+})
 
 export const GuidePage: VFC<{ content: string }> = ({ content }) => {
   const ref = scrollableRef();
