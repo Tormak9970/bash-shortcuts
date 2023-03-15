@@ -484,6 +484,14 @@ export class SteamController {
   registerForGameInstall(callback: (appData: SteamAppOverview, update: DownloadItem) => void): Unregisterer {
     const installedGames = collectionStore.localGamesCollection;
 
+    const overviewUnsubregisterer = SteamClient.Downloads.RegisterForDownloadOverview((overview: DownloadOverview) => {
+      console.log("downloadOverview:", overview);
+      // overview.updateAppID === 0 download is complete
+      // overview.update_is_install 
+      // overview.update_appid
+      // overview.update_state === "None" for all downloads complete
+    })
+
     return SteamClient.Downloads.RegisterForDownloadItems((_: boolean, downloadItems: DownloadItem[]) => {
       const download = downloadItems[0];
       const isInstall = false;
@@ -559,21 +567,7 @@ export class SteamController {
   }
 
   registerForHookPropDetect(): Unregisterer {
-    SteamClient.Downloads.RegisterForDownloadOverview((downloadOverview: DownloadOverview) => {
-      console.log("downloadOverview:", downloadOverview);
-      // when downloadOverview.updateAppID === 0 download is complete
-      // downloadOverview.update_is_install 
-      // downloadOverview.update_appid
-      // downloadOverview.update_state === "None" for complete
-    });
-
-    this.registerForGameAchievementNotification(() => {});
-
-    return {
-      unregister: () => {
-
-      }
-    }
+    return this.registerForGameAchievementNotification(() => {});
   }
 
   /**
