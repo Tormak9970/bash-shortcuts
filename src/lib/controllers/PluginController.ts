@@ -131,11 +131,11 @@ export class PluginController {
 
   /**
    * Checks if a shortcut is running.
-   * @param shorcut The shortcut to check for.
+   * @param shorcutId The id of the shortcut to check for.
    * @returns True if the shortcut is running.
    */
-  static checkIfRunning(shorcut: Shortcut): boolean {
-    return Object.keys(PluginController.instancesController.instances).includes(shorcut.id);
+  static checkIfRunning(shorcutId: string): boolean {
+    return Object.keys(PluginController.instancesController.instances).includes(shorcutId);
   }
 
   /**

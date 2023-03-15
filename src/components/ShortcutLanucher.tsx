@@ -58,7 +58,7 @@ const ShortcutLabel: VFC<{ shortcut: Shortcut, isRunning: boolean}> = (props: { 
  * @returns The ShortcutLauncher component.
  */
 export const ShortcutLauncher: VFC<ShortcutLauncherProps> = (props: ShortcutLauncherProps) => {
-  const [ isRunning, setIsRunning ] = useState<boolean>(PluginController.checkIfRunning(props.shortcut));
+  const [ isRunning, setIsRunning ] = useState<boolean>(PluginController.checkIfRunning(props.shortcut.id));
 
   /**
    * Determines which action to run when the interactable is selected.
@@ -74,7 +74,7 @@ export const ShortcutLauncher: VFC<ShortcutLauncherProps> = (props: ShortcutLaun
       }
     } else {
       const res = await PluginController.launchShortcut(shortcut, async () => {
-        if (PluginController.checkIfRunning(shortcut) && shortcut.isApp) {
+        if (PluginController.checkIfRunning(shortcut.id) && shortcut.isApp) {
           setIsRunning(false);
           const killRes = await PluginController.killShortcut(shortcut);
           if (killRes) {

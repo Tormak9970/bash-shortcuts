@@ -1,6 +1,7 @@
 import { PyInterop } from "../../PyInterop";
 import { Shortcut } from "../data-structures/Shortcut";
 import { InstancesController } from "./InstancesController";
+import { PluginController } from "./PluginController";
 import { SteamController } from "./SteamController";
 
 /**
@@ -129,18 +130,38 @@ export class HookController {
     PyInterop.log(`Unregistered hook: ${hook} for shortcut: ${shortcut.name} Id: ${shortcut.id}`);
   }
 
+  private runShortcuts(hook: Hook, flags: { [flag: string ]: string }): void {
+    flags["h"] = hook;
+
+    for (const shortcutId of this.shortcutHooks[hook]) {
+      if (!PluginController.checkIfRunning(shortcutId)) {
+        //TODO: Launch shortcut here
+      } else {
+        PyInterop.log(`Skipping hook: ${hook} for shortcut: ${shortcutId} because it was already running.`);
+      }
+    }
+  }
+
   /**
    * Sets up all of the hooks for the plugin.
    */
   liten(): void {
     this.registeredHooks[Hook.LOG_IN] = this.steamController.registerForAuthStateChange(async (username: string) => {
       const [ date, time ] = this.getDatetime();
-      //TODO: Launch shortcut here
+
+      const flags = { "t": time, "d": date };
+      flags["u"] = username;
+
+      this.runShortcuts(Hook.LOG_IN, flags);
     }, null, false);
 
     this.registeredHooks[Hook.LOG_OUT] = this.steamController.registerForAuthStateChange(null, async (username: string) => {
       const [ date, time ] = this.getDatetime();
-      //TODO: Launch shortcut here
+
+      const flags = { "t": time, "d": date };
+      flags["u"] = username;
+      
+      this.runShortcuts(Hook.LOG_IN, flags);
     }, false);
 
     this.registeredHooks[Hook.GAME_START] = this.steamController.registerForAllAppLifetimeNotifications((appId: number, data: LifetimeNotification) => {
@@ -149,56 +170,112 @@ export class HookController {
         if (app) {
           const [ date, time ] = this.getDatetime();
           
-          const flags = {
-            "h": Hook.GAME_START,
-            "t": time,
-            "d": date
-          };
-
+          const flags = { "t": time, "d": date };
           flags["i"] = appId;
           flags["n"] = app.display_name;
           
-          this.instancesController
+          this.runShortcuts(Hook.GAME_START, flags);
         } else {
-
+          PyInterop.log(`App with appId: ${appId} was not found, skipping ${Hook.GAME_START} hook calls...`);
         }
       }
     });
 
     this.registeredHooks[Hook.GAME_END] = this.steamController.registerForAllAppLifetimeNotifications((appId: number, data: LifetimeNotification) => {
       if (!data.bRunning) {
-        //TODO: Launch shortcut here
+        const app = collectionStore.localGamesCollection.apps.get(appId);
+        if (app) {
+          const [ date, time ] = this.getDatetime();
+          
+          const flags = { "t": time, "d": date };
+          flags["i"] = appId;
+          flags["n"] = app.display_name;
+          
+          this.runShortcuts(Hook.GAME_END, flags);
+        } else {
+          PyInterop.log(`App with appId: ${appId} was not found, skipping ${Hook.GAME_END} hook calls...`);
+        }
       }
     });
 
     this.registeredHooks[Hook.GAME_INSTALL] = this.steamController.registerForGameInstall((appData: SteamAppOverview) => {
-      //TODO: Launch shortcut here
+      const [ date, time ] = this.getDatetime();
+          
+      const flags = { "t": time, "d": date };
+      flags["i"] = appData.appid;
+      flags["n"] = appData.display_name;
+      
+      this.runShortcuts(Hook.GAME_INSTALL, flags);
     });
 
     this.registeredHooks[Hook.GAME_UPDATE] = this.steamController.registerForGameUpdate((appData: SteamAppOverview) => {
-      //TODO: Launch shortcut here
+      const [ date, time ] = this.getDatetime();
+          
+      const flags = { "t": time, "d": date };
+      flags["i"] = appData.appid;
+      flags["n"] = appData.display_name;
+      
+      this.runShortcuts(Hook.GAME_UPDATE, flags);
     });
 
     this.registeredHooks[Hook.GAME_UNINSTALL] = this.steamController.registerForGameUninstall((appData: SteamAppOverview) => {
-      //TODO: Launch shortcut here
+      const [ date, time ] = this.getDatetime();
+          
+      const flags = { "t": time, "d": date };
+      flags["i"] = appData.appid;
+      flags["n"] = appData.display_name;
+      
+      this.runShortcuts(Hook.GAME_UNINSTALL, flags);
     });
     
     this.registeredHooks[Hook.GAME_ACHIEVEMENT_UNLOCKED] = this.steamController.registerForGameAchievementNotification((data: AchievementNotification) => {
-      //TODO: Launch shortcut here
+      const appId = data.unAppID;
+      const app = collectionStore.localGamesCollection.apps.get(appId);
+      if (app) {
+        const [ date, time ] = this.getDatetime();
+        
+        const flags = { "t": time, "d": date };
+        flags["i"] = appId;
+        flags["n"] = app.display_name;
+        flags["a"] = data.achievement.strName;
+        
+        this.runShortcuts(Hook.GAME_ACHIEVEMENT_UNLOCKED, flags);
+      } else {
+        PyInterop.log(`App with appId: ${appId} was not found, skipping ${Hook.GAME_ACHIEVEMENT_UNLOCKED} hook calls...`);
+      }
     });
 
     this.registeredHooks[Hook.SCREENSHOT_TAKEN] = this.steamController.registerForScreenshotNotification((data: ScreenshotNotification) => {
-      //TODO: Launch shortcut here
+      const appId = data.unAppID;
+      const app = collectionStore.localGamesCollection.apps.get(appId);
+      if (app) {
+        const [ date, time ] = this.getDatetime();
+        
+        const flags = { "t": time, "d": date };
+        flags["i"] = appId;
+        flags["n"] = app.display_name;
+        flags["a"] = data.details.strUrl;
+        
+        this.runShortcuts(Hook.GAME_ACHIEVEMENT_UNLOCKED, flags);
+      } else {
+        PyInterop.log(`App with appId: ${appId} was not found, skipping ${Hook.SCREENSHOT_TAKEN} hook calls...`);
+      }
     });
 
     this.registeredHooks[Hook.DECK_SLEEP] = this.steamController.registerForSleepStart(() => {
       const [ date, time ] = this.getDatetime();
-      //TODO: Launch shortcut here
+
+      const flags = { "t": time, "d": date };
+      
+      this.runShortcuts(Hook.DECK_SLEEP, flags);
     });
 
     this.registeredHooks[Hook.DECK_SHUTDOWN] = this.steamController.registerForShutdownStart(() => {
       const [ date, time ] = this.getDatetime();
-      //TODO: Launch shortcut here
+
+      const flags = { "t": time, "d": date };
+      
+      this.runShortcuts(Hook.DECK_SHUTDOWN, flags);
     });
   }
 
