@@ -149,7 +149,7 @@ export class HookController {
         break;
       case Hook.GAME_UPDATE:
         unregister = this.steamController.registerForGameUpdate((appData: SteamAppOverview) => {
-
+          //TODO: Launch shortcut here
         });
         break;
       case Hook.GAME_UNINSTALL:

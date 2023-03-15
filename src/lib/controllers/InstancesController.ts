@@ -140,9 +140,10 @@ export class InstancesController {
    * Launches an instance.
    * @param shortcutId The id of the shortcut associated with the instance to launch.
    * @param onExit The function to run when the shortcut closes.
+   * @param flags Optional flags to pass to the shortcut.
    * @returns A promise resolving to true if the instance is launched.
    */
-  async launchInstance(shortcutId: string, onExit: (data?: LifetimeNotification) => void): Promise<boolean> {
+  async launchInstance(shortcutId: string, onExit: (data?: LifetimeNotification) => void, flags: { [flag: string]: string } = {}): Promise<boolean> {
     const instance = this.instances[shortcutId];
     
     if (instance.shortcutIsApp) {
@@ -160,7 +161,7 @@ export class InstancesController {
       
       return res;
     } else {
-      const res = await PyInterop.runNonAppShortcut(shortcutId);
+      const res = await PyInterop.runNonAppShortcut(shortcutId, Object.entries(flags));
       console.log(res);
       return true;
     }

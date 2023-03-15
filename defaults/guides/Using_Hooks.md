@@ -1,5 +1,4 @@
 ## Using Hooks
-<br/>
 
 ### Table of Contents
  - Overview
@@ -17,20 +16,15 @@
    - Deck Shutdown
    - Deck Sleep
 <br/>
-<br/>
 
 ### Overview
 Hooks are a more complex way to run your shortcuts, and allow you to automate running shortcuts. By adding a hook to a shortcut, it will be run each time the hook's associated event occurs, and will be passed the arguments for the hook event.
-<br/>
-<br/>
 <br/>
 
 ### Hookable Events
 Listed below are all the different hookable events. Each hook has a description of when it occurs, and what flag(s) it will provide your shortcut with. These flags can be accessed by checking for them in your script, as well as a flag containing the hook name. Scan the QR code below or click [here](https://linuxconfig.org/bash-script-flags-usage-with-arguments-examples) to learn more:
 
 <img title="Bash Flags Reference QR Code" src="https://raw.githubusercontent.com/tormak9970/bash-shortcuts/master/assets/bash-flags-ref-qrcode.png" width=178 height = 178 />
-<br/>
-<br/>
 
 #### Log In
 Run whenever a user logs into the steamdeck.
@@ -42,8 +36,6 @@ Run whenever a user logs into the steamdeck.
 | -t   | The time that the user logged in at |
 | -d   | The date that the user logged in on |
 
-<br/>
-
 #### Log Out
 Run whenever a user logs out of the steamdeck.
 
@@ -53,8 +45,6 @@ Run whenever a user logs out of the steamdeck.
 | -u   | The username of the user |
 | -t   | The time that the user logged out at |
 | -d   | The date that the user logged out on |
-
-<br/>
 
 #### Game Start
 Run whenever a game is started.
@@ -67,8 +57,6 @@ Run whenever a game is started.
 | -t   | The time the game was started at |
 | -d   | The date the game was started on |
 
-<br/>
-
 #### Game End
 Run whenever a game ends.
 
@@ -79,8 +67,6 @@ Run whenever a game ends.
 | -n   | The name of the game that was ended |
 | -t   | The time the game was ended at |
 | -d   | The date the game was ended on |
-
-<br/>
 
 #### Game Install
 Run whenever a game is installed.
@@ -94,8 +80,6 @@ Run whenever a game is installed.
 | -t   | The time the game was installed at |
 | -d   | The date the game was installed on |
 
-<br/>
-
 #### Game Update
 Run whenever a game is updated.
 
@@ -108,8 +92,6 @@ Run whenever a game is updated.
 | -t   | The time the game was updated at |
 | -d   | The date the game was updated on |
 
-<br/>
-
 #### Game Uninstall
 Run whenever a game is uninstalled.
 
@@ -120,8 +102,6 @@ Run whenever a game is uninstalled.
 | -n   | The name of the game that was uninstalled |
 | -t   | The time the game was uninstalled at |
 | -d   | The date the game was uninstalled on |
-
-<br/>
 
 #### Game Achievement Unlock
 Run whenever an achievement is unlocked in a game.
@@ -135,8 +115,6 @@ Run whenever an achievement is unlocked in a game.
 | -t   | The time the achievement was unlocked at |
 | -d   | The date the achievement was unlocked on |
 
-<br/>
-
 #### Screenshot Taken
 Run whenever a screenshot is taken.
 
@@ -149,8 +127,6 @@ Run whenever a screenshot is taken.
 | -t   | The time the screenshot was taken at |
 | -d   | The date the screenshot was taken on |
 
-<br/>
-
 #### Deck Sleep
 Run before the Deck goes to sleep.
 
@@ -159,8 +135,6 @@ Run before the Deck goes to sleep.
 | -h   | "Deck Sleep" |
 | -t   | The time the deck went to sleep at |
 | -d   | The date the deck went to sleep on |
-
-<br/>
 
 #### Deck Shutdown
 Run before the Deck shuts down.

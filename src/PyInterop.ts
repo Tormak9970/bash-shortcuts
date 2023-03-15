@@ -136,9 +136,10 @@ export class PyInterop {
   /**
    * Runs a non app shortcut.
    * @param shortcutId The id of the shortcut to run.
+   * @param flags Optional tuple array of flags to pass to the shortcut.
    */
-  static async runNonAppShortcut(shortcutId: string): Promise<ServerResponse<void>> {
-    const successful = await this.serverAPI.callPluginMethod<{ shortcutId: string }, void>("runNonAppShortcut", { shortcutId: shortcutId });
+  static async runNonAppShortcut(shortcutId: string, flags: [string, string][]): Promise<ServerResponse<void>> {
+    const successful = await this.serverAPI.callPluginMethod<{ shortcutId: string, flags: [string, string][] }, void>("runNonAppShortcut", { shortcutId: shortcutId, flags: flags });
     return successful;
   }
 

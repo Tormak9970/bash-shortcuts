@@ -70,8 +70,8 @@ class Plugin:
     self._remShortcut(self, shortcut)
     return self.settingsManager.getSetting("shortcuts", {})
 
-  async def runNonAppShortcut(self, shortcutId):
-    self._runNonAppShortcut(self, shortcutId)
+  async def runNonAppShortcut(self, shortcutId, flags):
+    self._runNonAppShortcut(self, shortcutId, flags)
 
   async def killNonAppShortcut(self, shortcutId):
     self._killNonAppShortcut(self, shortcutId)
@@ -189,9 +189,9 @@ class Plugin:
 
     pass
 
-  def _runNonAppShortcut(self, shortcutId):
+  def _runNonAppShortcut(self, shortcutId, flags):
     log(f"Running createInstance for shortcut with Id: {shortcutId}")
-    self.instanceManager.createInstance(self.settingsManager.getSetting("shortcuts", {})[shortcutId])
+    self.instanceManager.createInstance(self.settingsManager.getSetting("shortcuts", {})[shortcutId], flags)
   
   def _killNonAppShortcut(self, shortcutId):
     log(f"Running killInstance for shortcut with Id: {shortcutId}")

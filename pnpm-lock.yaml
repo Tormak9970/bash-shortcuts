@@ -13,6 +13,7 @@ specifiers:
   '@types/webpack': ^5.28.0
   decky-frontend-lib: ^3.19.2
   markdown-it: ^13.0.1
+  markdown-it-multimd-table: ^4.2.1
   react-icons: ^4.8.0
   rollup: ^2.79.1
   rollup-plugin-import-assets: ^1.1.1
@@ -23,6 +24,7 @@ specifiers:
 
 dependencies:
   decky-frontend-lib: 3.19.2
+  markdown-it-multimd-table: 4.2.1
   react-icons: 4.8.0
   uuid: 9.0.0
 
@@ -659,6 +661,10 @@ packages:
     dependencies:
       sourcemap-codec: 1.4.8
     dev: true
+
+  /markdown-it-multimd-table/4.2.1:
+    resolution: {integrity: sha512-0WEkr2Siw1I9TFaKEHwCXDRxIXWmuzht496Mb8yCkFnK+OVDqMSN6k5/FwyKlZIMtYNOK02e8o0uh3H0WMqstQ==}
+    dev: false
 
   /markdown-it/13.0.1:
     resolution: {integrity: sha512-lTlxriVoy2criHP0JKRhO2VDG9c2ypWCsT237eDiLqi09rmbKoUetyGHq2uOIRoRS//kfoJckS0eUzzkDR+k2Q==}

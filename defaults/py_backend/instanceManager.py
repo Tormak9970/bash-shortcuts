@@ -10,15 +10,22 @@ from .logger import log
 instancesShouldRun = {}
 
 class Instance:
-  def __init__(self, clonedShortcut, checkInterval, jsInteropManager):
+  def __init__(self, clonedShortcut, flags, checkInterval, jsInteropManager):
     self.shortcut = clonedShortcut
+    self.flags = flags
     self.shortcutProcess = None
     self.checkInterval = checkInterval
     self.jsInteropManager = jsInteropManager
 
   def createInstance(self):
     log(f"Created instance for shortcut {self.shortcut['name']} Id: {self.shortcut['id']}")
-    self.shortcutProcess = subprocess.Popen([self.shortcut["cmd"]], shell=True) # , stdout=subprocess.PIPE
+    command = [self.shortcut["cmd"]]
+
+    for _, flag in enumerate(self.flags):
+      command.append(f"-{flag[0]}")
+      command.append(flag[1])
+
+    self.shortcutProcess = subprocess.Popen(command, shell=True) # , stdout=subprocess.PIPE
     log(f"Ran process for shortcut {self.shortcut['name']} Id: {self.shortcut['id']}. Attempting to fetch status")
     status = self._getProcessStatus()
     log(f"Status for command was {status}. Name: {self.shortcut['name']} Id: {self.shortcut['id']}")
@@ -91,10 +98,10 @@ class InstanceManager:
     self.checkInterval = checkInterval
     self.jsInteropManager = jsInteropManager
 
-  def createInstance(self, shortcut):
+  def createInstance(self, shortcut, flags):
     log(f"Creating instance for {shortcut['name']} Id: {shortcut['id']}")
     instancesShouldRun[shortcut["id"]] = True
-    cmdThread = Thread(target=self.runInstanceInThread, args=[cloneObject(shortcut), self.checkInterval, self.jsInteropManager])
+    cmdThread = Thread(target=self.runInstanceInThread, args=[cloneObject(shortcut), flags, self.checkInterval, self.jsInteropManager])
     cmdThread.start()
     pass
   
@@ -103,9 +110,9 @@ class InstanceManager:
     instancesShouldRun[shortcut["id"]] = False
     pass
 
-  def runInstanceInThread(self, clonedShortcut, checkInterval, jsInteropManager):
+  def runInstanceInThread(self, clonedShortcut, flags, checkInterval, jsInteropManager):
     log(f"Running instance in thread for {clonedShortcut['name']} Id: {clonedShortcut['id']}")
-    instance = Instance(clonedShortcut, checkInterval, jsInteropManager)
+    instance = Instance(clonedShortcut, flags, checkInterval, jsInteropManager)
     instance.createInstance()
     instance.listenForStatus()
     pass

@@ -1,5 +1,4 @@
 ## Managing Shortcuts
-<br/>
 
 ### Table of Contents
  - Overview
@@ -10,51 +9,35 @@
    - Changing the Order of Shortcuts
  - Removing Shortcuts
 <br/>
-<br/>
 
 ### Overview
 txt here
-<br/>
-<br/>
 <br/>
 
 ### Adding Shortcuts
 <!-- Add image of UI -->
 txt here
-<br/>
-<br/>
 
 #### New Shortcut Options
 txt here
-<br/>
-<br/>
 <br/>
 
 ### Editing Shortcuts
 <!-- Add image of UI -->
 txt here
-<br/>
-<br/>
 
 #### Changing Existing Shortcuts
 <!-- Add image of UI -->
 txt here
-<br/>
-<br/>
-<br/>
 
 #### Changing the Order of Shortcuts
 <!-- Add image of UI -->
 txt here
 <br/>
-<br/>
-<br/>
 
 ### Removing Shortcuts
 <!-- Add image of UI -->
 txt here
-<br/>
-<br/>
 <br/>
 
 ###### © Travis Lane (Tormak)
