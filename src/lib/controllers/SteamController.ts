@@ -403,13 +403,11 @@ export class SteamController {
         if (username === "") {
           if (isLoggedIn !== false && (once ? !this.hasLoggedOut : true)) {
             if (onLogout) onLogout(currentUsername);
-            PyInterop.log("User logged out.");
           }
           isLoggedIn = false;
         } else {
           if (isLoggedIn !== true && (once ? !this.hasLoggedIn : true)) {
             if (onLogin) onLogin(username);
-            PyInterop.log(`user logged in. [DEBUG INFO] username: ${username};`);
           }
           isLoggedIn = true;
         }

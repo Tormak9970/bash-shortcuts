@@ -9,16 +9,19 @@ type ShortcutsDictionary = {
 interface PublicShortcutsState {
   shortcuts: ShortcutsDictionary;
   shortcutsList: Shortcut[];
+  runningShortcuts: Set<string>;
   reorderableShortcuts: ReorderableEntry<Shortcut>[];
 }
 
 interface PublicShortcutsContext extends PublicShortcutsState {
   setShortcuts(shortcuts: ShortcutsDictionary): void;
+  setIsRunning(shortcutId: string, value: boolean): void;
 }
 
 export class ShortcutsState {
   private shortcuts: ShortcutsDictionary = {};
   private shortcutsList: Shortcut[] = [];
+  private runningShortcuts = new Set<string>();
   private reorderableShortcuts: ReorderableEntry<Shortcut>[] = [];
 
   public eventBus = new EventTarget();
@@ -27,8 +30,19 @@ export class ShortcutsState {
     return {
       "shortcuts": this.shortcuts,
       "shortcutsList": this.shortcutsList,
+      "runningShortcuts": this.runningShortcuts,
       "reorderableShortcuts": this.reorderableShortcuts
     }
+  }
+
+  setIsRunning(shortcutId: string, value: boolean) {
+    if (value) {
+      this.runningShortcuts.add(shortcutId);
+    } else {
+      this.runningShortcuts.delete(shortcutId);
+    }
+
+    this.forceUpdate();
   }
 
   setShortcuts(shortcuts: ShortcutsDictionary) {
@@ -88,11 +102,16 @@ export const ShortcutsContextProvider: FC<ProviderProps> = ({
     shortcutsStateClass.setShortcuts(shortcuts);
   }
 
+  const setIsRunning = (shortcutId: string, value: boolean) => {
+    shortcutsStateClass.setIsRunning(shortcutId, value);
+  }
+
   return (
     <ShortcutsContext.Provider
       value={{
         ...publicState,
-        setShortcuts
+        setShortcuts,
+        setIsRunning
       }}
     >
       {children}

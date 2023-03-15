@@ -1,11 +1,12 @@
 import { DialogButton, Field, Focusable, Navigation, gamepadDialogClasses } from "decky-frontend-lib";
-import { Fragment, VFC, useState } from "react";
+import { Fragment, VFC, useEffect, useState } from "react";
 import { Shortcut } from "../lib/data-structures/Shortcut";
 
 import { IoRocketSharp } from "react-icons/io5";
 import { PyInterop } from "../PyInterop";
 import { FaTrashAlt } from "react-icons/fa";
 import { PluginController } from "../lib/controllers/PluginController";
+import { useShortcutsState } from "../state/ShortcutsState";
 
 export type ShortcutLauncherProps = {
   shortcut: Shortcut
@@ -58,7 +59,12 @@ const ShortcutLabel: VFC<{ shortcut: Shortcut, isRunning: boolean}> = (props: { 
  * @returns The ShortcutLauncher component.
  */
 export const ShortcutLauncher: VFC<ShortcutLauncherProps> = (props: ShortcutLauncherProps) => {
-  const [ isRunning, setIsRunning ] = useState<boolean>(PluginController.checkIfRunning(props.shortcut.id));
+  const { runningShortcuts, setIsRunning } = useShortcutsState();
+  const [ isRunning, _setIsRunning ] = useState<boolean>(PluginController.checkIfRunning(props.shortcut.id));
+
+  useEffect(() => {
+    _setIsRunning(runningShortcuts.has(props.shortcut.id));
+  }, [runningShortcuts]);
 
   /**
    * Determines which action to run when the interactable is selected.
@@ -70,12 +76,12 @@ export const ShortcutLauncher: VFC<ShortcutLauncherProps> = (props: ShortcutLaun
       if (!res) {
         PyInterop.toast("Error", "Failed to close shortcut.");
       } else {
-        setIsRunning(false);
+        setIsRunning(shortcut.id, false);
       }
     } else {
       const res = await PluginController.launchShortcut(shortcut, async () => {
         if (PluginController.checkIfRunning(shortcut.id) && shortcut.isApp) {
-          setIsRunning(false);
+          setIsRunning(shortcut.id, false);
           const killRes = await PluginController.killShortcut(shortcut);
           if (killRes) {
             Navigation.Navigate("/library/home");
@@ -100,12 +106,12 @@ export const ShortcutLauncher: VFC<ShortcutLauncherProps> = (props: ShortcutLaun
                 PyInterop.toast(shortcut.name, "Shortcut execution was canceled.");
               }
 
-              setIsRunning(false);
+              setIsRunning(shortcut.id, false);
             }
           });
         }
         
-        setIsRunning(true);
+        setIsRunning(shortcut.id, true);
       }
     }
   }

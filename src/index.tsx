@@ -155,7 +155,7 @@ export default definePlugin((serverApi: ServerAPI) => {
   PyInterop.setServer(serverApi);
 
   const state = new ShortcutsState();
-  PluginController.setup(serverApi);
+  PluginController.setup(serverApi, state);
 
   const loginHook = PluginController.initOnLogin();
 

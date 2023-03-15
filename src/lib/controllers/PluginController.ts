@@ -6,12 +6,16 @@ import { SteamController } from "./SteamController";
 import { Shortcut } from "../data-structures/Shortcut";
 import { WebSocketClient } from "../../WebsocketClient";
 import { HookController } from "./HookController";
+import { ShortcutsState } from "../../state/ShortcutsState";
 
 /**
  * Main controller class for the plugin.
  */
 export class PluginController {
   static mainAppId: number;
+  static shortcutName: string;
+  static runnerPath = "\"/home/deck/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh\"";
+  static startDir = "\"/home/deck/homebrew/plugins/bash-shortcuts/\"";
 
   // @ts-ignore
   private static server: ServerAPI;
@@ -20,17 +24,15 @@ export class PluginController {
   private static instancesController: InstancesController;
   private static hooksController: HookController;
   private static webSocketClient: WebSocketClient;
-
-  private static shortcutName: string;
-  private static runnerPath = "\"/home/deck/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh\"";
-  private static startDir = "\"/home/deck/homebrew/plugins/bash-shortcuts/\"";
+  private static state: ShortcutsState;
 
   /**
    * Sets the plugin's serverAPI.
    * @param server The serverAPI to use.
    */
-  static setup(server: ServerAPI): void {
+  static setup(server: ServerAPI, state: ShortcutsState): void {
     this.server = server;
+    this.state = state;
     this.steamController = new SteamController();
     this.shortcutsController = new ShortcutsController(this.steamController);
     this.webSocketClient = new WebSocketClient("localhost", "5000", 1000);
@@ -48,7 +50,8 @@ export class PluginController {
       PluginController.startDir = `\"/home/${res.result}/homebrew/plugins/bash-shortcuts/\"`;
     });
 
-    return this.steamController.registerForAuthStateChange(async () => {
+    return this.steamController.registerForAuthStateChange(async (username) => {
+      PyInterop.log(`user logged in. [DEBUG INFO] username: ${username};`);
       if (await this.steamController.waitForServicesToInitialize()) {
         PluginController.init("Bash Shortcuts");
       } else {
@@ -84,6 +87,24 @@ export class PluginController {
     }
     
     PyInterop.log("PluginController initialized.");
+  }
+
+  /**
+   * Gets a shortcut by its id.
+   * @param shortcutId The id of the shortcut to get.
+   * @returns The shortcut.
+   */
+  static getShortcutById(shortcutId: string): Shortcut {
+    return this.state.getPublicState().shortcuts[shortcutId];
+  }
+
+  /**
+   * Sets wether a shortcut is running or not.
+   * @param shortcutId The id of the shortcut to set.
+   * @param value The new value.
+   */
+  static setIsRunning(shortcutId: string, value: boolean): void {
+    this.state.setIsRunning(shortcutId, value);
   }
 
   /**

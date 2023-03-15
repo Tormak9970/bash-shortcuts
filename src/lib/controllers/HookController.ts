@@ -33,8 +33,10 @@ export class HookController {
   private steamController: SteamController;
   private instancesController: InstancesController;
 
-  shortcutHooks: HooksDict = Object.assign({}, ...Object.values(Hook).map((hook) => [hook, new Set()]));
-  registeredHooks: RegisteredDict = Object.assign({}, ...Object.values(Hook).map((hook) => [hook, {}]));
+  // @ts-ignore
+  shortcutHooks: HooksDict = {};
+  // @ts-ignore
+  registeredHooks: RegisteredDict = {};
 
   /**
    * Creates a new HooksController.
@@ -42,6 +44,10 @@ export class HookController {
    * @param instancesController The InstanceController to use.
    */
   constructor(steamController: SteamController, instancesController: InstancesController) {
+    for (const hook of Object.values(Hook)) {
+      this.shortcutHooks[hook] = new Set<string>();
+    }
+
     this.steamController = steamController;
     this.instancesController = instancesController;
   }
@@ -130,12 +136,20 @@ export class HookController {
     PyInterop.log(`Unregistered hook: ${hook} for shortcut: ${shortcut.name} Id: ${shortcut.id}`);
   }
 
-  private runShortcuts(hook: Hook, flags: { [flag: string ]: string }): void {
+  private async runShortcuts(hook: Hook, flags: { [flag: string ]: string }): Promise<void> {
     flags["h"] = hook;
 
-    for (const shortcutId of this.shortcutHooks[hook]) {
+    for (const shortcutId of this.shortcutHooks[hook].values()) {
       if (!PluginController.checkIfRunning(shortcutId)) {
-        //TODO: Launch shortcut here
+        const shortcut = PluginController.getShortcutById(shortcutId);
+        const createdInstance = await this.instancesController.createInstance(PluginController.shortcutName, shortcut, PluginController.runnerPath, PluginController.startDir);
+
+        if (createdInstance) {
+          PyInterop.log(`Created Instance for shortcut ${shortcut.name}`);
+          // return await this.instancesController.launchInstance(shortcut.id, onExit);
+        } else {
+          // return false;
+        }
       } else {
         PyInterop.log(`Skipping hook: ${hook} for shortcut: ${shortcutId} because it was already running.`);
       }
@@ -166,34 +180,38 @@ export class HookController {
 
     this.registeredHooks[Hook.GAME_START] = this.steamController.registerForAllAppLifetimeNotifications((appId: number, data: LifetimeNotification) => {
       if (data.bRunning) {
-        const app = collectionStore.localGamesCollection.apps.get(appId);
-        if (app) {
-          const [ date, time ] = this.getDatetime();
-          
-          const flags = { "t": time, "d": date };
-          flags["i"] = appId;
-          flags["n"] = app.display_name;
-          
-          this.runShortcuts(Hook.GAME_START, flags);
-        } else {
-          PyInterop.log(`App with appId: ${appId} was not found, skipping ${Hook.GAME_START} hook calls...`);
+        try {
+          const app = collectionStore.localGamesCollection.apps.get(appId);
+          if (app) {
+            const [ date, time ] = this.getDatetime();
+            
+            const flags = { "t": time, "d": date };
+            flags["i"] = appId;
+            flags["n"] = app.display_name;
+            
+            this.runShortcuts(Hook.GAME_START, flags);
+          }
+        } catch (e: any) {
+
         }
       }
     });
 
     this.registeredHooks[Hook.GAME_END] = this.steamController.registerForAllAppLifetimeNotifications((appId: number, data: LifetimeNotification) => {
       if (!data.bRunning) {
-        const app = collectionStore.localGamesCollection.apps.get(appId);
-        if (app) {
-          const [ date, time ] = this.getDatetime();
-          
-          const flags = { "t": time, "d": date };
-          flags["i"] = appId;
-          flags["n"] = app.display_name;
-          
-          this.runShortcuts(Hook.GAME_END, flags);
-        } else {
-          PyInterop.log(`App with appId: ${appId} was not found, skipping ${Hook.GAME_END} hook calls...`);
+        try {
+          const app = collectionStore.localGamesCollection.apps.get(appId);
+          if (app) {
+            const [ date, time ] = this.getDatetime();
+            
+            const flags = { "t": time, "d": date };
+            flags["i"] = appId;
+            flags["n"] = app.display_name;
+            
+            this.runShortcuts(Hook.GAME_END, flags);
+          }
+        } catch (e: any) {
+
         }
       }
     });
@@ -229,36 +247,40 @@ export class HookController {
     });
     
     this.registeredHooks[Hook.GAME_ACHIEVEMENT_UNLOCKED] = this.steamController.registerForGameAchievementNotification((data: AchievementNotification) => {
-      const appId = data.unAppID;
-      const app = collectionStore.localGamesCollection.apps.get(appId);
-      if (app) {
-        const [ date, time ] = this.getDatetime();
-        
-        const flags = { "t": time, "d": date };
-        flags["i"] = appId;
-        flags["n"] = app.display_name;
-        flags["a"] = data.achievement.strName;
-        
-        this.runShortcuts(Hook.GAME_ACHIEVEMENT_UNLOCKED, flags);
-      } else {
-        PyInterop.log(`App with appId: ${appId} was not found, skipping ${Hook.GAME_ACHIEVEMENT_UNLOCKED} hook calls...`);
+      try {
+        const appId = data.unAppID;
+        const app = collectionStore.localGamesCollection.apps.get(appId);
+        if (app) {
+          const [ date, time ] = this.getDatetime();
+          
+          const flags = { "t": time, "d": date };
+          flags["i"] = appId;
+          flags["n"] = app.display_name;
+          flags["a"] = data.achievement.strName;
+          
+          this.runShortcuts(Hook.GAME_ACHIEVEMENT_UNLOCKED, flags);
+        }
+      } catch (e: any) {
+
       }
     });
 
     this.registeredHooks[Hook.SCREENSHOT_TAKEN] = this.steamController.registerForScreenshotNotification((data: ScreenshotNotification) => {
-      const appId = data.unAppID;
-      const app = collectionStore.localGamesCollection.apps.get(appId);
-      if (app) {
-        const [ date, time ] = this.getDatetime();
-        
-        const flags = { "t": time, "d": date };
-        flags["i"] = appId;
-        flags["n"] = app.display_name;
-        flags["a"] = data.details.strUrl;
-        
-        this.runShortcuts(Hook.GAME_ACHIEVEMENT_UNLOCKED, flags);
-      } else {
-        PyInterop.log(`App with appId: ${appId} was not found, skipping ${Hook.SCREENSHOT_TAKEN} hook calls...`);
+      try {
+        const appId = data.unAppID;
+        const app = collectionStore.localGamesCollection.apps.get(appId);
+        if (app) {
+          const [ date, time ] = this.getDatetime();
+          
+          const flags = { "t": time, "d": date };
+          flags["i"] = appId;
+          flags["n"] = app.display_name;
+          flags["a"] = data.details.strUrl;
+          
+          this.runShortcuts(Hook.GAME_ACHIEVEMENT_UNLOCKED, flags);
+        }
+      } catch (e: any) {
+
       }
     });
 
@@ -284,7 +306,7 @@ export class HookController {
    */
   dismount(): void {
     for (const hook of Object.keys(this.registeredHooks)) {
-      this.shortcutHooks[hook].unregister();
+      this.registeredHooks[hook].unregister();
       PyInterop.log(`Unregistered hook: ${hook}`);
     }
   }
