@@ -15,14 +15,13 @@ export enum Hook {
   GAME_UNINSTALL = "Game Uninstall",
   GAME_ACHIEVEMENT_UNLOCKED = "Game Achievement Unlocked",
   SCREENSHOT_TAKEN = "Screenshot Taken",
-  MESSAGE_RECIEVED = "Message Recieved",
   DECK_SHUTDOWN = "Deck Shutdown",
   DECK_SLEEP = "Deck Sleep"
 }
 
 export const hookAsOptions = Object.values(Hook).map((entry) => { return { label: entry, data: entry } });
 
-type hooks = {
+type HooksDict = {
   [key in Hook]: {
     [id: string]: Unregisterer
   }
@@ -33,7 +32,7 @@ type hooks = {
  */
 export class HookController {
   private steamController: SteamController;
-  hooks: hooks = Object.assign({}, ...Object.values(Hook).map((hook) => [hook, {}]));
+  hooks: HooksDict = Object.assign({}, ...Object.values(Hook).map((hook) => [hook, {}]));
 
   /**
    * Creates a new HooksController.
@@ -117,7 +116,22 @@ export class HookController {
       case Hook.GAME_START:
         unregister = this.steamController.registerForAllAppLifetimeNotifications((appId: number, data: LifetimeNotification) => {
           if (data.bRunning) {
-            //TODO: Launch shortcut here
+            const app = collectionStore.localGamesCollection.apps.get(appId);
+            if (app) {
+              const [ date, time ] = this.getDatetime();
+              
+              const flags = {
+                "h": hook,
+                "t": time,
+                "d": date
+              };
+
+              flags["i"] = appId;
+              flags["n"] = app.display_name;
+              //TODO: Launch shortcut here
+            } else {
+
+            }
           }
         });
         break;
@@ -149,13 +163,8 @@ export class HookController {
         });
         break;
       case Hook.SCREENSHOT_TAKEN:
-        unregister = this.steamController.registerForScreenshotNotification(() => {
-
-        });
-        break;
-      case Hook.MESSAGE_RECIEVED:
-        unregister = this.steamController.registerForMessageRecieved(() => {
-
+        unregister = this.steamController.registerForScreenshotNotification((data: ScreenshotNotification) => {
+          //TODO: Launch shortcut here
         });
         break;
       case Hook.DECK_SLEEP:

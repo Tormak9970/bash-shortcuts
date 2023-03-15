@@ -64,6 +64,8 @@ Run whenever a game is started.
 | -h   | "Game Start" |
 | -i   | The id of the game that was started |
 | -n   | The name of the game that was started |
+| -t   | The time the game was started at |
+| -d   | The date the game was started on |
 
 <br/>
 
@@ -75,6 +77,8 @@ Run whenever a game ends.
 | -h   | "Game End" |
 | -i   | The id of the game that was ended |
 | -n   | The name of the game that was ended |
+| -t   | The time the game was ended at |
+| -d   | The date the game was ended on |
 
 <br/>
 
@@ -85,7 +89,10 @@ Run whenever a game is installed.
 | ---- | -------- |
 | -h   | "Game Install" |
 | -i   | The id of the game that was installed |
+| -v   | The version of the game that was installed |
 | -n   | The name of the game that was installed |
+| -t   | The time the game was installed at |
+| -d   | The date the game was installed on |
 
 <br/>
 
@@ -97,6 +104,9 @@ Run whenever a game is updated.
 | -h   | "Game Update" |
 | -i   | The id of the game that was updated |
 | -n   | The name of the game that was updated |
+| -v   | The version the game that was updared to |
+| -t   | The time the game was updated at |
+| -d   | The date the game was updated on |
 
 <br/>
 
@@ -108,6 +118,8 @@ Run whenever a game is uninstalled.
 | -h   | "Game Uninstall" |
 | -i   | The id of the game that was uninstalled |
 | -n   | The name of the game that was uninstalled |
+| -t   | The time the game was uninstalled at |
+| -d   | The date the game was uninstalled on |
 
 <br/>
 
@@ -136,17 +148,6 @@ Run whenever a screenshot is taken.
 | -p   | The path to the screenshot |
 | -t   | The time the screenshot was taken at |
 | -d   | The date the screenshot was taken on |
-
-<br/>
-
-#### Message Recieved
-Run whenever a chat message is recieved.
-
-| Flag | Value    |
-| ---- | -------- |
-| -h   | "Message Recieved" |
-| -f   | The name of the user the message is from |
-| -c   | The content of the message |
 
 <br/>
 

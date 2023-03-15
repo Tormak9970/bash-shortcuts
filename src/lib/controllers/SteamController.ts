@@ -502,6 +502,8 @@ export class SteamController {
   registerForGameUpdate(callback: (game: SteamAppOverview, update: DownloadItem) => void): Unregisterer {
     const installedGames = collectionStore.localGamesCollection;
 
+    //* May need to use a combination of registerForDownloadItems and registerForDownloadOverview
+
     return SteamClient.Downloads.RegisterForDownloadItems((_: boolean, downloadItems: DownloadItem[]) => {
       const download = downloadItems[0];
       const isUpdate = false;
@@ -528,20 +530,9 @@ export class SteamController {
    * @param callback The callback to run.
    * @returns An Unregisterer for this hook.
    */
-  registerForScreenshotNotification(callback: () => void): Unregisterer {
-    return SteamClient.GameSessions.RegisterForScreenshotNotification((...data: any) => {
-      console.log("screenshot:", data);
-    });
-  }
-
-  /**
-   * Registers a callback for message recieved events.
-   * @param callback The callback to run.
-   * @returns An Unregisterer for this hook.
-   */
-  registerForMessageRecieved(callback: () => void): Unregisterer {
-    return SteamClient.Messaging.RegisterForMessages(loginStore.m_strAccountName, (...data: any) => {
-      console.log("message:", data);
+  registerForScreenshotNotification(callback: (data: ScreenshotNotification) => void): Unregisterer {
+    return SteamClient.GameSessions.RegisterForScreenshotNotification((data: ScreenshotNotification) => {
+      callback(data);
     });
   }
 
@@ -568,18 +559,15 @@ export class SteamController {
   }
 
   registerForHookPropDetect(): Unregisterer {
-    SteamClient.Downloads.RegisterForDownloadItems((_: boolean, downloadItems: DownloadItem[]) => {
-      console.log("downloadItems:", downloadItems);
-    });
-    
     SteamClient.Downloads.RegisterForDownloadOverview((downloadOverview: DownloadOverview) => {
       console.log("downloadOverview:", downloadOverview);
       // when downloadOverview.updateAppID === 0 download is complete
+      // downloadOverview.update_is_install 
+      // downloadOverview.update_appid
+      // downloadOverview.update_state === "None" for complete
     });
 
     this.registerForGameAchievementNotification(() => {});
-    this.registerForScreenshotNotification(() => {});
-    this.registerForMessageRecieved(() => {});
 
     return {
       unregister: () => {
