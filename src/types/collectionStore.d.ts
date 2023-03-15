@@ -1,5 +1,14 @@
 // Types for the collectionStore global
 
+type CollectionStore = {
+  deckDesktopApps: Collection,
+  userCollections: Collection[],
+  localGamesCollection: Collection,
+  allAppsCollection: Collection,
+  BIsHidden: (appId: number) => boolean,
+  SetAppsAsHidden: (appIds: number[], hide: boolean) => void,
+}
+
 type SteamCollection = {
   AsDeletableCollection: ()=>null
   AsDragDropCollection: ()=>null
@@ -16,15 +25,7 @@ type SteamCollection = {
   visibleApps: SteamAppOverview[]
 }
 
-type CollectionStore = {
-  deckDesktopApps: Collection;
-  userCollections: Collection[];
-  localGamesCollection: LocalCollection;
-  BIsHidden: (appId: number) => boolean;
-  SetAppsAsHidden: (appIds: number[], hide: boolean) => void;
-}
-
-type LocalCollection = {
+type Collection = {
   AsDeletableCollection: () => null,
   AsDragDropCollection: () => null,
   AsEditableCollection: () => null,
@@ -38,15 +39,4 @@ type LocalCollection = {
   displayName: string,
   id: string,
   visibleApps: SteamAppOverview[]
-}
-
-type Collection = {
-  AsDragDropCollection: () => {
-    RemoveApps: (overviews: SteamAppOverview[]) => void;
-  };
-  apps: {
-    keys: () => IterableIterator<number>;
-    has: (appId: number) => boolean;
-  };
-  bAllowsDragAndDrop: boolean;
 }

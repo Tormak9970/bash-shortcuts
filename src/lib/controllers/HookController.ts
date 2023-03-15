@@ -144,7 +144,7 @@ export class HookController {
         break;
       case Hook.GAME_INSTALL:
         unregister = this.steamController.registerForGameInstall((appData: SteamAppOverview) => {
-
+          //TODO: Launch shortcut here
         });
         break;
       case Hook.GAME_UPDATE:
@@ -158,8 +158,8 @@ export class HookController {
         });
         break;
       case Hook.GAME_ACHIEVEMENT_UNLOCKED:
-        unregister = this.steamController.registerForGameAchievementNotification(() => {
-
+        unregister = this.steamController.registerForGameAchievementNotification((data: AchievementNotification) => {
+          //TODO: Launch shortcut here
         });
         break;
       case Hook.SCREENSHOT_TAKEN:

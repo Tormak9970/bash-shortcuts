@@ -57,7 +57,8 @@ export const AddShortcut: VFC = () => {
                   label={'Name'}
                   value={name}
                   onChange={(e) => { setName(e?.target.value) }}
-                />}
+                />
+              }
             />
           </PanelSectionRow>
           <PanelSectionRow>
@@ -68,15 +69,21 @@ export const AddShortcut: VFC = () => {
                   label={'Command'}
                   value={cmd}
                   onChange={(e) => { setCmd(e?.target.value) }}
-                />}
+                />
+              }
             />
           </PanelSectionRow>
           <PanelSectionRow>
-            <MultiSelect
-              label="Select a hook"
-              options={hookAsOptions}
-              selected={[]}
-              onChange={(selected:DropdownOption[]) => { setHooks(selected.map((s) => s.label as Hook)) }}
+            <Field 
+              label="Hooks"
+              description={
+                <MultiSelect
+                  label="Select a hook"
+                  options={hookAsOptions}
+                  selected={[]}
+                  onChange={(selected:DropdownOption[]) => { setHooks(selected.map((s) => s.label as Hook)) }}
+                />
+              }
             />
           </PanelSectionRow>
           <PanelSectionRow>

@@ -442,64 +442,42 @@ export class SteamController {
   }
 
   /**
-   * Registers a callback for game uninstall events.
-   * @param callback The callback to run.
-   * @returns An Unregisterer for this hook.
-   */
-  registerForGameUninstall(callback: (appData: SteamAppOverview) => void): Unregisterer {
-    const installedGames = collectionStore.localGamesCollection;
-    const actionQueue:{ data: any, action: string }[] = [];
-
-    const startUnregisterer = SteamClient.Apps.RegisterForGameActionStart((_: number, appId: string, action: string) => {
-      const appData = installedGames.apps.get(parseInt(appId));
-
-      if (action === "UninstallApps") {
-        actionQueue.push({ "data": { "appData": appData }, "action": action });
-      } else {
-        actionQueue.push({ "data": null, "action": action });
-      }
-    });
-
-    const endUnregisterer = SteamClient.Apps.RegisterForGameActionEnd((_: number) => {
-      const actionInfo = actionQueue.shift();
-
-      if (actionInfo?.action === "UninstallApps") {
-        callback(actionInfo.data.appData);
-      }
-    });
-
-    return {
-      unregister: () => {
-        startUnregisterer.unregister();
-        endUnregisterer.unregister();
-      }
-    }
-  }
-
-  /**
    * Registers a callback for game install events.
    * @param callback The callback to run.
    * @returns An Unregisterer for this hook.
    */
   registerForGameInstall(callback: (appData: SteamAppOverview, update: DownloadItem) => void): Unregisterer {
     const installedGames = collectionStore.localGamesCollection;
+    const overviewMap = new Map<number, DownloadOverview>();
 
-    const overviewUnsubregisterer = SteamClient.Downloads.RegisterForDownloadOverview((overview: DownloadOverview) => {
-      console.log("downloadOverview:", overview);
-      // overview.updateAppID === 0 download is complete
-      // overview.update_is_install 
-      // overview.update_appid
-      // overview.update_state === "None" for all downloads complete
-    })
+    const overviewRegister = SteamClient.Downloads.RegisterForDownloadOverview((overview: DownloadOverview) => {
+      if (overview && collectionStore.allAppsCollection.apps.has(overview.update_appid)) overviewMap.set(overview.update_appid, overview);
+    });
 
-    return SteamClient.Downloads.RegisterForDownloadItems((_: boolean, downloadItems: DownloadItem[]) => {
+    const itemsRegister = SteamClient.Downloads.RegisterForDownloadItems((_: boolean, downloadItems: DownloadItem[]) => {
       const download = downloadItems[0];
-      const isInstall = false;
+      
+      if (downloadItems.length > 0) {
+        const appId = download.appid;
+        
+        if (overviewMap.has(appId)) {
+          const overview = overviewMap.get(appId);
 
-      if (download.completed && isInstall) {
-        callback(installedGames.apps.get(download.appid) as SteamAppOverview, download);
+          const isInstall = overview?.update_is_install;
+
+          if (download.completed && isInstall) {
+            callback(installedGames.apps.get(appId) as SteamAppOverview, download);
+          }
+        }
       }
     });
+
+    return {
+      unregister: () => {
+        overviewRegister.unregister();
+        itemsRegister.unregister();
+      }
+    }
   }
 
   /**
@@ -509,17 +487,71 @@ export class SteamController {
    */
   registerForGameUpdate(callback: (game: SteamAppOverview, update: DownloadItem) => void): Unregisterer {
     const installedGames = collectionStore.localGamesCollection;
+    const overviewMap = new Map<number, DownloadOverview>();
 
-    //* May need to use a combination of registerForDownloadItems and registerForDownloadOverview
+    const overviewRegister = SteamClient.Downloads.RegisterForDownloadOverview((overview: DownloadOverview) => {
+      if (overview && collectionStore.allAppsCollection.apps.has(overview.update_appid)) overviewMap.set(overview.update_appid, overview);
+    });
 
-    return SteamClient.Downloads.RegisterForDownloadItems((_: boolean, downloadItems: DownloadItem[]) => {
+    const itemsRegister = SteamClient.Downloads.RegisterForDownloadItems((_: boolean, downloadItems: DownloadItem[]) => {
       const download = downloadItems[0];
-      const isUpdate = false;
+      
+      if (downloadItems.length > 0) {
+        const appId = download.appid;
+        
+        if (overviewMap.has(appId)) {
+          const overview = overviewMap.get(appId);
 
-      if (download.completed && isUpdate) {
-        callback(installedGames.apps.get(download.appid) as SteamAppOverview, download);
+          const isUpdate = !overview?.update_is_install;
+
+          if (download.completed && isUpdate) {
+            callback(installedGames.apps.get(appId) as SteamAppOverview, download);
+          }
+        }
       }
     });
+
+    return {
+      unregister: () => {
+        overviewRegister.unregister();
+        itemsRegister.unregister();
+      }
+    }
+  }
+
+  /**
+   * Registers a callback for game uninstall events.
+   * @param callback The callback to run.
+   * @returns An Unregisterer for this hook.
+   */
+  registerForGameUninstall(callback: (appData: SteamAppOverview) => void): Unregisterer {
+    const installedGames = collectionStore.localGamesCollection;
+    const actionQueue:{ data: any, action: string }[] = [];
+
+    const startRegister = SteamClient.Apps.RegisterForGameActionStart((_: number, appId: string, action: string) => {
+      const appData = installedGames.apps.get(parseInt(appId));
+
+      if (action === "UninstallApps") {
+        actionQueue.push({ "data": { "appData": appData }, "action": action });
+      } else {
+        actionQueue.push({ "data": null, "action": action });
+      }
+    });
+
+    const endRegister = SteamClient.Apps.RegisterForGameActionEnd((_: number) => {
+      const actionInfo = actionQueue.shift();
+
+      if (actionInfo?.action === "UninstallApps") {
+        callback(actionInfo.data.appData);
+      }
+    });
+
+    return {
+      unregister: () => {
+        startRegister.unregister();
+        endRegister.unregister();
+      }
+    }
   }
 
   /**
@@ -527,9 +559,9 @@ export class SteamController {
    * @param callback The callback to run.
    * @returns An Unregisterer for this hook.
    */
-  registerForGameAchievementNotification(callback: () => void): Unregisterer {
-    return SteamClient.GameSessions.RegisterForAchievementNotification((...data: any) => {
-      console.log("achievement:", data);
+  registerForGameAchievementNotification(callback: (data: AchievementNotification) => void): Unregisterer {
+    return SteamClient.GameSessions.RegisterForAchievementNotification((data: AchievementNotification) => {
+      callback(data);
     });
   }
 
@@ -564,10 +596,6 @@ export class SteamController {
     return SteamClient.User.RegisterForShutdownStart(() => {
       callback();
     });
-  }
-
-  registerForHookPropDetect(): Unregisterer {
-    return this.registerForGameAchievementNotification(() => {});
   }
 
   /**

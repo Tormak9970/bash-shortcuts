@@ -61,11 +61,16 @@ export const EditModal: VFC<EditModalProps> = ({
             />
           </PanelSectionRow>
           <PanelSectionRow>
-            <MultiSelect
-              label="Select a hook"
-              options={hookAsOptions}
-              selected={[]}
-              onChange={(selected:DropdownOption[]) => { setHooks(selected.map((s) => s.label as Hook)) }}
+            <Field 
+              label="Hooks"
+              description={
+                <MultiSelect
+                  label="Select a hook"
+                  options={hookAsOptions}
+                  selected={[]}
+                  onChange={(selected:DropdownOption[]) => { setHooks(selected.map((s) => s.label as Hook)) }}
+                />
+              }
             />
           </PanelSectionRow>
           <PanelSectionRow>

@@ -171,3 +171,17 @@ type SteamShortcut = {
     strSortAs:string
   }
 }
+
+type SteamAchievement = {
+  bAchieved: boolean,
+  bHidden: boolean,
+  flAchieved: number, //percent of players who have gotten it
+  flCurrentProgress: number,
+  flMaxProgress: number,
+  flMinProgress: number,
+  rtUnlocked: number,
+  strDescription: string,
+  strID: string,
+  strImage: string,
+  strName: string,
+}

@@ -82,8 +82,6 @@ export class PluginController {
     } else {
       this.hooksController.init(shortcuts);
     }
-
-    this.steamController.registerForHookPropDetect();
     
     PyInterop.log("PluginController initialized.");
   }
