@@ -366,6 +366,7 @@ export class SteamController {
   async runGame(appId: number, waitUntilGameStops: boolean): Promise<boolean> {
     const gameStart = this.waitForAppLifetimeNotifications(appId, { initialTimeout: 1500, waitForStart: true, waitUntilNewEnd: waitUntilGameStops });
     const gameId = await this.getGameId(appId);
+    console.log("GameId:", gameId);
     SteamClient.Apps.RunGame(gameId as string, "", -1, 100);
 
     PyInterop.log(`Running app/game. [DEBUG INFO] appId: ${appId}; gameId: ${gameId};`);

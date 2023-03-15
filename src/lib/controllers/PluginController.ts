@@ -14,7 +14,7 @@ import { ShortcutsState } from "../../state/ShortcutsState";
 export class PluginController {
   static mainAppId: number;
   static shortcutName: string;
-  static runnerPath = "\"/home/deck/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh\"";
+  static runnerPath = "/home/deck/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh";
   static startDir = "\"/home/deck/homebrew/plugins/bash-shortcuts/\"";
 
   // @ts-ignore
@@ -22,9 +22,9 @@ export class PluginController {
   private static steamController: SteamController;
   private static shortcutsController: ShortcutsController;
   private static instancesController: InstancesController;
-  private static hooksController: HookController;
+  // private static hooksController: HookController;
   private static webSocketClient: WebSocketClient;
-  private static state: ShortcutsState;
+  // private static state: ShortcutsState;
 
   /**
    * Sets the plugin's serverAPI.
@@ -32,12 +32,12 @@ export class PluginController {
    */
   static setup(server: ServerAPI, state: ShortcutsState): void {
     this.server = server;
-    this.state = state;
+    // this.state = state;
     this.steamController = new SteamController();
     this.shortcutsController = new ShortcutsController(this.steamController);
     this.webSocketClient = new WebSocketClient("localhost", "5000", 1000);
     this.instancesController = new InstancesController(this.shortcutsController, this.webSocketClient);
-    this.hooksController = new HookController(this.steamController, this.instancesController);
+    // this.hooksController = new HookController(this.steamController, this.instancesController);
   }
 
   /**
@@ -46,7 +46,7 @@ export class PluginController {
    */
   static initOnLogin(): Unregisterer {
     PyInterop.getHomeDir().then((res) => {
-      PluginController.runnerPath = `\"/home/${res.result}/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh\"`;
+      PluginController.runnerPath = `/home/${res.result}/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh`;
       PluginController.startDir = `\"/home/${res.result}/homebrew/plugins/bash-shortcuts/\"`;
     });
 
@@ -83,7 +83,7 @@ export class PluginController {
     if (typeof shortcuts === "string") {
       PyInterop.log(`Failed to get shortcuts for hooks. Error: ${shortcuts}`);
     } else {
-      this.hooksController.init(shortcuts);
+      // this.hooksController.init(shortcuts);
     }
     
     PyInterop.log("PluginController initialized.");
@@ -95,7 +95,8 @@ export class PluginController {
    * @returns The shortcut.
    */
   static getShortcutById(shortcutId: string): Shortcut {
-    return this.state.getPublicState().shortcuts[shortcutId];
+    // return this.state.getPublicState().shortcuts[shortcutId];
+    return null as any;
   }
 
   /**
@@ -104,7 +105,7 @@ export class PluginController {
    * @param value The new value.
    */
   static setIsRunning(shortcutId: string, value: boolean): void {
-    this.state.setIsRunning(shortcutId, value);
+    // this.state.setIsRunning(shortcutId, value);
   }
 
   /**
@@ -173,7 +174,7 @@ export class PluginController {
    * @param shortcut The shortcut to update the hooks for.
    */
   static updateHooks(shortcut: Shortcut): void {
-    this.hooksController.updateHooks(shortcut);
+    // this.hooksController.updateHooks(shortcut);
   }
 
   /**
@@ -181,7 +182,7 @@ export class PluginController {
    * @param shortcut The shortcut to remove the hooks for.
    */
   static removeHooks(shortcut: Shortcut): void {
-    this.hooksController.unregisterAllHooks(shortcut);
+    // this.hooksController.unregisterAllHooks(shortcut);
   }
 
   /**
@@ -192,7 +193,7 @@ export class PluginController {
 
     this.shortcutsController.onDismount();
     this.webSocketClient.disconnect();
-    this.hooksController.dismount();
+    // this.hooksController.dismount();
     
     PyInterop.log("PluginController dismounted.");
   }
