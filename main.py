@@ -160,6 +160,7 @@ class Plugin:
   def _modShortcut(self, shortcut):
     if (shortcut["id"] in self.settingsManager.getSetting("shortcuts", {})):
       log(f"Modifying shortcut {shortcut['name']}")
+      log(f"JSON: {json.dumps(shortcut)}")
       shortcutsDict = self.settingsManager.getSetting("shortcuts", {})
       shortcutsDict[shortcut["id"]] = shortcut
       

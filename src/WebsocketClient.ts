@@ -96,7 +96,6 @@ export class WebSocketClient {
    * @param e The Event.
    */
   private onError(e: Event) {
-    console.log(`WebSocket onError triggered:`, e);
     PyInterop.log(`Websocket recieved and error: ${JSON.stringify(e)}`)
   }
 
@@ -105,7 +104,6 @@ export class WebSocketClient {
    * @param e The Event.
    */
   private onOpen(e: Event) {
-    console.log(`WebSocket onOpen triggered:`, e);
     this.ws?.send("Hello server from TS!");
     PyInterop.log(`WebSocket server opened. Event: ${JSON.stringify(e)}`);
   }
