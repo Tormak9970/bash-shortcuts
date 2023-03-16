@@ -13,9 +13,6 @@ import { ShortcutsState } from "../../state/ShortcutsState";
  */
 export class PluginController {
   static mainAppId: number;
-  static shortcutName: string;
-  static runnerPath = "/home/deck/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh";
-  static startDir = "\"/home/deck/homebrew/plugins/bash-shortcuts/\"";
 
   // @ts-ignore
   private static server: ServerAPI;
@@ -29,6 +26,7 @@ export class PluginController {
   /**
    * Sets the plugin's serverAPI.
    * @param server The serverAPI to use.
+   * @param state The plugin state.
    */
   static setup(server: ServerAPI, state: ShortcutsState): void {
     this.server = server;
@@ -37,7 +35,7 @@ export class PluginController {
     this.shortcutsController = new ShortcutsController(this.steamController);
     this.webSocketClient = new WebSocketClient("localhost", "5000", 1000);
     this.instancesController = new InstancesController(this.shortcutsController, this.webSocketClient);
-    this.hooksController = new HookController(this.steamController, this.instancesController);
+    this.hooksController = new HookController(this.steamController, this.instancesController, this.webSocketClient, this.state);
   }
 
   /**
@@ -45,15 +43,10 @@ export class PluginController {
    * @returns The unregister function for the login hook.
    */
   static initOnLogin(): Unregisterer {
-    PyInterop.getHomeDir().then((res) => {
-      PluginController.runnerPath = `/home/${res.result}/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh`;
-      PluginController.startDir = `\"/home/${res.result}/homebrew/plugins/bash-shortcuts/\"`;
-    });
-
     return this.steamController.registerForAuthStateChange(async (username) => {
       PyInterop.log(`user logged in. [DEBUG INFO] username: ${username};`);
       if (await this.steamController.waitForServicesToInitialize()) {
-        PluginController.init("Bash Shortcuts");
+        PluginController.init();
       } else {
         PyInterop.toast("Error", "Failed to initialize, try restarting.");
       }
@@ -62,11 +55,9 @@ export class PluginController {
 
   /**
    * Initializes the Plugin.
-   * @param name The name of the main shortcut.
    */
-  static async init(name: string): Promise<void> {
+  static async init(): Promise<void> {
     PyInterop.log("PluginController initializing...");
-    this.shortcutName = name;
 
     //* clean out all shortcuts with names that start with "Bash Shortcuts - Instance"
     const oldInstances = (await this.shortcutsController.getShortcuts()).filter((shortcut:SteamAppDetails) => shortcut.strDisplayName.startsWith("Bash Shortcuts - Instance"));
@@ -90,24 +81,6 @@ export class PluginController {
   }
 
   /**
-   * Gets a shortcut by its id.
-   * @param shortcutId The id of the shortcut to get.
-   * @returns The shortcut.
-   */
-  static getShortcutById(shortcutId: string): Shortcut {
-    return this.state.getPublicState().shortcuts[shortcutId];
-  }
-
-  /**
-   * Sets wether a shortcut is running or not.
-   * @param shortcutId The id of the shortcut to set.
-   * @param value The new value.
-   */
-  static setIsRunning(shortcutId: string, value: boolean): void {
-    this.state.setIsRunning(shortcutId, value);
-  }
-
-  /**
    * Checks if a shortcut is running.
    * @param shorcutId The id of the shortcut to check for.
    * @returns True if the shortcut is running.
@@ -125,7 +98,7 @@ export class PluginController {
    * @returns A promise resolving to true if the shortcut was successfully launched.
    */
   static async launchShortcut(shortcut: Shortcut, onExit: (data?: LifetimeNotification) => void = () => {}): Promise<boolean> {
-    const createdInstance = await this.instancesController.createInstance(PluginController.shortcutName, shortcut, PluginController.runnerPath, PluginController.startDir);
+    const createdInstance = await this.instancesController.createInstance(shortcut);
     if (createdInstance) {
       PyInterop.log(`Created Instance for shortcut ${shortcut.name}`);
       return await this.instancesController.launchInstance(shortcut.id, onExit);

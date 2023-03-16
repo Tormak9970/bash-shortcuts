@@ -1,4 +1,6 @@
 import { PyInterop } from "../../PyInterop";
+import { WebSocketClient } from "../../WebsocketClient";
+import { ShortcutsState } from "../../state/ShortcutsState";
 import { Shortcut } from "../data-structures/Shortcut";
 import { InstancesController } from "./InstancesController";
 // import { PluginController } from "./PluginController";
@@ -30,8 +32,10 @@ type RegisteredDict = { [key in Hook]: Unregisterer }
  * Controller for handling hook events.
  */
 export class HookController {
+  private state: ShortcutsState;
   private steamController: SteamController;
   private instancesController: InstancesController;
+  private webSocketClient: WebSocketClient;
 
   // @ts-ignore
   shortcutHooks: HooksDict = {};
@@ -42,14 +46,18 @@ export class HookController {
    * Creates a new HooksController.
    * @param steamController The SteamController to use.
    * @param instancesController The InstanceController to use.
+   * @param webSocketClient The WebSocketClient to use.
+   * @param state The plugin state.
    */
-  constructor(steamController: SteamController, instancesController: InstancesController) {
+  constructor(steamController: SteamController, instancesController: InstancesController, webSocketClient: WebSocketClient, state: ShortcutsState) {
+    this.state = state;
+    this.steamController = steamController;
+    this.instancesController = instancesController;
+    this.webSocketClient = webSocketClient;
+
     for (const hook of Object.values(Hook)) {
       this.shortcutHooks[hook] = new Set<string>();
     }
-
-    this.steamController = steamController;
-    this.instancesController = instancesController;
   }
 
   /**
@@ -65,22 +73,30 @@ export class HookController {
   }
 
   /**
-   * Updates the hooks for a shortcut.
-   * @param shortcut The shortcut to update the hooks of.
+   * Gets a shortcut by its id.
+   * @param shortcutId The id of the shortcut to get.
+   * @returns The shortcut.
    */
-  updateHooks(shortcut: Shortcut) {
-    const shortcutHooks = shortcut.hooks;
-    
-    for (const h of Object.keys(this.shortcutHooks)) {
-      const hook = h as Hook;
-      const registeredHooks = this.shortcutHooks[hook];
+  private getShortcutById(shortcutId: string): Shortcut {
+    return this.state.getPublicState().shortcuts[shortcutId];
+  }
 
-      if (shortcutHooks.includes(hook)) {
-        this.registerHook(shortcut, hook);
-      } else if (Object.keys(registeredHooks).includes(shortcut.id)) {
-        this.unregisterHook(shortcut, hook);
-      }
-    }
+  /**
+   * Sets wether a shortcut is running or not.
+   * @param shortcutId The id of the shortcut to set.
+   * @param value The new value.
+   */
+  private setIsRunning(shortcutId: string, value: boolean): void {
+    this.state.setIsRunning(shortcutId, value);
+  }
+
+  /**
+   * Checks if a shortcut is running.
+   * @param shorcutId The id of the shortcut to check for.
+   * @returns True if the shortcut is running.
+   */
+  private checkIfRunning(shorcutId: string): boolean {
+    return Object.keys(this.instancesController.instances).includes(shorcutId);
   }
 
   /**
@@ -102,6 +118,25 @@ export class HookController {
       `${month}-${day}-${year}`,
       `${hours}:${minutes}:${seconds}`
     ];
+  }
+
+  /**
+   * Updates the hooks for a shortcut.
+   * @param shortcut The shortcut to update the hooks of.
+   */
+  updateHooks(shortcut: Shortcut) {
+    const shortcutHooks = shortcut.hooks;
+    
+    for (const h of Object.keys(this.shortcutHooks)) {
+      const hook = h as Hook;
+      const registeredHooks = this.shortcutHooks[hook];
+
+      if (shortcutHooks.includes(hook)) {
+        this.registerHook(shortcut, hook);
+      } else if (Object.keys(registeredHooks).includes(shortcut.id)) {
+        this.unregisterHook(shortcut, hook);
+      }
+    }
   }
 
   /**
@@ -140,19 +175,44 @@ export class HookController {
     flags["h"] = hook;
 
     for (const shortcutId of this.shortcutHooks[hook].values()) {
-      // if (!PluginController.checkIfRunning(shortcutId)) {
-      //   const shortcut = PluginController.getShortcutById(shortcutId);
-      //   const createdInstance = await this.instancesController.createInstance(PluginController.shortcutName, shortcut, PluginController.runnerPath, PluginController.startDir);
+      if (!this.checkIfRunning(shortcutId)) {
+        const shortcut = this.getShortcutById(shortcutId);
+        const createdInstance = await this.instancesController.createInstance(shortcut);
 
-      //   if (createdInstance) {
-      //     PyInterop.log(`Created Instance for shortcut ${shortcut.name}`);
-      //     // return await this.instancesController.launchInstance(shortcut.id, onExit);
-      //   } else {
-      //     // return false;
-      //   }
-      // } else {
-      //   PyInterop.log(`Skipping hook: ${hook} for shortcut: ${shortcutId} because it was already running.`);
-      // }
+        if (createdInstance) {
+          PyInterop.log(`Created Instance for shortcut { Id: ${shortcut.id}, Name: ${shortcut.name} } on hook: ${hook}`);
+          const didLaunch = await this.instancesController.launchInstance(shortcut.id, () => {
+
+          });
+          
+          if (!didLaunch) {
+            PyInterop.log(`Failed to launch instance for shortcut { Id: ${shortcut.id}, Name: ${shortcut.name} } on hook: ${hook}`);
+          } else {
+            if (!shortcut.isApp) {
+              PyInterop.log(`Registering for WebSocket messages of type: ${shortcut.id} on hook: ${hook}...`);
+    
+              this.webSocketClient.on(shortcut.id, (data: any) => {
+                if (data.type == "end") {
+                  if (data.status == 0) {
+                    PyInterop.toast(shortcut.name, "Shortcut execution finished.");
+                  } else {
+                    PyInterop.toast(shortcut.name, "Shortcut execution was canceled.");
+                  }
+    
+                  this.setIsRunning(shortcut.id, false);
+                }
+              });
+            }
+            
+            this.setIsRunning(shortcut.id, true);
+          }
+        } else {
+          PyInterop.toast("Error", "Shortcut failed. Check the command.");
+          PyInterop.log(`Failed to create instance for shortcut { Id: ${shortcut.id}, Name: ${shortcut.name} } on hook: ${hook}`);
+        }
+      } else {
+        PyInterop.log(`Skipping hook: ${hook} for shortcut: ${shortcutId} because it was already running.`);
+      }
     }
   }
 

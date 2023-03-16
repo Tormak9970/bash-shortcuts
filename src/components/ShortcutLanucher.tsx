@@ -104,7 +104,6 @@ export const ShortcutLauncher: VFC<ShortcutLauncherProps> = (props: ShortcutLaun
           PyInterop.log(`Registering for WebSocket messages of type: ${shortcut.id}...`);
 
           PluginController.onWebSocketEvent(shortcut.id, (data: any) => {
-            PyInterop.log(`Listener for event type: ${shortcut.id} called. Data: ${JSON.stringify(data)}`);
             if (data.type == "end") {
               if (data.status == 0) {
                 PyInterop.toast(shortcut.name, "Shortcut execution finished.");

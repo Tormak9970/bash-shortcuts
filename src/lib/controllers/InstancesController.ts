@@ -9,6 +9,9 @@ import { WebSocketClient } from "../../WebsocketClient";
  * Controller for managing plugin instances.
  */
 export class InstancesController {
+  private baseName = "Bash Shortcuts";
+  private runnerPath = "/home/deck/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh";
+  private startDir = "\"/home/deck/homebrew/plugins/bash-shortcuts/\"";
   private shorcutsController:ShortcutsController;
   private webSocketClient: WebSocketClient;
 
@@ -23,21 +26,23 @@ export class InstancesController {
     this.shorcutsController = shortcutsController;
     this.webSocketClient = webSocketClient;
 
+    PyInterop.getHomeDir().then((res) => {
+      this.runnerPath = `/home/${res.result}/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh`;
+      this.startDir = `\"/home/${res.result}/homebrew/plugins/bash-shortcuts/\"`;
+    });
+
     this.numInstances = 0;
     this.instances = {};
   }
 
   /**
    * Creates a new instance for a shortcut.
-   * @param baseName The base name for instances.
    * @param shortcut The shortcut to make an instance for.
-   * @param exec The exe for the shortcut.
-   * @param startDir The start directory for the shortcut.
    * @returns A promise resolving to true if all the steamClient calls were successful.
    */
-  async createInstance(baseName: string, shortcut: Shortcut, exec: string, startDir: string): Promise<boolean> {
+  async createInstance(shortcut: Shortcut): Promise<boolean> {
     this.numInstances++;
-    const shortcutName = `${baseName} - Instance ${this.numInstances}`;
+    const shortcutName = `${this.baseName} - Instance ${this.numInstances}`;
 
     if (shortcut.isApp) {
       let appId = null;
@@ -47,19 +52,19 @@ export class InstancesController {
         const shortcut = await this.shorcutsController.getShortcut(shortcutName);
         appId = shortcut?.unAppID;
       } else {
-        appId = await this.shorcutsController.addShortcut(shortcutName, exec);
+        appId = await this.shorcutsController.addShortcut(shortcutName, this.runnerPath);
       }
 
       if (appId) {
         this.instances[shortcut.id] = new Instance(appId, shortcutName, shortcut.id, shortcut.isApp);
         
-        const exeRes = await this.shorcutsController.setShortcutExe(appId, exec);
+        const exeRes = await this.shorcutsController.setShortcutExe(appId, this.runnerPath);
         if (!exeRes) {
           PyInterop.toast("Error", "Failed to set the shortcutsRunner path");
           return false;
         }
         
-        const startDirRes = await this.shorcutsController.setShortcutStartDir(appId, startDir);
+        const startDirRes = await this.shorcutsController.setShortcutStartDir(appId, this.startDir);
         if (!startDirRes) {
           PyInterop.toast("Error", "Failed to set the start dir");
           return false;
