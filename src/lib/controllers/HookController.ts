@@ -1,7 +1,7 @@
 import { PyInterop } from "../../PyInterop";
 import { Shortcut } from "../data-structures/Shortcut";
 import { InstancesController } from "./InstancesController";
-import { PluginController } from "./PluginController";
+// import { PluginController } from "./PluginController";
 import { SteamController } from "./SteamController";
 
 /**
@@ -140,19 +140,19 @@ export class HookController {
     flags["h"] = hook;
 
     for (const shortcutId of this.shortcutHooks[hook].values()) {
-      if (!PluginController.checkIfRunning(shortcutId)) {
-        const shortcut = PluginController.getShortcutById(shortcutId);
-        const createdInstance = await this.instancesController.createInstance(PluginController.shortcutName, shortcut, PluginController.runnerPath, PluginController.startDir);
+      // if (!PluginController.checkIfRunning(shortcutId)) {
+      //   const shortcut = PluginController.getShortcutById(shortcutId);
+      //   const createdInstance = await this.instancesController.createInstance(PluginController.shortcutName, shortcut, PluginController.runnerPath, PluginController.startDir);
 
-        if (createdInstance) {
-          PyInterop.log(`Created Instance for shortcut ${shortcut.name}`);
-          // return await this.instancesController.launchInstance(shortcut.id, onExit);
-        } else {
-          // return false;
-        }
-      } else {
-        PyInterop.log(`Skipping hook: ${hook} for shortcut: ${shortcutId} because it was already running.`);
-      }
+      //   if (createdInstance) {
+      //     PyInterop.log(`Created Instance for shortcut ${shortcut.name}`);
+      //     // return await this.instancesController.launchInstance(shortcut.id, onExit);
+      //   } else {
+      //     // return false;
+      //   }
+      // } else {
+      //   PyInterop.log(`Skipping hook: ${hook} for shortcut: ${shortcutId} because it was already running.`);
+      // }
     }
   }
 

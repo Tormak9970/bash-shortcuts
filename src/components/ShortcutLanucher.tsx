@@ -63,6 +63,12 @@ export const ShortcutLauncher: VFC<ShortcutLauncherProps> = (props: ShortcutLaun
   const [ isRunning, _setIsRunning ] = useState<boolean>(PluginController.checkIfRunning(props.shortcut.id));
 
   useEffect(() => {
+    if (PluginController.checkIfRunning(props.shortcut.id) && !runningShortcuts.has(props.shortcut.id)) {
+      setIsRunning(props.shortcut.id, true);
+    }
+  }, []);
+
+  useEffect(() => {
     _setIsRunning(runningShortcuts.has(props.shortcut.id));
   }, [runningShortcuts]);
 

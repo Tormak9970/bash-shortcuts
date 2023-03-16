@@ -22,7 +22,7 @@ export class PluginController {
   private static steamController: SteamController;
   private static shortcutsController: ShortcutsController;
   private static instancesController: InstancesController;
-  // private static hooksController: HookController;
+  private static hooksController: HookController;
   private static webSocketClient: WebSocketClient;
   private static state: ShortcutsState;
 
@@ -37,7 +37,7 @@ export class PluginController {
     this.shortcutsController = new ShortcutsController(this.steamController);
     this.webSocketClient = new WebSocketClient("localhost", "5000", 1000);
     this.instancesController = new InstancesController(this.shortcutsController, this.webSocketClient);
-    // this.hooksController = new HookController(this.steamController, this.instancesController);
+    this.hooksController = new HookController(this.steamController, this.instancesController);
   }
 
   /**
@@ -83,7 +83,7 @@ export class PluginController {
     if (typeof shortcuts === "string") {
       PyInterop.log(`Failed to get shortcuts for hooks. Error: ${shortcuts}`);
     } else {
-      // this.hooksController.init(shortcuts);
+      this.hooksController.init(shortcuts);
     }
     
     PyInterop.log("PluginController initialized.");
@@ -105,6 +105,15 @@ export class PluginController {
    */
   static setIsRunning(shortcutId: string, value: boolean): void {
     this.state.setIsRunning(shortcutId, value);
+  }
+
+  /**
+   * Checks if a shortcut is running.
+   * @param shorcutId The id of the shortcut to check for.
+   * @returns True if the shortcut is running.
+   */
+  static checkIfRunning(shorcutId: string): boolean {
+    return Object.keys(PluginController.instancesController.instances).includes(shorcutId);
   }
 
   /**
@@ -151,12 +160,19 @@ export class PluginController {
   }
 
   /**
-   * Checks if a shortcut is running.
-   * @param shorcutId The id of the shortcut to check for.
-   * @returns True if the shortcut is running.
+   * Updates the hooks for a specific shortcut.
+   * @param shortcut The shortcut to update the hooks for.
    */
-  static checkIfRunning(shorcutId: string): boolean {
-    return Object.keys(PluginController.instancesController.instances).includes(shorcutId);
+  static updateHooks(shortcut: Shortcut): void {
+    this.hooksController.updateHooks(shortcut);
+  }
+
+  /**
+   * Removes the hooks for a specific shortcut.
+   * @param shortcut The shortcut to remove the hooks for.
+   */
+  static removeHooks(shortcut: Shortcut): void {
+    this.hooksController.unregisterAllHooks(shortcut);
   }
 
   /**
@@ -169,22 +185,6 @@ export class PluginController {
   }
 
   /**
-   * Updates the hooks for a specific shortcut.
-   * @param shortcut The shortcut to update the hooks for.
-   */
-  static updateHooks(shortcut: Shortcut): void {
-    // this.hooksController.updateHooks(shortcut);
-  }
-
-  /**
-   * Removes the hooks for a specific shortcut.
-   * @param shortcut The shortcut to remove the hooks for.
-   */
-  static removeHooks(shortcut: Shortcut): void {
-    // this.hooksController.unregisterAllHooks(shortcut);
-  }
-
-  /**
    * Function to run when the plugin dismounts.
    */
   static dismount(): void {
@@ -192,7 +192,7 @@ export class PluginController {
 
     this.shortcutsController.onDismount();
     this.webSocketClient.disconnect();
-    // this.hooksController.dismount();
+    this.hooksController.dismount();
     
     PyInterop.log("PluginController dismounted.");
   }

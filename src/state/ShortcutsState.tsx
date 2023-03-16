@@ -42,6 +42,8 @@ export class ShortcutsState {
       this.runningShortcuts.delete(shortcutId);
     }
 
+    this.runningShortcuts = new Set(this.runningShortcuts.values());
+
     this.forceUpdate();
   }
 
