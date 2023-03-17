@@ -13,6 +13,7 @@ import { History, debounce } from "../Utils";
  * Main controller class for the plugin.
  */
 export class PluginController {
+  // @ts-ignore
   private static server: ServerAPI;
   private static state: ShortcutsState;
 
@@ -56,11 +57,11 @@ export class PluginController {
     });
     
     this.historyListener = History.listen(debounce((info: any) => {
+      const currGame = this.state.getPublicState().currentGame;
       const pathStart = "/library/app/";
 
       if (!this.state.getPublicState().gameRunning) {
         if (info.pathname.startsWith(pathStart)) {
-          const currGame = this.state.getPublicState().currentGame;
           const appId = parseInt(info.pathname.substring(info.pathname.indexOf(pathStart) + pathStart.length));
   
           if (currGame == null || currGame.appid != appId) {
@@ -69,7 +70,7 @@ export class PluginController {
   
             PyInterop.log(`Set currentGame to ${overview?.display_name} appId: ${appId}.`);
           }
-        } else {
+        } else if (currGame != null) {
           this.state.setCurrentGame(null);
           PyInterop.log(`Set currentGame to null.`);
         }

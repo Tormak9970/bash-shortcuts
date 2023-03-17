@@ -4,7 +4,6 @@ import { WebSocketClient } from "../../WebsocketClient";
 import { ShortcutsState } from "../../state/ShortcutsState";
 import { Shortcut } from "../data-structures/Shortcut";
 import { InstancesController } from "./InstancesController";
-// import { PluginController } from "./PluginController";
 import { SteamController } from "./SteamController";
 
 /**

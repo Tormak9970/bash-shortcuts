@@ -87,7 +87,7 @@ export const EditModal: VFC<EditModalProps> = ({
                   label="Select a hook"
                   options={hookAsOptions}
                   selected={hookAsOptions.filter((hookOpt) => hooks.includes(hookOpt.label))}
-                  onChange={(selected:DropdownOption[]) => { setHooks(selected.map((s) => s.label as Hook)) }}
+                  onChange={(selected:DropdownOption[]) => { setHooks(selected.map((s) => s.label as Hook)); }}
                 />
               }
             />

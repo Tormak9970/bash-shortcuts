@@ -100,7 +100,7 @@ export const AddShortcut: VFC = () => {
                   label="Select a hook"
                   options={hookAsOptions}
                   selected={[]}
-                  onChange={(selected:DropdownOption[]) => { setHooks(selected.map((s) => s.label as Hook)) }}
+                  onChange={(selected:DropdownOption[]) => { setHooks(selected.map((s) => s.label as Hook)); }}
                 />
               }
             />

@@ -62,8 +62,8 @@ export const MultiSelect:VFC<MultiSelectProps> = ({ options, selected, label, on
   useEffect(() => {
     const avail = options.filter((opt) => !sel.includes(opt));
     setAvailable(avail);
-    setDropLabel(avail.length == 0 ? "All selected" : (!!maxOptions && selected.length == maxOptions ? "Max selected" : label));
-    onChange(selected);
+    setDropLabel(avail.length == 0 ? "All selected" : (!!maxOptions && sel.length == maxOptions ? "Max selected" : label));
+    onChange(sel);
   }, [sel]);
 
   const onRemove = (option: DropdownOption) => {
