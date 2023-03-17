@@ -1,4 +1,4 @@
-import { Navigation, RoutePatch, Router, ServerAPI } from "decky-frontend-lib";
+import { RoutePatch, ServerAPI, useParams } from "decky-frontend-lib";
 import { ShortcutsController } from "./ShortcutsController";
 import { InstancesController } from "./InstancesController";
 import { PyInterop } from "../../PyInterop";
@@ -39,14 +39,54 @@ export class PluginController {
     this.hooksController = new HookController(this.steamController, this.instancesController, this.webSocketClient, this.state);
 
     this.gameLifetimeRegister = this.steamController.registerForAllAppLifetimeNotifications((appId: number, data: LifetimeNotification) => {
-      // TODO: fetch overview from appStore
-      // TODO: set plugin state
+      const currGame = this.state.getPublicState().currentGame;
+      
+      if (data.bRunning) {
+        if (currGame == null || currGame.appid != appId) {
+          const overview = appStore.GetAppOverviewByAppID(appId);
+          this.state.setCurrentGame(overview);
+
+          PyInterop.log(`Set currentGame to ${overview?.display_name} appId: ${appId}`);
+          console.log("Overview:", overview);
+        }
+      } else {
+        const pathStart = "/routes/library/app/";
+        const routePath = window.location.pathname;
+
+        if (routePath.startsWith(pathStart)) {
+          // TODO: get current appId from route
+          const appId = parseInt(routePath.substring(routePath.indexOf(pathStart) + 1));
+
+          if (currGame == null || currGame.appid != appId) {
+            // TODO: fetch overview from appStore
+            const overview = appStore.GetAppOverviewByAppID(appId);
+            // TODO: set plugin state
+            this.state.setCurrentGame(overview);
+
+            PyInterop.log(`Set currentGame to ${overview?.display_name} appId: ${appId}`);
+            console.log("Overview:", overview);
+          }
+        } else {
+          this.state.setCurrentGame(null);
+        }
+      }
     });
     this.libraryTabPatch = this.server.routerHook.addPatch('/library/app/:appid', (props?: { path?: string }) => {
       if (props?.path) {
+        const currGame = this.state.getPublicState().currentGame;
         // TODO: get appId from path
-        // TODO: fetch overview from appStore
-        // TODO: set plugin state
+        const { appid } = useParams<{ appid: string }>();
+        const appId = parseInt(appid);
+
+        if (currGame == null || currGame.appid != appId) {
+          // TODO: fetch overview from appStore
+          const overview = appStore.GetAppOverviewByAppID(appId);
+          // TODO: set plugin state
+          this.state.setCurrentGame(overview);
+
+          PyInterop.log(`Set currentGame to ${overview?.display_name} appId: ${appId}`);
+          console.log("Overview:", overview);
+        }
       }
       
       return props;

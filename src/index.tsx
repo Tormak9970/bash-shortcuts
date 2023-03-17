@@ -30,7 +30,7 @@ import { GuidePage } from "./components/plugin-config-ui/guides/GuidePage";
 declare global {
   var SteamClient: SteamClient;
   var collectionStore: CollectionStore;
-  var appStore: any;
+  var appStore: AppStore;
   var loginStore: LoginStore;
 }
 

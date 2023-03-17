@@ -29,6 +29,7 @@ const ActionButtion: VFC<ActionButtonProps<Shortcut>> = (props:ActionButtonProps
           showModal(
             // @ts-ignore
             <EditModal onConfirm={(updated: Shortcut) => {
+              PluginController.closeShortcut(shortcut);
               PyInterop.modShortcut(updated);
               PluginController.updateHooks(updated);
               let shorts = shortcuts;
@@ -41,6 +42,7 @@ const ActionButtion: VFC<ActionButtonProps<Shortcut>> = (props:ActionButtonProps
         <MenuItem onSelected={() => {
           showModal(
             <ConfirmModal onOK={() => {
+              PluginController.closeShortcut(shortcut);
               PyInterop.remShortcut(shortcut);
               PluginController.updateHooks(shortcut);
               let shorts = shortcuts;

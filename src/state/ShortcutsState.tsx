@@ -17,7 +17,7 @@ interface PublicShortcutsState {
 interface PublicShortcutsContext extends PublicShortcutsState {
   setShortcuts(shortcuts: ShortcutsDictionary): void;
   setIsRunning(shortcutId: string, value: boolean): void;
-  setCurrentGame(game: SteamAppOverview | null): void;
+  setCurrentGame(overview: SteamAppOverview | null): void;
 }
 
 export class ShortcutsState {
@@ -51,8 +51,8 @@ export class ShortcutsState {
     this.forceUpdate();
   }
 
-  setCurrentGame(game: SteamAppOverview | null): void {
-    this.currentGame = game;
+  setCurrentGame(overview: SteamAppOverview | null): void {
+    this.currentGame = overview;
 
     this.forceUpdate();
   }
@@ -118,8 +118,8 @@ export const ShortcutsContextProvider: FC<ProviderProps> = ({
     shortcutsStateClass.setIsRunning(shortcutId, value);
   }
 
-  const setCurrentGame = (game: SteamAppOverview | null) => {
-    shortcutsStateClass.setCurrentGame(game);
+  const setCurrentGame = (overview: SteamAppOverview | null) => {
+    shortcutsStateClass.setCurrentGame(overview);
   }
 
   return (
