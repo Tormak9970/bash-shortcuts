@@ -100,27 +100,6 @@ export class HookController {
   }
 
   /**
-   * Gets the current date and time.
-   * @returns A tuple containing [date, time] in US standard format.
-   */
-  private getDatetime(): [string, string] {
-    const date = new Date();
-
-    const day = date.getDate();
-    const month = date.getMonth() + 1;
-    const year = date.getFullYear();
-
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
-    const seconds = date.getSeconds();
-
-    return [
-      `${month}-${day}-${year}`,
-      `${hours}:${minutes}:${seconds}`
-    ];
-  }
-
-  /**
    * Updates the hooks for a shortcut.
    * @param shortcut The shortcut to update the hooks of.
    */
@@ -221,34 +200,18 @@ export class HookController {
    */
   liten(): void {
     this.registeredHooks[Hook.LOG_IN] = this.steamController.registerForAuthStateChange(async (username: string) => {
-      const [ date, time ] = this.getDatetime();
-
-      const flags = { "t": time, "d": date };
-      flags["u"] = username;
-
-      this.runShortcuts(Hook.LOG_IN, flags);
+      this.runShortcuts(Hook.LOG_IN, { "u": username});
     }, null, false);
 
     this.registeredHooks[Hook.LOG_OUT] = this.steamController.registerForAuthStateChange(null, async (username: string) => {
-      const [ date, time ] = this.getDatetime();
-
-      const flags = { "t": time, "d": date };
-      flags["u"] = username;
-      
-      this.runShortcuts(Hook.LOG_IN, flags);
+      this.runShortcuts(Hook.LOG_IN, { "u": username });
     }, false);
 
     this.registeredHooks[Hook.GAME_START] = this.steamController.registerForAllAppLifetimeNotifications((appId: number, data: LifetimeNotification) => {
       if (data.bRunning && (collectionStore.allAppsCollection.apps.has(appId) || collectionStore.deckDesktopApps.apps.has(appId))) {
         const app = collectionStore.allAppsCollection.apps.get(appId) ?? collectionStore.deckDesktopApps.apps.get(appId);
         if (app) {
-          const [ date, time ] = this.getDatetime();
-          
-          const flags = { "t": time, "d": date };
-          flags["i"] = appId;
-          flags["n"] = app.display_name;
-          
-          this.runShortcuts(Hook.GAME_START, flags);
+          this.runShortcuts(Hook.GAME_START, { "i": appId.toString(), "n": app.display_name });
         }
       }
     });
@@ -257,59 +220,28 @@ export class HookController {
       if (!data.bRunning && (collectionStore.allAppsCollection.apps.has(appId) || collectionStore.deckDesktopApps.apps.has(appId))) {
         const app = collectionStore.allAppsCollection.apps.get(appId) ?? collectionStore.deckDesktopApps.apps.get(appId);
         if (app) {
-          const [ date, time ] = this.getDatetime();
-          
-          const flags = { "t": time, "d": date };
-          flags["i"] = appId;
-          flags["n"] = app.display_name;
-          
-          this.runShortcuts(Hook.GAME_END, flags);
+          this.runShortcuts(Hook.GAME_END, { "i": appId.toString(), "n": app.display_name });
         }
       }
     });
 
     this.registeredHooks[Hook.GAME_INSTALL] = this.steamController.registerForGameInstall((appData: SteamAppOverview) => {
-      const [ date, time ] = this.getDatetime();
-          
-      const flags = { "t": time, "d": date };
-      flags["i"] = appData.appid;
-      flags["n"] = appData.display_name;
-      
-      this.runShortcuts(Hook.GAME_INSTALL, flags);
+      this.runShortcuts(Hook.GAME_INSTALL, { "i": appData.appid.toString(), "n": appData.display_name });
     });
 
     this.registeredHooks[Hook.GAME_UPDATE] = this.steamController.registerForGameUpdate((appData: SteamAppOverview) => {
-      const [ date, time ] = this.getDatetime();
-          
-      const flags = { "t": time, "d": date };
-      flags["i"] = appData.appid;
-      flags["n"] = appData.display_name;
-      
-      this.runShortcuts(Hook.GAME_UPDATE, flags);
+      this.runShortcuts(Hook.GAME_UPDATE, { "i": appData.appid.toString(), "n": appData.display_name });
     });
 
     this.registeredHooks[Hook.GAME_UNINSTALL] = this.steamController.registerForGameUninstall((appData: SteamAppOverview) => {
-      const [ date, time ] = this.getDatetime();
-          
-      const flags = { "t": time, "d": date };
-      flags["i"] = appData.appid;
-      flags["n"] = appData.display_name;
-      
-      this.runShortcuts(Hook.GAME_UNINSTALL, flags);
+      this.runShortcuts(Hook.GAME_UNINSTALL, { "i": appData.appid.toString(), "n": appData.display_name });
     });
     
     this.registeredHooks[Hook.GAME_ACHIEVEMENT_UNLOCKED] = this.steamController.registerForGameAchievementNotification((data: AchievementNotification) => {
       const appId = data.unAppID;
       const app = collectionStore.localGamesCollection.apps.get(appId);
       if (app) {
-        const [ date, time ] = this.getDatetime();
-        
-        const flags = { "t": time, "d": date };
-        flags["i"] = appId;
-        flags["n"] = app.display_name;
-        flags["a"] = data.achievement.strName;
-        
-        this.runShortcuts(Hook.GAME_ACHIEVEMENT_UNLOCKED, flags);
+        this.runShortcuts(Hook.GAME_ACHIEVEMENT_UNLOCKED, { "i": appId.toString(), "n": app.display_name, "a": data.achievement.strName });
       }
     });
 
@@ -317,31 +249,16 @@ export class HookController {
       const appId = data.unAppID;
       const app = collectionStore.localGamesCollection.apps.get(appId);
       if (app) {
-        const [ date, time ] = this.getDatetime();
-        
-        const flags = { "t": time, "d": date };
-        flags["i"] = appId;
-        flags["n"] = app.display_name;
-        flags["a"] = data.details.strUrl;
-        
-        this.runShortcuts(Hook.GAME_ACHIEVEMENT_UNLOCKED, flags);
+        this.runShortcuts(Hook.GAME_ACHIEVEMENT_UNLOCKED, { "i": appId.toString(), "n": app.display_name, "p": data.details.strUrl });
       }
     });
 
     this.registeredHooks[Hook.DECK_SLEEP] = this.steamController.registerForSleepStart(() => {
-      const [ date, time ] = this.getDatetime();
-
-      const flags = { "t": time, "d": date };
-      
-      this.runShortcuts(Hook.DECK_SLEEP, flags);
+      this.runShortcuts(Hook.DECK_SLEEP, {});
     });
 
     this.registeredHooks[Hook.DECK_SHUTDOWN] = this.steamController.registerForShutdownStart(() => {
-      const [ date, time ] = this.getDatetime();
-
-      const flags = { "t": time, "d": date };
-      
-      this.runShortcuts(Hook.DECK_SHUTDOWN, flags);
+      this.runShortcuts(Hook.DECK_SHUTDOWN, {});
     });
   }
 

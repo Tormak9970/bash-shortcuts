@@ -36,6 +36,27 @@ export class InstancesController {
   }
 
   /**
+   * Gets the current date and time.
+   * @returns A tuple containing [date, time] in US standard format.
+   */
+  private getDatetime(): [string, string] {
+    const date = new Date();
+
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
+
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const seconds = date.getSeconds();
+
+    return [
+      `${month}-${day}-${year}`,
+      `${hours}:${minutes}:${seconds}`
+    ];
+  }
+
+  /**
    * Creates a new instance for a shortcut.
    * @param shortcut The shortcut to make an instance for.
    * @returns A promise resolving to true if all the steamClient calls were successful.
@@ -166,6 +187,21 @@ export class InstancesController {
       
       return res;
     } else {
+      const [ date, time ] = this.getDatetime();
+      
+      flags["d"] = date;
+      flags["t"] = time;
+
+      if (!Object.keys(flags).includes("u")) flags["u"] = loginStore.m_strAccountName;
+
+      if (!Object.keys(flags).includes("i")) {
+
+      }
+
+      if (!Object.keys(flags).includes("n")) {
+
+      }
+
       const res = await PyInterop.runNonAppShortcut(shortcutId, Object.entries(flags));
       console.log(res);
       return true;

@@ -18,11 +18,12 @@ export const AddShortcut: VFC = () => {
   const [ ableToSave, setAbleToSave ] = useState(false);
   const [ name, setName ] = useState<string>("");
   const [ cmd, setCmd ] = useState<string>("");
-  const [ hooks, setHooks ] = useState<Hook[]>([]);
   const [ isApp, setIsApp ] = useState<boolean>(true);
+  const [ passFlags, setPassFlags ] = useState<boolean>(false);
+  const [ hooks, setHooks ] = useState<Hook[]>([]);
 
   function saveShortcut() {
-    const newShort = new Shortcut(uuidv4(), name, cmd, shortcutsList.length + 1, isApp, hooks);
+    const newShort = new Shortcut(uuidv4(), name, cmd, shortcutsList.length + 1, isApp, passFlags, hooks);
     PyInterop.addShortcut(newShort);
     PluginController.updateHooks(newShort);
     setName("");
@@ -56,7 +57,7 @@ export const AddShortcut: VFC = () => {
                 <TextField
                   label={'Name'}
                   value={name}
-                  onChange={(e) => { setName(e?.target.value) }}
+                  onChange={(e) => { setName(e?.target.value); }}
                 />
               }
             />
@@ -68,9 +69,27 @@ export const AddShortcut: VFC = () => {
                 <TextField
                   label={'Command'}
                   value={cmd}
-                  onChange={(e) => { setCmd(e?.target.value) }}
+                  onChange={(e) => { setCmd(e?.target.value); }}
                 />
               }
+            />
+          </PanelSectionRow>
+          <PanelSectionRow>
+            <ToggleField
+              label="Does this launch an app?"
+              onChange={(e) => {
+                setIsApp(e);
+                if (e) setPassFlags(false);
+              }}
+              checked={isApp}
+            />
+          </PanelSectionRow>
+          <PanelSectionRow>
+            <ToggleField
+              label="Does this shortcut use flags?"
+              onChange={(e) => { setPassFlags(e); }}
+              checked={passFlags}
+              disabled={isApp}
             />
           </PanelSectionRow>
           <PanelSectionRow>
@@ -84,13 +103,6 @@ export const AddShortcut: VFC = () => {
                   onChange={(selected:DropdownOption[]) => { setHooks(selected.map((s) => s.label as Hook)) }}
                 />
               }
-            />
-          </PanelSectionRow>
-          <PanelSectionRow>
-            <ToggleField
-              label="Does this launch an app?"
-              onChange={(e) => { setIsApp(e) }}
-              checked
             />
           </PanelSectionRow>
           <PanelSectionRow>

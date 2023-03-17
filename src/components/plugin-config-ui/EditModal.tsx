@@ -25,6 +25,7 @@ export const EditModal: VFC<EditModalProps> = ({
   const [ name, setName ] = useState<string>(shortcut.name);
   const [ cmd, setCmd ] = useState<string>(shortcut.cmd);
   const [ isApp, setIsApp ] = useState<boolean>(shortcut.isApp);
+  const [ passFlags, setPassFlags ] = useState<boolean>(shortcut.passFlags);
   const [ hooks, setHooks ] = useState<Hook[]>(shortcut.hooks);
 
   return (
@@ -35,7 +36,7 @@ export const EditModal: VFC<EditModalProps> = ({
         onEscKeypress={closeModal}
 
         onOK={() => {
-          const updated = new Shortcut(shortcut.id, name, cmd, shortcut.position, isApp, hooks);
+          const updated = new Shortcut(shortcut.id, name, cmd, shortcut.position, isApp, passFlags, hooks);
           onConfirm(updated);
           closeModal();
         }}>
@@ -46,7 +47,7 @@ export const EditModal: VFC<EditModalProps> = ({
               description={
                 <TextField
                   value={name}
-                  onChange={(e) => { setName(e?.target.value) }}
+                  onChange={(e) => { setName(e?.target.value); }}
                 />}
             />
           </PanelSectionRow>
@@ -56,8 +57,26 @@ export const EditModal: VFC<EditModalProps> = ({
               description={
                 <TextField
                   value={cmd}
-                  onChange={(e) => { setCmd(e?.target.value) }}
+                  onChange={(e) => { setCmd(e?.target.value); }}
                 />}
+            />
+          </PanelSectionRow>
+          <PanelSectionRow>
+            <ToggleField
+              label="Does this launch an app?"
+              onChange={(e) => {
+                setIsApp(e);
+                if (e) setPassFlags(false);
+              }}
+              checked={isApp}
+            />
+          </PanelSectionRow>
+          <PanelSectionRow>
+            <ToggleField
+              label="Does this shortcut use flags?"
+              onChange={(e) => { setPassFlags(e); }}
+              checked={passFlags}
+              disabled={isApp}
             />
           </PanelSectionRow>
           <PanelSectionRow>
@@ -72,9 +91,6 @@ export const EditModal: VFC<EditModalProps> = ({
                 />
               }
             />
-          </PanelSectionRow>
-          <PanelSectionRow>
-            <ToggleField label="Does this launch an app?" onChange={(e) => { setIsApp(e) }} checked={isApp} />
           </PanelSectionRow>
         </PanelSection>
       </ConfirmModal>

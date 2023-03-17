@@ -27,9 +27,11 @@ This is where you can add new shortcuts to the plugin. You can find the various 
 
 **Command** - The command to run when the shortcut is run.
 
-**Hooks** - The list of hooks that should run the shortcut. (You can check the dedicated guide to learn more)
-
 **Is an App** - Toggle this off if your shortcut does not launch an app.
+
+**Takes Flags** - Toggle this on if you intend to use any of the flags mentioned in the **Using Hooks** guide. This can only be enabled for non app shortcuts.
+
+**Hooks** - The list of hooks that should run the shortcut. (You can check the dedicated guide to learn more)
 
 <br/>
 
@@ -38,12 +40,12 @@ This where you can modify existing shortcuts. You can reorder, modify, and delet
 
 #### Changing Existing Shortcuts
 <img title="Modify UI" src="https://raw.githubusercontent.com/tormak9970/bash-shortcuts/master/assets/v2.0_modify-shortcut.png" />
-<br/>
 The modification window allows you to edit the values of existing shortcuts. It shares the same options as the **Add Shortcuts** section.
 
-#### Changing the Order of Shortcuts
-<img title="Reorder UI" src="https://raw.githubusercontent.com/tormak9970/bash-shortcuts/master/assets/v2.0_reodering.png" />
 <br/>
+
+#### Changing the Order of Shortcuts
+<img title="Reorder UI" src="https://raw.githubusercontent.com/tormak9970/bash-shortcuts/master/assets/v2.0_reordering.png" />
 To reorder your shortcuts, focus the shortcut you want to reorder, then click **X** (or Square) and move the left stick stick to change its position. Click the button again to save your changes.
 
 <br/>

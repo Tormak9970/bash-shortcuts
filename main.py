@@ -2,7 +2,6 @@
 import json
 import os
 import sys
-import shutil
 
 sys.path.append(os.path.dirname(__file__))
 
@@ -35,6 +34,9 @@ class Plugin:
     for key in shortcuts.keys():
       if not "hooks" in shortcuts[key]:
         shortcuts[key]["hooks"] = []
+        needToSet = True
+      if not "passFlags" in shortcuts[key]:
+        shortcuts[key]["passFlags"] = False
         needToSet = True
 
     if needToSet:
@@ -191,8 +193,11 @@ class Plugin:
     pass
 
   def _runNonAppShortcut(self, shortcutId, flags):
+    defFlags = {}
     log(f"Running createInstance for shortcut with Id: {shortcutId}")
-    self.instanceManager.createInstance(self.settingsManager.getSetting("shortcuts", {})[shortcutId], flags)
+    shortcut = self.settingsManager.getSetting("shortcuts", {})[shortcutId]
+    
+    self.instanceManager.createInstance(shortcut, flags if shortcut.passFlags else defFlags)
   
   def _killNonAppShortcut(self, shortcutId):
     log(f"Running killInstance for shortcut with Id: {shortcutId}")
