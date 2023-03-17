@@ -1,3 +1,4 @@
+import { Navigation } from "decky-frontend-lib";
 import { PyInterop } from "../../PyInterop";
 import { WebSocketClient } from "../../WebsocketClient";
 import { ShortcutsState } from "../../state/ShortcutsState";
@@ -160,8 +161,17 @@ export class HookController {
 
         if (createdInstance) {
           PyInterop.log(`Created Instance for shortcut { Id: ${shortcut.id}, Name: ${shortcut.name} } on hook: ${hook}`);
-          const didLaunch = await this.instancesController.launchInstance(shortcut.id, () => {
-
+          const didLaunch = await this.instancesController.launchInstance(shortcut.id, async () => {
+            if (this.checkIfRunning(shortcut.id) && shortcut.isApp) {
+              this.setIsRunning(shortcut.id, false);
+              const killRes = await this.instancesController.killInstance(shortcut.id);
+              if (killRes) {
+                Navigation.Navigate("/library/home");
+                Navigation.CloseSideMenus();
+              } else {
+                PyInterop.toast("Error", "Failed to kill shortcut.");
+              }
+            }
           });
           
           if (!didLaunch) {
