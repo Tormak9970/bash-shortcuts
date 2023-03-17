@@ -82,6 +82,7 @@ export const EditModal: VFC<EditModalProps> = ({
           <PanelSectionRow>
             <Field 
               label="Hooks"
+              highlightOnFocus={false}
               description={
                 <MultiSelect
                   label="Select a hook"

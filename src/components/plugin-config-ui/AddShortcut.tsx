@@ -95,6 +95,7 @@ export const AddShortcut: VFC = () => {
           <PanelSectionRow>
             <Field 
               label="Hooks"
+              highlightOnFocus={false}
               description={
                 <MultiSelect
                   label="Select a hook"
