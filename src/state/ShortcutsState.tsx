@@ -12,12 +12,14 @@ interface PublicShortcutsState {
   runningShortcuts: Set<string>;
   reorderableShortcuts: ReorderableEntry<Shortcut>[];
   currentGame: SteamAppOverview | null;
+  gameRunning: boolean;
 }
 
 interface PublicShortcutsContext extends PublicShortcutsState {
   setShortcuts(shortcuts: ShortcutsDictionary): void;
   setIsRunning(shortcutId: string, value: boolean): void;
   setCurrentGame(overview: SteamAppOverview | null): void;
+  setGameRunning(isRunning: boolean): void;
 }
 
 export class ShortcutsState {
@@ -26,6 +28,7 @@ export class ShortcutsState {
   private runningShortcuts = new Set<string>();
   private reorderableShortcuts: ReorderableEntry<Shortcut>[] = [];
   private currentGame: SteamAppOverview | null = null;
+  private gameRunning: boolean = false;
 
   public eventBus = new EventTarget();
 
@@ -35,11 +38,12 @@ export class ShortcutsState {
       "shortcutsList": this.shortcutsList,
       "runningShortcuts": this.runningShortcuts,
       "reorderableShortcuts": this.reorderableShortcuts,
-      "currentGame": this.currentGame
+      "currentGame": this.currentGame,
+      "gameRunning": this.gameRunning
     }
   }
 
-  setIsRunning(shortcutId: string, value: boolean) {
+  setIsRunning(shortcutId: string, value: boolean): void {
     if (value) {
       this.runningShortcuts.add(shortcutId);
     } else {
@@ -57,7 +61,13 @@ export class ShortcutsState {
     this.forceUpdate();
   }
 
-  setShortcuts(shortcuts: ShortcutsDictionary) {
+  setGameRunning(isRunning: boolean): void {
+    this.gameRunning = isRunning;
+
+    this.forceUpdate();
+  }
+
+  setShortcuts(shortcuts: ShortcutsDictionary): void {
     this.shortcuts = shortcuts;
     this.shortcutsList = Object.values(this.shortcuts).sort((a, b) => a.position - b.position);
     this.reorderableShortcuts = [];
@@ -76,7 +86,7 @@ export class ShortcutsState {
     this.forceUpdate();
   }
 
-  private forceUpdate() {
+  private forceUpdate(): void {
     this.eventBus.dispatchEvent(new Event("stateUpdate"));
   }
 }
@@ -122,13 +132,18 @@ export const ShortcutsContextProvider: FC<ProviderProps> = ({
     shortcutsStateClass.setCurrentGame(overview);
   }
 
+  const setGameRunning = (isRunning: boolean) => {
+    shortcutsStateClass.setGameRunning(isRunning);
+  }
+
   return (
     <ShortcutsContext.Provider
       value={{
         ...publicState,
         setShortcuts,
         setIsRunning,
-        setCurrentGame
+        setCurrentGame,
+        setGameRunning
       }}
     >
       {children}

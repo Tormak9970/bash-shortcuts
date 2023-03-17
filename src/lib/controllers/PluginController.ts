@@ -1,4 +1,4 @@
-import { RoutePatch, ServerAPI, useParams } from "decky-frontend-lib";
+import { ServerAPI } from "decky-frontend-lib";
 import { ShortcutsController } from "./ShortcutsController";
 import { InstancesController } from "./InstancesController";
 import { PyInterop } from "../../PyInterop";
@@ -7,6 +7,7 @@ import { Shortcut } from "../data-structures/Shortcut";
 import { WebSocketClient } from "../../WebsocketClient";
 import { HookController } from "./HookController";
 import { ShortcutsState } from "../../state/ShortcutsState";
+import { History, debounce } from "../Utils";
 
 /**
  * Main controller class for the plugin.
@@ -22,7 +23,7 @@ export class PluginController {
   private static webSocketClient: WebSocketClient;
 
   private static gameLifetimeRegister: Unregisterer;
-  private static libraryTabPatch: RoutePatch;
+  private static historyListener: () => void;
 
   /**
    * Sets the plugin's serverAPI.
@@ -43,55 +44,37 @@ export class PluginController {
       
       if (data.bRunning) {
         if (currGame == null || currGame.appid != appId) {
+          this.state.setGameRunning(true);
           const overview = appStore.GetAppOverviewByAppID(appId);
           this.state.setCurrentGame(overview);
 
           PyInterop.log(`Set currentGame to ${overview?.display_name} appId: ${appId}`);
-          console.log("Overview:", overview);
         }
       } else {
-        const pathStart = "/routes/library/app/";
-        const routePath = window.location.pathname;
+        this.state.setGameRunning(false);
+      }
+    });
+    
+    this.historyListener = History.listen(debounce((info: any) => {
+      const pathStart = "/library/app/";
 
-        if (routePath.startsWith(pathStart)) {
-          // TODO: get current appId from route
-          const appId = parseInt(routePath.substring(routePath.indexOf(pathStart) + 1));
-
+      if (!this.state.getPublicState().gameRunning) {
+        if (info.pathname.startsWith(pathStart)) {
+          const currGame = this.state.getPublicState().currentGame;
+          const appId = parseInt(info.pathname.substring(info.pathname.indexOf(pathStart) + pathStart.length));
+  
           if (currGame == null || currGame.appid != appId) {
-            // TODO: fetch overview from appStore
             const overview = appStore.GetAppOverviewByAppID(appId);
-            // TODO: set plugin state
             this.state.setCurrentGame(overview);
-
-            PyInterop.log(`Set currentGame to ${overview?.display_name} appId: ${appId}`);
-            console.log("Overview:", overview);
+  
+            PyInterop.log(`Set currentGame to ${overview?.display_name} appId: ${appId}.`);
           }
         } else {
           this.state.setCurrentGame(null);
+          PyInterop.log(`Set currentGame to null.`);
         }
       }
-    });
-    this.libraryTabPatch = this.server.routerHook.addPatch('/library/app/:appid', (props?: { path?: string }) => {
-      if (props?.path) {
-        const currGame = this.state.getPublicState().currentGame;
-        // TODO: get appId from path
-        const { appid } = useParams<{ appid: string }>();
-        const appId = parseInt(appid);
-
-        if (currGame == null || currGame.appid != appId) {
-          // TODO: fetch overview from appStore
-          const overview = appStore.GetAppOverviewByAppID(appId);
-          // TODO: set plugin state
-          this.state.setCurrentGame(overview);
-
-          PyInterop.log(`Set currentGame to ${overview?.display_name} appId: ${appId}`);
-          console.log("Overview:", overview);
-        }
-      }
-      
-      return props;
-    }
-  )
+    }, 200));
   }
 
   /**
@@ -223,7 +206,7 @@ export class PluginController {
     this.webSocketClient.disconnect();
     this.hooksController.dismount();
     this.gameLifetimeRegister.unregister();
-    this.server.routerHook.removePatch('/library/app/:appid', this.libraryTabPatch);
+    this.historyListener();
     
     PyInterop.log("PluginController dismounted.");
   }
