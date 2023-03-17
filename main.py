@@ -194,7 +194,7 @@ class Plugin:
 
   def _runNonAppShortcut(self, shortcutId, flags):
     defFlags = {}
-    log(f"Running createInstance for shortcut with Id: {shortcutId}")
+    log(f"Running createInstance for shortcut with Id: {shortcutId} and Flags: {json.dumps(flags if shortcut.passFlags else defFlags)}")
     shortcut = self.settingsManager.getSetting("shortcuts", {})[shortcutId]
     
     self.instanceManager.createInstance(shortcut, flags if shortcut.passFlags else defFlags)

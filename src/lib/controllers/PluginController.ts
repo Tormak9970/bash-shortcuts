@@ -1,4 +1,4 @@
-import { ServerAPI } from "decky-frontend-lib";
+import { Navigation, RoutePatch, Router, ServerAPI } from "decky-frontend-lib";
 import { ShortcutsController } from "./ShortcutsController";
 import { InstancesController } from "./InstancesController";
 import { PyInterop } from "../../PyInterop";
@@ -12,16 +12,17 @@ import { ShortcutsState } from "../../state/ShortcutsState";
  * Main controller class for the plugin.
  */
 export class PluginController {
-  static mainAppId: number;
-
-  // @ts-ignore
   private static server: ServerAPI;
+  private static state: ShortcutsState;
+
   private static steamController: SteamController;
   private static shortcutsController: ShortcutsController;
   private static instancesController: InstancesController;
   private static hooksController: HookController;
   private static webSocketClient: WebSocketClient;
-  private static state: ShortcutsState;
+
+  private static gameLifetimeRegister: Unregisterer;
+  private static libraryTabPatch: RoutePatch;
 
   /**
    * Sets the plugin's serverAPI.
@@ -34,8 +35,23 @@ export class PluginController {
     this.steamController = new SteamController();
     this.shortcutsController = new ShortcutsController(this.steamController);
     this.webSocketClient = new WebSocketClient("localhost", "5000", 1000);
-    this.instancesController = new InstancesController(this.shortcutsController, this.webSocketClient);
+    this.instancesController = new InstancesController(this.shortcutsController, this.webSocketClient, this.state);
     this.hooksController = new HookController(this.steamController, this.instancesController, this.webSocketClient, this.state);
+
+    this.gameLifetimeRegister = this.steamController.registerForAllAppLifetimeNotifications((appId: number, data: LifetimeNotification) => {
+      // TODO: fetch overview from appStore
+      // TODO: set plugin state
+    });
+    this.libraryTabPatch = this.server.routerHook.addPatch('/library/app/:appid', (props?: { path?: string }) => {
+      if (props?.path) {
+        // TODO: get appId from path
+        // TODO: fetch overview from appStore
+        // TODO: set plugin state
+      }
+      
+      return props;
+    }
+  )
   }
 
   /**
@@ -166,6 +182,8 @@ export class PluginController {
     this.shortcutsController.onDismount();
     this.webSocketClient.disconnect();
     this.hooksController.dismount();
+    this.gameLifetimeRegister.unregister();
+    this.server.routerHook.removePatch('/library/app/:appid', this.libraryTabPatch);
     
     PyInterop.log("PluginController dismounted.");
   }

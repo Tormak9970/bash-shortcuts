@@ -11,11 +11,13 @@ interface PublicShortcutsState {
   shortcutsList: Shortcut[];
   runningShortcuts: Set<string>;
   reorderableShortcuts: ReorderableEntry<Shortcut>[];
+  currentGame: SteamAppOverview | null;
 }
 
 interface PublicShortcutsContext extends PublicShortcutsState {
   setShortcuts(shortcuts: ShortcutsDictionary): void;
   setIsRunning(shortcutId: string, value: boolean): void;
+  setCurrentGame(game: SteamAppOverview | null): void;
 }
 
 export class ShortcutsState {
@@ -23,6 +25,7 @@ export class ShortcutsState {
   private shortcutsList: Shortcut[] = [];
   private runningShortcuts = new Set<string>();
   private reorderableShortcuts: ReorderableEntry<Shortcut>[] = [];
+  private currentGame: SteamAppOverview | null = null;
 
   public eventBus = new EventTarget();
 
@@ -31,7 +34,8 @@ export class ShortcutsState {
       "shortcuts": this.shortcuts,
       "shortcutsList": this.shortcutsList,
       "runningShortcuts": this.runningShortcuts,
-      "reorderableShortcuts": this.reorderableShortcuts
+      "reorderableShortcuts": this.reorderableShortcuts,
+      "currentGame": this.currentGame
     }
   }
 
@@ -43,6 +47,12 @@ export class ShortcutsState {
     }
 
     this.runningShortcuts = new Set(this.runningShortcuts.values());
+
+    this.forceUpdate();
+  }
+
+  setCurrentGame(game: SteamAppOverview | null): void {
+    this.currentGame = game;
 
     this.forceUpdate();
   }
@@ -108,12 +118,17 @@ export const ShortcutsContextProvider: FC<ProviderProps> = ({
     shortcutsStateClass.setIsRunning(shortcutId, value);
   }
 
+  const setCurrentGame = (game: SteamAppOverview | null) => {
+    shortcutsStateClass.setCurrentGame(game);
+  }
+
   return (
     <ShortcutsContext.Provider
       value={{
         ...publicState,
         setShortcuts,
-        setIsRunning
+        setIsRunning,
+        setCurrentGame
       }}
     >
       {children}

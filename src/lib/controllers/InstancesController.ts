@@ -4,6 +4,7 @@ import { ShortcutsController } from "./ShortcutsController";
 import { PyInterop } from "../../PyInterop";
 import { Navigation } from "decky-frontend-lib";
 import { WebSocketClient } from "../../WebsocketClient";
+import { ShortcutsState } from "../../state/ShortcutsState";
 
 /**
  * Controller for managing plugin instances.
@@ -14,6 +15,7 @@ export class InstancesController {
   private startDir = "\"/home/deck/homebrew/plugins/bash-shortcuts/\"";
   private shorcutsController:ShortcutsController;
   private webSocketClient: WebSocketClient;
+  private state: ShortcutsState;
 
   numInstances: number;
   instances: { [uuid:string]: Instance };
@@ -21,10 +23,13 @@ export class InstancesController {
   /**
    * Creates a new InstancesController.
    * @param shortcutsController The shortcuts controller used by this class.
+   * @param webSocketClient The WebSocketClient used by this class.
+   * @param state The plugin state.
    */
-  constructor(shortcutsController: ShortcutsController, webSocketClient: WebSocketClient) {
+  constructor(shortcutsController: ShortcutsController, webSocketClient: WebSocketClient, state: ShortcutsState) {
     this.shorcutsController = shortcutsController;
     this.webSocketClient = webSocketClient;
+    this.state = state;
 
     PyInterop.getHomeDir().then((res) => {
       this.runnerPath = `/home/${res.result}/homebrew/plugins/bash-shortcuts/shortcutsRunner.sh`;
@@ -188,19 +193,14 @@ export class InstancesController {
       return res;
     } else {
       const [ date, time ] = this.getDatetime();
+      const currentGameOverview = this.state.getPublicState().currentGame;
       
       flags["d"] = date;
       flags["t"] = time;
 
       if (!Object.keys(flags).includes("u")) flags["u"] = loginStore.m_strAccountName;
-
-      if (!Object.keys(flags).includes("i")) {
-
-      }
-
-      if (!Object.keys(flags).includes("n")) {
-
-      }
+      if (!Object.keys(flags).includes("i") && currentGameOverview != null) flags["i"] = currentGameOverview.appid.toString();
+      if (!Object.keys(flags).includes("n") && currentGameOverview != null) flags["n"] = currentGameOverview.display_name;
 
       const res = await PyInterop.runNonAppShortcut(shortcutId, Object.entries(flags));
       console.log(res);
