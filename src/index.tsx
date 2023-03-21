@@ -17,7 +17,7 @@ import { HiViewGridAdd } from "react-icons/hi";
 import { FaEdit } from "react-icons/fa";
 import { MdNumbers } from "react-icons/md";
 import { AddShortcut } from "./components/plugin-config-ui/AddShortcut";
-import { ShortcutLauncher } from "./components/ShortcutLanucher";
+import { ShortcutLauncher } from "./components/ShortcutLauncher";
 import { ManageShortcuts } from "./components/plugin-config-ui/ManageShortcuts";
 
 import { PyInterop } from "./PyInterop";
