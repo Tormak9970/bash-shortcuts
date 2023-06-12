@@ -97,6 +97,16 @@ export class ShortcutsController {
   }
 
   /**
+   * Sets the name of a steam shortcut.
+   * @param appId The id of the app to set.
+   * @param newName The new name for the shortcut.
+   * @returns A promise resolving to true if the name was set successfully.
+   */
+  async setShortcutName(appId: number, newName: string): Promise<boolean> {
+    return await this.steamController.setShortcutName(appId, newName);
+  }
+
+  /**
    * Launches a steam shortcut.
    * @param appId The id of the steam shortcut to launch.
    * @returns A promise resolving to true if the shortcut was successfully launched.

@@ -145,13 +145,7 @@ export class SteamController {
   async addShortcut(appName: string, execPath: string): Promise<number | null> {
     const appId = await SteamClient.Apps.AddShortcut(appName, execPath) as number | undefined | null;
     if (typeof appId === "number") {
-      const overview = await this.getAppOverview(appId);
-      if (overview && overview.display_name == appName) {
-        return appId;
-      }
-
-      await this.removeShortcut(appId as number);
-      PyInterop.log(`Removing shortcut. [DEBUG INFO] appId: ${appId}; appName: ${appName};`);
+      return appId;
     }
 
     PyInterop.log(`Could not add shortcut. [DEBUG INFO] appId: ${appId}; appName: ${appName};`);
@@ -243,6 +237,35 @@ export class SteamController {
     }
     
     PyInterop.log(`Added launch options. [DEBUG INFO] appId: ${appId};`);
+    return true;
+  }
+
+  /**
+   * Sets the name of a steam shortcut.
+   * @param appId The id of the app to set.
+   * @param newName The new name for the shortcut.
+   * @returns A promise resolving to true if the name was set successfully.
+   */
+  async setShortcutName(appId: number, newName: string): Promise<boolean> {
+    const details = await this.getAppDetails(appId);
+    if (!details) {
+      PyInterop.log(`Could not set shortcut name (does not exist)! [DEBUG INFO] appId: ${appId};`);
+      return false;
+    }
+
+    if (details.strDisplayName == newName) {
+      PyInterop.log(`Set shortcut name. [DEBUG INFO] strDisplayName: ${details.strDisplayName}; appId:${appId};`);
+      return true;
+    }
+
+    SteamClient.Apps.SetShortcutName(appId, newName);
+    const updated = await this.getAppDetails(appId);
+    if (updated?.strDisplayName != newName) {
+      PyInterop.log(`Could not set shortcut name. [DEBUG INFO] strDisplayName: ${details.strDisplayName}; appId: ${appId};`);
+      return false;
+    }
+    
+    PyInterop.log(`Set shortcut name. [DEBUG INFO] strDisplayName: ${details.strDisplayName}; appId:${appId};`);
     return true;
   }
 

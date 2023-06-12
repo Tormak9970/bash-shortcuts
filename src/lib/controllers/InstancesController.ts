@@ -90,6 +90,12 @@ export class InstancesController {
           return false;
         }
         
+        const nameRes = await this.shorcutsController.setShortcutName(appId, shortcutName);
+        if (!nameRes) {
+          PyInterop.toast("Error", "Failed to set the name of the instance");
+          return false;
+        }
+        
         const startDirRes = await this.shorcutsController.setShortcutStartDir(appId, this.startDir);
         if (!startDirRes) {
           PyInterop.toast("Error", "Failed to set the start dir");

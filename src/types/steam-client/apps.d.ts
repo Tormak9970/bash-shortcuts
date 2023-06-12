@@ -1,16 +1,21 @@
 // Types for SteamClient.Apps
 
 type Apps = {
-  RegisterForAchievementChanges: (callback: () => void) => Unregisterer,
   RunGame: (gameId: string, unk1: string, unk2: number, unk3: number) => void,
-  RemoveShortcut: (appId: number) => void,
-  RegisterForAppDetails: (appId: number, callback: (details: SteamAppDetails) => void) => Unregisterer,
   TerminateApp: (gameId: string, unk1: boolean) => void,
   SetAppLaunchOptions: (appId: number, options: string) => void,
+
+  AddShortcut: (appName: string, exePath: string) => number, //! this changed on preview
+  RemoveShortcut: (appId: number) => void,
+  GetShortcutData: any,
+
+  SetShortcutLaunchOptions: any, //(appId: number, options: string) => void,
+  SetShortcutName: (appId: number, newName: string) => void,
   SetShortcutStartDir: (appId: number, startDir: string) => void,
   SetShortcutExe: (appId: number, exePath: string) => void,
-  AddShortcut: (appName: string, exePath: string) => number,
 
+  RegisterForAchievementChanges: (callback: () => void) => Unregisterer,
+  RegisterForAppDetails: (appId: number, callback: (details: SteamAppDetails) => void) => Unregisterer,
   RegisterForGameActionEnd: (callback: (unk1: number) => void) => Unregisterer,
   RegisterForGameActionStart: (callback: (unk1: number, appId: string, action: string) => void) => Unregisterer,
   RegisterForGameActionTaskChange: (callback: (data: any) => void) => Unregisterer,
