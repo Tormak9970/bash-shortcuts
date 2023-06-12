@@ -5,7 +5,7 @@ type Apps = {
   TerminateApp: (gameId: string, unk1: boolean) => void,
   SetAppLaunchOptions: (appId: number, options: string) => void,
 
-  AddShortcut: (appName: string, exePath: string) => number, //! this changed on preview
+  AddShortcut: (appName: string, exePath: string, startDir: string, launchArgs: string) => number,
   RemoveShortcut: (appId: number) => void,
   GetShortcutData: any,
 

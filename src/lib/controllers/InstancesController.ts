@@ -78,7 +78,7 @@ export class InstancesController {
         const shortcut = await this.shorcutsController.getShortcut(shortcutName);
         appId = shortcut?.unAppID;
       } else {
-        appId = await this.shorcutsController.addShortcut(shortcutName, this.runnerPath);
+        appId = await this.shorcutsController.addShortcut(shortcutName, this.runnerPath, this.startDir, shortcut.cmd);
       }
 
       if (appId) {
