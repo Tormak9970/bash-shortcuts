@@ -137,6 +137,7 @@ export class SteamController {
   }
 
   /**
+   * ! this is broken on preview
    * Creates a new shortcut.
    * @param appName The name of the new shortcut.
    * @param execPath The exe path of the new shortcut.

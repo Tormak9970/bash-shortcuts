@@ -141,7 +141,7 @@ export class PluginController {
     const createdInstance = await this.instancesController.createInstance(shortcut);
     if (createdInstance) {
       PyInterop.log(`Created Instance for shortcut ${shortcut.name}`);
-      return await this.instancesController.launchInstance(shortcut.id, onExit);
+      return await this.instancesController.launchInstance(shortcut.id, onExit, {});
     } else {
       return false;
     }

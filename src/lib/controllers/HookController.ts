@@ -171,7 +171,7 @@ export class HookController {
                 PyInterop.toast("Error", "Failed to kill shortcut.");
               }
             }
-          });
+          }, flags);
           
           if (!didLaunch) {
             PyInterop.log(`Failed to launch instance for shortcut { Id: ${shortcut.id}, Name: ${shortcut.name} } on hook: ${hook}`);
