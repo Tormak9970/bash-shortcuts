@@ -128,10 +128,12 @@ export class ShortcutsController {
    * Creates a new steam shortcut.
    * @param name The name of the shortcut to create.
    * @param exec The executable file for the shortcut.
+   * @param startDir The start directory of the shortcut.
+   * @param launchArgs The launch args of the shortcut.
    * @returns A promise resolving to true if the shortcut was successfully created.
    */
-  async addShortcut(name: string, exec: string): Promise<number | null> {
-    const appId = await this.steamController.addShortcut(name, exec);
+  async addShortcut(name: string, exec: string, startDir: string, launchArgs: string): Promise<number | null> {
+    const appId = await this.steamController.addShortcut(name, exec, startDir, launchArgs);
     if (appId) {
       return appId;
     } else {

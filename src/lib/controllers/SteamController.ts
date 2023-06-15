@@ -141,10 +141,12 @@ export class SteamController {
    * Creates a new shortcut.
    * @param appName The name of the new shortcut.
    * @param execPath The exe path of the new shortcut.
+   * @param startDir The start directory of the new shortcut.
+   * @param launchArgs The launch args of the new shortcut.
    * @returns A promise resolving to the new shortcut's appId if the shortcut was successfully created.
    */
-  async addShortcut(appName: string, execPath: string): Promise<number | null> {
-    const appId = await SteamClient.Apps.AddShortcut(appName, execPath) as number | undefined | null;
+  async addShortcut(appName: string, execPath: string, startDir: string, launchArgs: string): Promise<number | null> {
+    const appId = await SteamClient.Apps.AddShortcut(appName, execPath, startDir, launchArgs) as number | undefined | null;
     if (typeof appId === "number") {
       return appId;
     }
