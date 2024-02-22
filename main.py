@@ -154,7 +154,7 @@ class Plugin:
     pass
 
   def _setShortcuts(self, shortcuts):
-    log(f"Setting shortcuts...")
+    log("Setting shortcuts...")
     self.settingsManager.setSetting("shortcuts", shortcuts)
 
     pass
