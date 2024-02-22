@@ -3,7 +3,6 @@ import subprocess
 from threading import Thread
 from time import sleep
 from copy import deepcopy
-import json
 
 from .logger import log
 
