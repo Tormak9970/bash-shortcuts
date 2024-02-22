@@ -45,7 +45,7 @@ class Instance:
     log(f"Getting process status for instance. Name: {self.shortcut['name']} Id: {self.shortcut['id']}")
     status = self.shortcutProcess.poll()
 
-    if (status == None):
+    if (status is None):
       return 2
     elif (status < 0):
       return 4
