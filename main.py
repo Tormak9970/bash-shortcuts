@@ -32,10 +32,10 @@ class Plugin:
     needToSet = False
 
     for key in shortcuts.keys():
-      if not "hooks" in shortcuts[key]:
+      if "hooks" not in shortcuts[key]:
         shortcuts[key]["hooks"] = []
         needToSet = True
-      if not "passFlags" in shortcuts[key]:
+      if "passFlags" not in shortcuts[key]:
         shortcuts[key]["passFlags"] = False
         needToSet = True
 
@@ -154,7 +154,7 @@ class Plugin:
     pass
 
   def _setShortcuts(self, shortcuts):
-    log(f"Setting shortcuts...")
+    log("Setting shortcuts...")
     self.settingsManager.setSetting("shortcuts", shortcuts)
 
     pass

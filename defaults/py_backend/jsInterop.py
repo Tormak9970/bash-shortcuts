@@ -22,15 +22,15 @@ class JsInteropManager:
     ws = WebSocketClient()
     log(f"Connecting to websocket {self.hostName}:{self.port}...")
     ws.connect(f"ws://{self.hostName}:{self.port}")
-    log(f"Connected")
+    log("Connected")
 
     log(f"Sending message to frontend. Type: {data}")
     ws.send(json.dumps({ "type": type, "data": data }))
-    log(f"Message sent.")
+    log("Message sent.")
 
-    log(f"Closing websocket...")
+    log("Closing websocket...")
     ws.close()
-    log(f"Closed.")
+    log("Closed.")
     pass
 
   def stopServer(self):

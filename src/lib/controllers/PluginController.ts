@@ -37,45 +37,67 @@ export class PluginController {
     this.steamController = new SteamController();
     this.shortcutsController = new ShortcutsController(this.steamController);
     this.webSocketClient = new WebSocketClient("localhost", "5000", 1000);
-    this.instancesController = new InstancesController(this.shortcutsController, this.webSocketClient, this.state);
-    this.hooksController = new HookController(this.steamController, this.instancesController, this.webSocketClient, this.state);
+    this.instancesController = new InstancesController(
+      this.shortcutsController,
+      this.webSocketClient,
+      this.state,
+    );
+    this.hooksController = new HookController(
+      this.steamController,
+      this.instancesController,
+      this.webSocketClient,
+      this.state,
+    );
 
-    this.gameLifetimeRegister = this.steamController.registerForAllAppLifetimeNotifications((appId: number, data: LifetimeNotification) => {
-      const currGame = this.state.getPublicState().currentGame;
-      
-      if (data.bRunning) {
-        if (currGame == null || currGame.appid != appId) {
-          this.state.setGameRunning(true);
-          const overview = appStore.GetAppOverviewByAppID(appId);
-          this.state.setCurrentGame(overview);
+    this.gameLifetimeRegister =
+      this.steamController.registerForAllAppLifetimeNotifications(
+        (appId: number, data: LifetimeNotification) => {
+          const currGame = this.state.getPublicState().currentGame;
 
-          PyInterop.log(`Set currentGame to ${overview?.display_name} appId: ${appId}`);
-        }
-      } else {
-        this.state.setGameRunning(false);
-      }
-    });
-    
-    this.historyListener = History.listen(debounce((info: any) => {
-      const currGame = this.state.getPublicState().currentGame;
-      const pathStart = "/library/app/";
+          if (data.bRunning) {
+            if (currGame == null || currGame.appid != appId) {
+              this.state.setGameRunning(true);
+              const overview = appStore.GetAppOverviewByAppID(appId);
+              this.state.setCurrentGame(overview);
 
-      if (!this.state.getPublicState().gameRunning) {
-        if (info.pathname.startsWith(pathStart)) {
-          const appId = parseInt(info.pathname.substring(info.pathname.indexOf(pathStart) + pathStart.length));
-  
-          if (currGame == null || currGame.appid != appId) {
-            const overview = appStore.GetAppOverviewByAppID(appId);
-            this.state.setCurrentGame(overview);
-  
-            PyInterop.log(`Set currentGame to ${overview?.display_name} appId: ${appId}.`);
+              PyInterop.log(
+                `Set currentGame to ${overview?.display_name} appId: ${appId}`,
+              );
+            }
+          } else {
+            this.state.setGameRunning(false);
           }
-        } else if (currGame != null) {
-          this.state.setCurrentGame(null);
-          PyInterop.log(`Set currentGame to null.`);
+        },
+      );
+
+    this.historyListener = History.listen(
+      debounce((info: any) => {
+        const currGame = this.state.getPublicState().currentGame;
+        const pathStart = "/library/app/";
+
+        if (!this.state.getPublicState().gameRunning) {
+          if (info.pathname.startsWith(pathStart)) {
+            const appId = parseInt(
+              info.pathname.substring(
+                info.pathname.indexOf(pathStart) + pathStart.length,
+              ),
+            );
+
+            if (currGame == null || currGame.appid != appId) {
+              const overview = appStore.GetAppOverviewByAppID(appId);
+              this.state.setCurrentGame(overview);
+
+              PyInterop.log(
+                `Set currentGame to ${overview?.display_name} appId: ${appId}.`,
+              );
+            }
+          } else if (currGame != null) {
+            this.state.setCurrentGame(null);
+            PyInterop.log(`Set currentGame to null.`);
+          }
         }
-      }
-    }, 200));
+      }, 200),
+    );
   }
 
   /**
@@ -83,14 +105,18 @@ export class PluginController {
    * @returns The unregister function for the login hook.
    */
   static initOnLogin(): Unregisterer {
-    return this.steamController.registerForAuthStateChange(async (username) => {
-      PyInterop.log(`user logged in. [DEBUG INFO] username: ${username};`);
-      if (await this.steamController.waitForServicesToInitialize()) {
-        PluginController.init();
-      } else {
-        PyInterop.toast("Error", "Failed to initialize, try restarting.");
-      }
-    }, null, true);
+    return this.steamController.registerForAuthStateChange(
+      async (username) => {
+        PyInterop.log(`user logged in. [DEBUG INFO] username: ${username};`);
+        if (await this.steamController.waitForServicesToInitialize()) {
+          PluginController.init();
+        } else {
+          PyInterop.toast("Error", "Failed to initialize, try restarting.");
+        }
+      },
+      null,
+      true,
+    );
   }
 
   /**
@@ -100,7 +126,10 @@ export class PluginController {
     PyInterop.log("PluginController initializing...");
 
     //* clean out all shortcuts with names that start with "Bash Shortcuts - Instance"
-    const oldInstances = (await this.shortcutsController.getShortcuts()).filter((shortcut:SteamAppDetails) => shortcut.strDisplayName.startsWith("Bash Shortcuts - Instance"));
+    const oldInstances = (await this.shortcutsController.getShortcuts()).filter(
+      (shortcut: SteamAppDetails) =>
+        shortcut.strDisplayName.startsWith("Bash Shortcuts - Instance"),
+    );
 
     if (oldInstances.length > 0) {
       for (const instance of oldInstances) {
@@ -116,7 +145,7 @@ export class PluginController {
     } else {
       this.hooksController.init(shortcuts);
     }
-    
+
     PyInterop.log("PluginController initialized.");
   }
 
@@ -126,7 +155,9 @@ export class PluginController {
    * @returns True if the shortcut is running.
    */
   static checkIfRunning(shorcutId: string): boolean {
-    return Object.keys(PluginController.instancesController.instances).includes(shorcutId);
+    return Object.keys(PluginController.instancesController.instances).includes(
+      shorcutId,
+    );
   }
 
   /**
@@ -137,11 +168,19 @@ export class PluginController {
    * @param onExit An optional function to run when the instance closes.
    * @returns A promise resolving to true if the shortcut was successfully launched.
    */
-  static async launchShortcut(shortcut: Shortcut, onExit: (data?: LifetimeNotification) => void = () => {}): Promise<boolean> {
-    const createdInstance = await this.instancesController.createInstance(shortcut);
+  static async launchShortcut(
+    shortcut: Shortcut,
+    onExit: (data?: LifetimeNotification) => void = () => {},
+  ): Promise<boolean> {
+    const createdInstance =
+      await this.instancesController.createInstance(shortcut);
     if (createdInstance) {
       PyInterop.log(`Created Instance for shortcut ${shortcut.name}`);
-      return await this.instancesController.launchInstance(shortcut.id, onExit, {});
+      return await this.instancesController.launchInstance(
+        shortcut.id,
+        onExit,
+        {},
+      );
     } else {
       return false;
     }
@@ -152,13 +191,17 @@ export class PluginController {
    * @param shortcut The shortcut to close.
    * @returns A promise resolving to true if the shortcut was successfully closed.
    */
-  static async closeShortcut(shortcut:Shortcut): Promise<boolean> {
-    const stoppedInstance = await this.instancesController.stopInstance(shortcut.id);
+  static async closeShortcut(shortcut: Shortcut): Promise<boolean> {
+    const stoppedInstance = await this.instancesController.stopInstance(
+      shortcut.id,
+    );
     if (stoppedInstance) {
       PyInterop.log(`Stopped Instance for shortcut ${shortcut.name}`);
       return await this.instancesController.killInstance(shortcut.id);
     } else {
-      PyInterop.log(`Failed to stop instance for shortcut ${shortcut.name}. Id: ${shortcut.id}`);
+      PyInterop.log(
+        `Failed to stop instance for shortcut ${shortcut.name}. Id: ${shortcut.id}`,
+      );
       return false;
     }
   }
@@ -208,7 +251,7 @@ export class PluginController {
     this.hooksController.dismount();
     this.gameLifetimeRegister.unregister();
     this.historyListener();
-    
+
     PyInterop.log("PluginController dismounted.");
   }
 }

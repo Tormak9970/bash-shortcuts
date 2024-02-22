@@ -1,4 +1,10 @@
-import { DialogButton, Field, Focusable, Navigation, gamepadDialogClasses } from "decky-frontend-lib";
+import {
+  DialogButton,
+  Field,
+  Focusable,
+  Navigation,
+  gamepadDialogClasses,
+} from "decky-frontend-lib";
 import { Fragment, VFC, useEffect, useState } from "react";
 import { Shortcut } from "../lib/data-structures/Shortcut";
 
@@ -9,15 +15,18 @@ import { PluginController } from "../lib/controllers/PluginController";
 import { useShortcutsState } from "../state/ShortcutsState";
 
 export type ShortcutLauncherProps = {
-  shortcut: Shortcut
-}
+  shortcut: Shortcut;
+};
 
 /**
  * A component for the label of a ShortcutLauncher.
  * @param props The props for this ShortcutLabel.
  * @returns A ShortcutLabel component.
  */
-const ShortcutLabel: VFC<{ shortcut: Shortcut, isRunning: boolean}> = (props: { shortcut: Shortcut, isRunning: boolean }) => {
+const ShortcutLabel: VFC<{ shortcut: Shortcut; isRunning: boolean }> = (props: {
+  shortcut: Shortcut;
+  isRunning: boolean;
+}) => {
   return (
     <>
       <style>{`
@@ -33,37 +42,48 @@ const ShortcutLabel: VFC<{ shortcut: Shortcut, isRunning: boolean}> = (props: { 
           }
         }
       `}</style>
-      <div style={{
-        "height": "100%",
-        "display": "flex",
-        "flexDirection": "row",
-        "alignItems": "center"
-      }}>
+      <div
+        style={{
+          height: "100%",
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+        }}
+      >
         <div>{props.shortcut.name}</div>
-        <div style={{
-          "visibility": props.isRunning ? "visible" : "hidden",
-          "marginLeft": "7px",
-          "width": "12px",
-          "height": "12px",
-          "borderRadius": "50%",
-          "backgroundColor": "#36ff04",
-          "animation": "gradient 3s ease-in-out infinite"
-        }}></div>
+        <div
+          style={{
+            visibility: props.isRunning ? "visible" : "hidden",
+            marginLeft: "7px",
+            width: "12px",
+            height: "12px",
+            borderRadius: "50%",
+            backgroundColor: "#36ff04",
+            animation: "gradient 3s ease-in-out infinite",
+          }}
+        ></div>
       </div>
     </>
   );
-}
+};
 /**
  * A component for launching shortcuts.
  * @param props The ShortcutLauncher's props.
  * @returns The ShortcutLauncher component.
  */
-export const ShortcutLauncher: VFC<ShortcutLauncherProps> = (props: ShortcutLauncherProps) => {
+export const ShortcutLauncher: VFC<ShortcutLauncherProps> = (
+  props: ShortcutLauncherProps,
+) => {
   const { runningShortcuts, setIsRunning } = useShortcutsState();
-  const [ isRunning, _setIsRunning ] = useState<boolean>(PluginController.checkIfRunning(props.shortcut.id));
+  const [isRunning, _setIsRunning] = useState<boolean>(
+    PluginController.checkIfRunning(props.shortcut.id),
+  );
 
   useEffect(() => {
-    if (PluginController.checkIfRunning(props.shortcut.id) && !runningShortcuts.has(props.shortcut.id)) {
+    if (
+      PluginController.checkIfRunning(props.shortcut.id) &&
+      !runningShortcuts.has(props.shortcut.id)
+    ) {
       setIsRunning(props.shortcut.id, true);
     }
   }, []);
@@ -76,7 +96,7 @@ export const ShortcutLauncher: VFC<ShortcutLauncherProps> = (props: ShortcutLaun
    * Determines which action to run when the interactable is selected.
    * @param shortcut The shortcut associated with this shortcutLauncher.
    */
-  async function onAction(shortcut:Shortcut): Promise<void> {
+  async function onAction(shortcut: Shortcut): Promise<void> {
     if (isRunning) {
       const res = await PluginController.closeShortcut(shortcut);
       if (!res) {
@@ -101,21 +121,26 @@ export const ShortcutLauncher: VFC<ShortcutLauncherProps> = (props: ShortcutLaun
         PyInterop.toast("Error", "Shortcut failed. Check the command.");
       } else {
         if (!shortcut.isApp) {
-          PyInterop.log(`Registering for WebSocket messages of type: ${shortcut.id}...`);
+          PyInterop.log(
+            `Registering for WebSocket messages of type: ${shortcut.id}...`,
+          );
 
           PluginController.onWebSocketEvent(shortcut.id, (data: any) => {
             if (data.type == "end") {
               if (data.status == 0) {
                 PyInterop.toast(shortcut.name, "Shortcut execution finished.");
               } else {
-                PyInterop.toast(shortcut.name, "Shortcut execution was canceled.");
+                PyInterop.toast(
+                  shortcut.name,
+                  "Shortcut execution was canceled.",
+                );
               }
 
               setIsRunning(shortcut.id, false);
             }
           });
         }
-        
+
         setIsRunning(shortcut.id, true);
       }
     }
@@ -137,20 +162,31 @@ export const ShortcutLauncher: VFC<ShortcutLauncherProps> = (props: ShortcutLaun
       `}
       </style>
       <div className="custom-buttons">
-        <Field label={<ShortcutLabel shortcut={props.shortcut} isRunning={isRunning} />}>
+        <Field
+          label={
+            <ShortcutLabel shortcut={props.shortcut} isRunning={isRunning} />
+          }
+        >
           <Focusable style={{ display: "flex", width: "100%" }}>
-            <DialogButton onClick={() => onAction(props.shortcut)} style={{
-              minWidth: "30px",
-              maxWidth: "60px",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center"
-            }}>
-              { (isRunning) ? <FaTrashAlt color="#e24a4a" /> : <IoRocketSharp color="#36ff04" /> }
+            <DialogButton
+              onClick={() => onAction(props.shortcut)}
+              style={{
+                minWidth: "30px",
+                maxWidth: "60px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              {isRunning ? (
+                <FaTrashAlt color="#e24a4a" />
+              ) : (
+                <IoRocketSharp color="#36ff04" />
+              )}
             </DialogButton>
           </Focusable>
         </Field>
       </div>
     </>
   );
-}
+};

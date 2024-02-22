@@ -14,7 +14,12 @@ export class Instance {
    * @param shortcutId The id of the shortcut associated with this instance.
    * @param shortcutIsApp Whether the shortcut is an app.
    */
-  constructor(unAppID: number | null, steamShortcutName: string, shortcutId: string, shortcutIsApp: boolean) {
+  constructor(
+    unAppID: number | null,
+    steamShortcutName: string,
+    shortcutId: string,
+    shortcutIsApp: boolean,
+  ) {
     this.unAppID = unAppID;
     this.steamShortcutName = steamShortcutName;
     this.shortcutId = shortcutId;

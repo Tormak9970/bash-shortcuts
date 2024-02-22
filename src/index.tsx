@@ -22,7 +22,11 @@ import { ManageShortcuts } from "./components/plugin-config-ui/ManageShortcuts";
 
 import { PyInterop } from "./PyInterop";
 import { Shortcut } from "./lib/data-structures/Shortcut";
-import { ShortcutsContextProvider, ShortcutsState, useShortcutsState } from "./state/ShortcutsState";
+import {
+  ShortcutsContextProvider,
+  ShortcutsState,
+  useShortcutsState,
+} from "./state/ShortcutsState";
 import { PluginController } from "./lib/controllers/PluginController";
 import { Settings } from "./components/plugin-config-ui/Settings";
 import { GuidePage } from "./components/plugin-config-ui/guides/GuidePage";
@@ -34,7 +38,7 @@ declare global {
   var loginStore: LoginStore;
 }
 
-const Content: VFC<{ serverAPI: ServerAPI }> = ({ }) => {
+const Content: VFC<{ serverAPI: ServerAPI }> = ({}) => {
   const { shortcuts, setShortcuts, shortcutsList } = useShortcutsState();
   const tries = useRef(0);
 
@@ -44,7 +48,10 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({ }) => {
     });
   }
 
-  if (Object.values(shortcuts as ShortcutsDictionary).length === 0 && tries.current < 10) {
+  if (
+    Object.values(shortcuts as ShortcutsDictionary).length === 0 &&
+    tries.current < 10
+  ) {
     reload();
     tries.current++;
   }
@@ -78,28 +85,39 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({ }) => {
       <div className="bash-shortcuts-scope">
         <PanelSection>
           <PanelSectionRow>
-            <ButtonItem layout="below" onClick={() => { Navigation.CloseSideMenus(); Navigation.Navigate("/bash-shortcuts-config"); }} >
+            <ButtonItem
+              layout="below"
+              onClick={() => {
+                Navigation.CloseSideMenus();
+                Navigation.Navigate("/bash-shortcuts-config");
+              }}
+            >
               Plugin Config
             </ButtonItem>
           </PanelSectionRow>
-          {
-            (shortcutsList.length == 0) ? (
-              <div style={{ textAlign: "center", margin: "14px 0px", padding: "0px 15px", fontSize: "18px" }}>No shortcuts found</div>
-            ) : (
-              <>
-                {
-                  shortcutsList.map((itm: Shortcut) => (
-                    <ShortcutLauncher shortcut={itm} />
-                  ))
-                }
-                <PanelSectionRow>
-                  <ButtonItem layout="below" onClick={reload} >
-                    Reload
-                  </ButtonItem>
-                </PanelSectionRow>
-              </>
-            )
-          }
+          {shortcutsList.length == 0 ? (
+            <div
+              style={{
+                textAlign: "center",
+                margin: "14px 0px",
+                padding: "0px 15px",
+                fontSize: "18px",
+              }}
+            >
+              No shortcuts found
+            </div>
+          ) : (
+            <>
+              {shortcutsList.map((itm: Shortcut) => (
+                <ShortcutLauncher shortcut={itm} />
+              ))}
+              <PanelSectionRow>
+                <ButtonItem layout="below" onClick={reload}>
+                  Reload
+                </ButtonItem>
+              </PanelSectionRow>
+            </>
+          )}
         </PanelSection>
       </div>
     </>
@@ -107,15 +125,15 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({ }) => {
 };
 
 const ShortcutsManagerRouter: VFC<{ guides: GuidePages }> = ({ guides }) => {
-  const guidePages = {}
-  Object.entries(guides).map(([ guideName, guide ]) => {
+  const guidePages = {};
+  Object.entries(guides).map(([guideName, guide]) => {
     guidePages[guideName] = {
       title: guideName,
       content: <GuidePage content={guide} />,
       route: `/bash-shortcuts-config/guides-${guideName.toLowerCase().replace(/ /g, "-")}`,
       icon: <MdNumbers />,
-      hideTitle: true
-    }
+      hideTitle: true,
+    };
   });
 
   return (
@@ -127,25 +145,25 @@ const ShortcutsManagerRouter: VFC<{ guides: GuidePages }> = ({ guides }) => {
           title: "Add Shortcut",
           content: <AddShortcut />,
           route: "/bash-shortcuts-config/add",
-          icon: <HiViewGridAdd />
+          icon: <HiViewGridAdd />,
         },
         {
           title: "Manage Shortcuts",
           content: <ManageShortcuts />,
           route: "/bash-shortcuts-config/manage",
-          icon: <FaEdit />
+          icon: <FaEdit />,
         },
         {
           title: "Settings",
           content: <Settings />,
           route: "/bash-shortcuts-config/settings",
-          icon: <IoSettingsSharp />
+          icon: <IoSettingsSharp />,
         },
         "separator",
         guidePages["Overview"],
         guidePages["Managing Shortcuts"],
         guidePages["Custom Scripts"],
-        guidePages["Using Hooks"]
+        guidePages["Using Hooks"],
       ]}
     />
   );
@@ -183,6 +201,6 @@ export default definePlugin((serverApi: ServerAPI) => {
       serverApi.routerHook.removeRoute("/bash-shortcuts-config");
       PluginController.dismount();
     },
-    alwaysRender: true
+    alwaysRender: true,
   };
 });
