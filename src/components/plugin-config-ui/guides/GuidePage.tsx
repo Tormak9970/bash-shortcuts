@@ -3,9 +3,10 @@ import { VFC, Fragment } from "react";
 import MarkDownIt from "markdown-it";
 import { ScrollArea, Scrollable, scrollableRef } from "../utils/Scrollable";
 
-const mdIt = new MarkDownIt({ //try "commonmark"
-  html: true
-})
+const mdIt = new MarkDownIt({
+  //try "commonmark"
+  html: true,
+});
 
 export const GuidePage: VFC<{ content: string }> = ({ content }) => {
   const ref = scrollableRef();
@@ -40,4 +41,4 @@ export const GuidePage: VFC<{ content: string }> = ({ content }) => {
       </div>
     </>
   );
-}
+};

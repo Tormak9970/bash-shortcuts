@@ -1,6 +1,6 @@
 import { PyInterop } from "./PyInterop";
 
-type Listener = (data: any) => void
+type Listener = (data: any) => void;
 
 /**
  * Enum for return values from running scripts.
@@ -12,7 +12,7 @@ enum ScriptStatus {
   DOES_NOT_EXIST = 1,
   RUNNING = 2,
   KILLED = 3,
-  FAILED = 4
+  FAILED = 4,
 }
 
 /**
@@ -21,7 +21,7 @@ enum ScriptStatus {
 export class WebSocketClient {
   hostName: string;
   port: string;
-  ws: WebSocket|null;
+  ws: WebSocket | null;
   listeners = new Map<string, Listener[]>();
   reconnectInterval: number;
   numRetries: number | null;
@@ -33,7 +33,12 @@ export class WebSocketClient {
    * @param reconnectInterval The time between reconnect attempts.
    * @param numRetries The number of times to try to reconnect. If null there is no cap. Defaults to null.
    */
-  constructor(hostName: string, port: string, reconnectInterval: number, numRetries = null) {
+  constructor(
+    hostName: string,
+    port: string,
+    reconnectInterval: number,
+    numRetries = null,
+  ) {
     this.hostName = hostName;
     this.port = port;
     this.reconnectInterval = reconnectInterval;
@@ -45,7 +50,9 @@ export class WebSocketClient {
    * Connects the client to the WebSocket.
    */
   connect(): void {
-    PyInterop.log(`WebSocket client connecting to ${this.hostName}:${this.port}...`);
+    PyInterop.log(
+      `WebSocket client connecting to ${this.hostName}:${this.port}...`,
+    );
 
     this.ws = new WebSocket(`ws://${this.hostName}:${this.port}`);
     this.ws.onopen = this.onOpen.bind(this);
@@ -53,18 +60,24 @@ export class WebSocketClient {
     this.ws.onerror = this.onError.bind(this);
     this.ws.onclose = this.onClose.bind(this);
 
-    PyInterop.log(`WebSocket client connected to ${this.hostName}:${this.port}.`);
+    PyInterop.log(
+      `WebSocket client connected to ${this.hostName}:${this.port}.`,
+    );
   }
 
   /**
    * Disconnects the client from the WebSocket.
    */
   disconnect(): void {
-    PyInterop.log(`WebSocket client disconnecting from ${this.hostName}:${this.port}...`);
+    PyInterop.log(
+      `WebSocket client disconnecting from ${this.hostName}:${this.port}...`,
+    );
 
     this.ws?.close();
-    
-    PyInterop.log(`WebSocket client disconnected from ${this.hostName}:${this.port}.`);
+
+    PyInterop.log(
+      `WebSocket client disconnected from ${this.hostName}:${this.port}.`,
+    );
   }
 
   /**
@@ -73,10 +86,10 @@ export class WebSocketClient {
    */
   private listen(e: MessageEvent): void {
     // PyInterop.log(`Recieved message: ${JSON.stringify(e)}`);
-    
+
     try {
       const info = JSON.parse(e.data);
-      
+
       // PyInterop.log(`WebSocketClient recieved message containing JSON data. Message: ${JSON.stringify(e)} Data: ${JSON.stringify(info)}`);
 
       if (this.listeners.has(info.type)) {
@@ -96,7 +109,7 @@ export class WebSocketClient {
    * @param e The Event.
    */
   private onError(e: Event) {
-    PyInterop.log(`Websocket recieved and error: ${JSON.stringify(e)}`)
+    PyInterop.log(`Websocket recieved and error: ${JSON.stringify(e)}`);
   }
 
   /**
@@ -125,12 +138,12 @@ export class WebSocketClient {
    * @param callback The callback to run.
    */
   on(type: string, callback: Listener): void {
-    let existingListeners:Listener[] = []
+    let existingListeners: Listener[] = [];
     if (this.listeners.has(type)) {
       existingListeners = this.listeners.get(type) as Listener[];
     }
-    
-    existingListeners.push(callback)
+
+    existingListeners.push(callback);
 
     this.listeners.set(type, existingListeners);
     PyInterop.log(`Registered listener for message of type: ${type}.`);
@@ -151,9 +164,11 @@ export class WebSocketClient {
    * @param data The data to send.
    */
   sendMessage(type: string, data: any) {
-    this.ws?.send(JSON.stringify({
-      "type": type,
-      "data": data
-    }));
+    this.ws?.send(
+      JSON.stringify({
+        type: type,
+        data: data,
+      }),
+    );
   }
 }

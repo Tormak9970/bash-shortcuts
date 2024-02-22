@@ -2,8 +2,8 @@ import { ServerAPI, ServerResponse } from "decky-frontend-lib";
 import { Shortcut } from "./lib/data-structures/Shortcut";
 
 type ShortcutsDictionary = {
-  [key: string]: Shortcut
-}
+  [key: string]: Shortcut;
+};
 
 /**
  * Class for frontend - backend communication.
@@ -22,7 +22,9 @@ export class PyInterop {
   /**
    * Gets the interop's serverAPI.
    */
-  static get server(): ServerAPI { return this.serverAPI; }
+  static get server(): ServerAPI {
+    return this.serverAPI;
+  }
 
   /**
    * Logs a message to bash shortcut's log file and the frontend console.
@@ -30,7 +32,10 @@ export class PyInterop {
    */
   static async log(message: String): Promise<void> {
     console.log(message);
-    await this.serverAPI.callPluginMethod<{ message: String }, boolean>("logMessage", { message: `[front-end]: ${message}` });
+    await this.serverAPI.callPluginMethod<{ message: String }, boolean>(
+      "logMessage",
+      { message: `[front-end]: ${message}` },
+    );
   }
 
   /**
@@ -38,7 +43,10 @@ export class PyInterop {
    * @returns A promise resolving to a server response containing the user's home directory.
    */
   static async getHomeDir(): Promise<ServerResponse<string>> {
-    const res = await this.serverAPI.callPluginMethod<{}, string>("getHomeDir", {});
+    const res = await this.serverAPI.callPluginMethod<{}, string>(
+      "getHomeDir",
+      {},
+    );
     return res;
   }
 
@@ -66,7 +74,10 @@ export class PyInterop {
    * @returns A promise resolving to a server response containing the shortcuts dictionary.
    */
   static async getShortcuts(): Promise<ServerResponse<ShortcutsDictionary>> {
-    return await this.serverAPI.callPluginMethod<{}, ShortcutsDictionary>("getShortcuts", {});
+    return await this.serverAPI.callPluginMethod<{}, ShortcutsDictionary>(
+      "getShortcuts",
+      {},
+    );
   }
 
   /**
@@ -74,7 +85,10 @@ export class PyInterop {
    * @returns The guides.
    */
   static async getGuides(): Promise<ServerResponse<GuidePages>> {
-    return await this.serverAPI.callPluginMethod<{}, GuidePages>("getGuides", {});
+    return await this.serverAPI.callPluginMethod<{}, GuidePages>(
+      "getGuides",
+      {},
+    );
   }
 
   /**
@@ -84,7 +98,12 @@ export class PyInterop {
    * @returns A promise resolving to the setting's value.
    */
   static async getSetting<T>(key: string, defaultVal: T): Promise<T> {
-    return (await this.serverAPI.callPluginMethod<{ key: string, defaultVal: T }, T>("getSetting", { key: key, defaultVal: defaultVal })).result as T;
+    return (
+      await this.serverAPI.callPluginMethod<{ key: string; defaultVal: T }, T>(
+        "getSetting",
+        { key: key, defaultVal: defaultVal },
+      )
+    ).result as T;
   }
 
   /**
@@ -93,8 +112,14 @@ export class PyInterop {
    * @param newVal The new value for the setting.
    * @returns A void promise resolving once the setting is set.
    */
-  static async setSetting<T>(key: string, newVal: T): Promise<ServerResponse<void>> {
-    return await this.serverAPI.callPluginMethod<{ key: string, newVal : T}, void>("setSetting", { key: key, newVal: newVal });
+  static async setSetting<T>(
+    key: string,
+    newVal: T,
+  ): Promise<ServerResponse<void>> {
+    return await this.serverAPI.callPluginMethod<
+      { key: string; newVal: T },
+      void
+    >("setSetting", { key: key, newVal: newVal });
   }
 
   /**
@@ -102,8 +127,13 @@ export class PyInterop {
    * @param shortcut The shortcut to add.
    * @returns A promise resolving to a server response containing the updated shortcuts dictionary.
    */
-  static async addShortcut(shortcut: Shortcut): Promise<ServerResponse<ShortcutsDictionary>> {
-    return await this.serverAPI.callPluginMethod<{ shortcut: Shortcut }, ShortcutsDictionary>("addShortcut", { shortcut: shortcut });
+  static async addShortcut(
+    shortcut: Shortcut,
+  ): Promise<ServerResponse<ShortcutsDictionary>> {
+    return await this.serverAPI.callPluginMethod<
+      { shortcut: Shortcut },
+      ShortcutsDictionary
+    >("addShortcut", { shortcut: shortcut });
   }
 
   /**
@@ -111,8 +141,13 @@ export class PyInterop {
    * @param shortcuts The updated shortcuts dictionary.
    * @returns A promise resolving to a server response containing the updated shortcuts dictionary.
    */
-  static async setShortcuts(shortcuts: ShortcutsDictionary): Promise<ServerResponse<ShortcutsDictionary>> {
-    return await this.serverAPI.callPluginMethod<{ shortcuts: ShortcutsDictionary }, ShortcutsDictionary>("setShortcuts", { shortcuts: shortcuts });
+  static async setShortcuts(
+    shortcuts: ShortcutsDictionary,
+  ): Promise<ServerResponse<ShortcutsDictionary>> {
+    return await this.serverAPI.callPluginMethod<
+      { shortcuts: ShortcutsDictionary },
+      ShortcutsDictionary
+    >("setShortcuts", { shortcuts: shortcuts });
   }
 
   /**
@@ -120,8 +155,13 @@ export class PyInterop {
    * @param shortcut The shortcut to update.
    * @returns A promise resolving to a server response containing the updated shortcuts dictionary.
    */
-  static async modShortcut(shortcut: Shortcut): Promise<ServerResponse<ShortcutsDictionary>> {
-    return await this.serverAPI.callPluginMethod<{ shortcut: Shortcut }, ShortcutsDictionary>("modShortcut", { shortcut: shortcut });
+  static async modShortcut(
+    shortcut: Shortcut,
+  ): Promise<ServerResponse<ShortcutsDictionary>> {
+    return await this.serverAPI.callPluginMethod<
+      { shortcut: Shortcut },
+      ShortcutsDictionary
+    >("modShortcut", { shortcut: shortcut });
   }
 
   /**
@@ -129,8 +169,13 @@ export class PyInterop {
    * @param shortcut The shortcut to remove.
    * @returns A promise resolving to a server response containing the updated shortcuts dictionary.
    */
-  static async remShortcut(shortcut: Shortcut): Promise<ServerResponse<ShortcutsDictionary>> {
-    return await this.serverAPI.callPluginMethod<{ shortcut: Shortcut }, ShortcutsDictionary>("remShortcut", { shortcut: shortcut });
+  static async remShortcut(
+    shortcut: Shortcut,
+  ): Promise<ServerResponse<ShortcutsDictionary>> {
+    return await this.serverAPI.callPluginMethod<
+      { shortcut: Shortcut },
+      ShortcutsDictionary
+    >("remShortcut", { shortcut: shortcut });
   }
 
   /**
@@ -138,8 +183,14 @@ export class PyInterop {
    * @param shortcutId The id of the shortcut to run.
    * @param flags Optional tuple array of flags to pass to the shortcut.
    */
-  static async runNonAppShortcut(shortcutId: string, flags: [string, string][]): Promise<ServerResponse<void>> {
-    const successful = await this.serverAPI.callPluginMethod<{ shortcutId: string, flags: [string, string][] }, void>("runNonAppShortcut", { shortcutId: shortcutId, flags: flags });
+  static async runNonAppShortcut(
+    shortcutId: string,
+    flags: [string, string][],
+  ): Promise<ServerResponse<void>> {
+    const successful = await this.serverAPI.callPluginMethod<
+      { shortcutId: string; flags: [string, string][] },
+      void
+    >("runNonAppShortcut", { shortcutId: shortcutId, flags: flags });
     return successful;
   }
 
@@ -147,8 +198,13 @@ export class PyInterop {
    * Kills a non app shortcut.
    * @param shortcutId The id of the shortcut to kill.
    */
-  static async killNonAppShortcut(shortcutId: string): Promise<ServerResponse<void>> {
-    const successful = await this.serverAPI.callPluginMethod<{ shortcutId: string }, void>("killNonAppShortcut", { shortcutId: shortcutId });
+  static async killNonAppShortcut(
+    shortcutId: string,
+  ): Promise<ServerResponse<void>> {
+    const successful = await this.serverAPI.callPluginMethod<
+      { shortcutId: string },
+      void
+    >("killNonAppShortcut", { shortcutId: shortcutId });
     return successful;
   }
 }

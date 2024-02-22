@@ -20,13 +20,15 @@ export enum Hook {
   GAME_ACHIEVEMENT_UNLOCKED = "Game Achievement Unlocked",
   SCREENSHOT_TAKEN = "Screenshot Taken",
   DECK_SHUTDOWN = "Deck Shutdown",
-  DECK_SLEEP = "Deck Sleep"
+  DECK_SLEEP = "Deck Sleep",
 }
 
-export const hookAsOptions = Object.values(Hook).map((entry) => { return { label: entry, data: entry } });
+export const hookAsOptions = Object.values(Hook).map((entry) => {
+  return { label: entry, data: entry };
+});
 
-type HooksDict = { [key in Hook]: Set<string> }
-type RegisteredDict = { [key in Hook]: Unregisterer }
+type HooksDict = { [key in Hook]: Set<string> };
+type RegisteredDict = { [key in Hook]: Unregisterer };
 
 /**
  * Controller for handling hook events.
@@ -49,7 +51,12 @@ export class HookController {
    * @param webSocketClient The WebSocketClient to use.
    * @param state The plugin state.
    */
-  constructor(steamController: SteamController, instancesController: InstancesController, webSocketClient: WebSocketClient, state: ShortcutsState) {
+  constructor(
+    steamController: SteamController,
+    instancesController: InstancesController,
+    webSocketClient: WebSocketClient,
+    state: ShortcutsState,
+  ) {
     this.state = state;
     this.steamController = steamController;
     this.instancesController = instancesController;
@@ -105,7 +112,7 @@ export class HookController {
    */
   updateHooks(shortcut: Shortcut) {
     const shortcutHooks = shortcut.hooks;
-    
+
     for (const h of Object.keys(this.shortcutHooks)) {
       const hook = h as Hook;
       const registeredHooks = this.shortcutHooks[hook];
@@ -125,7 +132,9 @@ export class HookController {
    */
   private registerHook(shortcut: Shortcut, hook: Hook): void {
     this.shortcutHooks[hook].add(shortcut.id);
-    PyInterop.log(`Registered hook: ${hook} for shortcut: ${shortcut.name} Id: ${shortcut.id}`);
+    PyInterop.log(
+      `Registered hook: ${hook} for shortcut: ${shortcut.name} Id: ${shortcut.id}`,
+    );
   }
 
   /**
@@ -147,59 +156,87 @@ export class HookController {
    */
   private unregisterHook(shortcut: Shortcut, hook: Hook): void {
     this.shortcutHooks[hook].delete(shortcut.id);
-    PyInterop.log(`Unregistered hook: ${hook} for shortcut: ${shortcut.name} Id: ${shortcut.id}`);
+    PyInterop.log(
+      `Unregistered hook: ${hook} for shortcut: ${shortcut.name} Id: ${shortcut.id}`,
+    );
   }
 
-  private async runShortcuts(hook: Hook, flags: { [flag: string ]: string }): Promise<void> {
+  private async runShortcuts(
+    hook: Hook,
+    flags: { [flag: string]: string },
+  ): Promise<void> {
     flags["h"] = hook;
 
     for (const shortcutId of this.shortcutHooks[hook].values()) {
       if (!this.checkIfRunning(shortcutId)) {
         const shortcut = this.getShortcutById(shortcutId);
-        const createdInstance = await this.instancesController.createInstance(shortcut);
+        const createdInstance =
+          await this.instancesController.createInstance(shortcut);
 
         if (createdInstance) {
-          PyInterop.log(`Created Instance for shortcut { Id: ${shortcut.id}, Name: ${shortcut.name} } on hook: ${hook}`);
-          const didLaunch = await this.instancesController.launchInstance(shortcut.id, async () => {
-            if (this.checkIfRunning(shortcut.id) && shortcut.isApp) {
-              this.setIsRunning(shortcut.id, false);
-              const killRes = await this.instancesController.killInstance(shortcut.id);
-              if (killRes) {
-                Navigation.Navigate("/library/home");
-                Navigation.CloseSideMenus();
-              } else {
-                PyInterop.toast("Error", "Failed to kill shortcut.");
+          PyInterop.log(
+            `Created Instance for shortcut { Id: ${shortcut.id}, Name: ${shortcut.name} } on hook: ${hook}`,
+          );
+          const didLaunch = await this.instancesController.launchInstance(
+            shortcut.id,
+            async () => {
+              if (this.checkIfRunning(shortcut.id) && shortcut.isApp) {
+                this.setIsRunning(shortcut.id, false);
+                const killRes = await this.instancesController.killInstance(
+                  shortcut.id,
+                );
+                if (killRes) {
+                  Navigation.Navigate("/library/home");
+                  Navigation.CloseSideMenus();
+                } else {
+                  PyInterop.toast("Error", "Failed to kill shortcut.");
+                }
               }
-            }
-          }, flags);
-          
+            },
+            flags,
+          );
+
           if (!didLaunch) {
-            PyInterop.log(`Failed to launch instance for shortcut { Id: ${shortcut.id}, Name: ${shortcut.name} } on hook: ${hook}`);
+            PyInterop.log(
+              `Failed to launch instance for shortcut { Id: ${shortcut.id}, Name: ${shortcut.name} } on hook: ${hook}`,
+            );
           } else {
             if (!shortcut.isApp) {
-              PyInterop.log(`Registering for WebSocket messages of type: ${shortcut.id} on hook: ${hook}...`);
-    
+              PyInterop.log(
+                `Registering for WebSocket messages of type: ${shortcut.id} on hook: ${hook}...`,
+              );
+
               this.webSocketClient.on(shortcut.id, (data: any) => {
                 if (data.type == "end") {
                   if (data.status == 0) {
-                    PyInterop.toast(shortcut.name, "Shortcut execution finished.");
+                    PyInterop.toast(
+                      shortcut.name,
+                      "Shortcut execution finished.",
+                    );
                   } else {
-                    PyInterop.toast(shortcut.name, "Shortcut execution was canceled.");
+                    PyInterop.toast(
+                      shortcut.name,
+                      "Shortcut execution was canceled.",
+                    );
                   }
-    
+
                   this.setIsRunning(shortcut.id, false);
                 }
               });
             }
-            
+
             this.setIsRunning(shortcut.id, true);
           }
         } else {
           PyInterop.toast("Error", "Shortcut failed. Check the command.");
-          PyInterop.log(`Failed to create instance for shortcut { Id: ${shortcut.id}, Name: ${shortcut.name} } on hook: ${hook}`);
+          PyInterop.log(
+            `Failed to create instance for shortcut { Id: ${shortcut.id}, Name: ${shortcut.name} } on hook: ${hook}`,
+          );
         }
       } else {
-        PyInterop.log(`Skipping hook: ${hook} for shortcut: ${shortcutId} because it was already running.`);
+        PyInterop.log(
+          `Skipping hook: ${hook} for shortcut: ${shortcutId} because it was already running.`,
+        );
       }
     }
   }
@@ -208,67 +245,135 @@ export class HookController {
    * Sets up all of the hooks for the plugin.
    */
   liten(): void {
-    this.registeredHooks[Hook.LOG_IN] = this.steamController.registerForAuthStateChange(async (username: string) => {
-      this.runShortcuts(Hook.LOG_IN, { "u": username});
-    }, null, false);
+    this.registeredHooks[Hook.LOG_IN] =
+      this.steamController.registerForAuthStateChange(
+        async (username: string) => {
+          this.runShortcuts(Hook.LOG_IN, { u: username });
+        },
+        null,
+        false,
+      );
 
-    this.registeredHooks[Hook.LOG_OUT] = this.steamController.registerForAuthStateChange(null, async (username: string) => {
-      this.runShortcuts(Hook.LOG_IN, { "u": username });
-    }, false);
+    this.registeredHooks[Hook.LOG_OUT] =
+      this.steamController.registerForAuthStateChange(
+        null,
+        async (username: string) => {
+          this.runShortcuts(Hook.LOG_IN, { u: username });
+        },
+        false,
+      );
 
-    this.registeredHooks[Hook.GAME_START] = this.steamController.registerForAllAppLifetimeNotifications((appId: number, data: LifetimeNotification) => {
-      if (data.bRunning && (collectionStore.allAppsCollection.apps.has(appId) || collectionStore.deckDesktopApps.apps.has(appId))) {
-        const app = collectionStore.allAppsCollection.apps.get(appId) ?? collectionStore.deckDesktopApps.apps.get(appId);
-        if (app) {
-          this.runShortcuts(Hook.GAME_START, { "i": appId.toString(), "n": app.display_name });
-        }
-      }
-    });
+    this.registeredHooks[Hook.GAME_START] =
+      this.steamController.registerForAllAppLifetimeNotifications(
+        (appId: number, data: LifetimeNotification) => {
+          if (
+            data.bRunning &&
+            (collectionStore.allAppsCollection.apps.has(appId) ||
+              collectionStore.deckDesktopApps.apps.has(appId))
+          ) {
+            const app =
+              collectionStore.allAppsCollection.apps.get(appId) ??
+              collectionStore.deckDesktopApps.apps.get(appId);
+            if (app) {
+              this.runShortcuts(Hook.GAME_START, {
+                i: appId.toString(),
+                n: app.display_name,
+              });
+            }
+          }
+        },
+      );
 
-    this.registeredHooks[Hook.GAME_END] = this.steamController.registerForAllAppLifetimeNotifications((appId: number, data: LifetimeNotification) => {
-      if (!data.bRunning && (collectionStore.allAppsCollection.apps.has(appId) || collectionStore.deckDesktopApps.apps.has(appId))) {
-        const app = collectionStore.allAppsCollection.apps.get(appId) ?? collectionStore.deckDesktopApps.apps.get(appId);
-        if (app) {
-          this.runShortcuts(Hook.GAME_END, { "i": appId.toString(), "n": app.display_name });
-        }
-      }
-    });
+    this.registeredHooks[Hook.GAME_END] =
+      this.steamController.registerForAllAppLifetimeNotifications(
+        (appId: number, data: LifetimeNotification) => {
+          if (
+            !data.bRunning &&
+            (collectionStore.allAppsCollection.apps.has(appId) ||
+              collectionStore.deckDesktopApps.apps.has(appId))
+          ) {
+            const app =
+              collectionStore.allAppsCollection.apps.get(appId) ??
+              collectionStore.deckDesktopApps.apps.get(appId);
+            if (app) {
+              this.runShortcuts(Hook.GAME_END, {
+                i: appId.toString(),
+                n: app.display_name,
+              });
+            }
+          }
+        },
+      );
 
-    this.registeredHooks[Hook.GAME_INSTALL] = this.steamController.registerForGameInstall((appData: SteamAppOverview) => {
-      this.runShortcuts(Hook.GAME_INSTALL, { "i": appData.appid.toString(), "n": appData.display_name });
-    });
+    this.registeredHooks[Hook.GAME_INSTALL] =
+      this.steamController.registerForGameInstall(
+        (appData: SteamAppOverview) => {
+          this.runShortcuts(Hook.GAME_INSTALL, {
+            i: appData.appid.toString(),
+            n: appData.display_name,
+          });
+        },
+      );
 
-    this.registeredHooks[Hook.GAME_UPDATE] = this.steamController.registerForGameUpdate((appData: SteamAppOverview) => {
-      this.runShortcuts(Hook.GAME_UPDATE, { "i": appData.appid.toString(), "n": appData.display_name });
-    });
+    this.registeredHooks[Hook.GAME_UPDATE] =
+      this.steamController.registerForGameUpdate(
+        (appData: SteamAppOverview) => {
+          this.runShortcuts(Hook.GAME_UPDATE, {
+            i: appData.appid.toString(),
+            n: appData.display_name,
+          });
+        },
+      );
 
-    this.registeredHooks[Hook.GAME_UNINSTALL] = this.steamController.registerForGameUninstall((appData: SteamAppOverview) => {
-      this.runShortcuts(Hook.GAME_UNINSTALL, { "i": appData.appid.toString(), "n": appData.display_name });
-    });
-    
-    this.registeredHooks[Hook.GAME_ACHIEVEMENT_UNLOCKED] = this.steamController.registerForGameAchievementNotification((data: AchievementNotification) => {
-      const appId = data.unAppID;
-      const app = collectionStore.localGamesCollection.apps.get(appId);
-      if (app) {
-        this.runShortcuts(Hook.GAME_ACHIEVEMENT_UNLOCKED, { "i": appId.toString(), "n": app.display_name, "a": data.achievement.strName });
-      }
-    });
+    this.registeredHooks[Hook.GAME_UNINSTALL] =
+      this.steamController.registerForGameUninstall(
+        (appData: SteamAppOverview) => {
+          this.runShortcuts(Hook.GAME_UNINSTALL, {
+            i: appData.appid.toString(),
+            n: appData.display_name,
+          });
+        },
+      );
 
-    this.registeredHooks[Hook.SCREENSHOT_TAKEN] = this.steamController.registerForScreenshotNotification((data: ScreenshotNotification) => {
-      const appId = data.unAppID;
-      const app = collectionStore.localGamesCollection.apps.get(appId);
-      if (app) {
-        this.runShortcuts(Hook.GAME_ACHIEVEMENT_UNLOCKED, { "i": appId.toString(), "n": app.display_name, "p": data.details.strUrl });
-      }
-    });
+    this.registeredHooks[Hook.GAME_ACHIEVEMENT_UNLOCKED] =
+      this.steamController.registerForGameAchievementNotification(
+        (data: AchievementNotification) => {
+          const appId = data.unAppID;
+          const app = collectionStore.localGamesCollection.apps.get(appId);
+          if (app) {
+            this.runShortcuts(Hook.GAME_ACHIEVEMENT_UNLOCKED, {
+              i: appId.toString(),
+              n: app.display_name,
+              a: data.achievement.strName,
+            });
+          }
+        },
+      );
 
-    this.registeredHooks[Hook.DECK_SLEEP] = this.steamController.registerForSleepStart(() => {
-      this.runShortcuts(Hook.DECK_SLEEP, {});
-    });
+    this.registeredHooks[Hook.SCREENSHOT_TAKEN] =
+      this.steamController.registerForScreenshotNotification(
+        (data: ScreenshotNotification) => {
+          const appId = data.unAppID;
+          const app = collectionStore.localGamesCollection.apps.get(appId);
+          if (app) {
+            this.runShortcuts(Hook.GAME_ACHIEVEMENT_UNLOCKED, {
+              i: appId.toString(),
+              n: app.display_name,
+              p: data.details.strUrl,
+            });
+          }
+        },
+      );
 
-    this.registeredHooks[Hook.DECK_SHUTDOWN] = this.steamController.registerForShutdownStart(() => {
-      this.runShortcuts(Hook.DECK_SHUTDOWN, {});
-    });
+    this.registeredHooks[Hook.DECK_SLEEP] =
+      this.steamController.registerForSleepStart(() => {
+        this.runShortcuts(Hook.DECK_SLEEP, {});
+      });
+
+    this.registeredHooks[Hook.DECK_SHUTDOWN] =
+      this.steamController.registerForShutdownStart(() => {
+        this.runShortcuts(Hook.DECK_SHUTDOWN, {});
+      });
   }
 
   /**
