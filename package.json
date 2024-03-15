@@ -1,6 +1,6 @@
 {
   "name": "bash-shortcuts",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "A plugin for creating and managing shortcuts that can be launched from the Quick Access Menu. Uses bash to run shortcuts, hence the name.",
   "scripts": {
     "build": "shx rm -rf dist && rollup -c",
