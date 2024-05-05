@@ -24,6 +24,12 @@
     "name": "Tormak",
     "email": "Tormak9970@gmail.com"
   },
+  "contributors": [
+    {
+      "name": "JediRhymeTrix",
+      "url": "https://github.com/JediRhymeTrix"
+    }
+  ],
   "license": "GPL-2.0-or-later",
   "bugs": {
     "url": "https://github.com/Tormak9970/bash-shortcuts/issues"
