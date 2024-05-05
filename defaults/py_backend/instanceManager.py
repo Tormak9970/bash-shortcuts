@@ -25,7 +25,7 @@ class Instance:
       command.append(f"-{flag[0]}")
       command.append(flag[1])
 
-    self.shortcutProcess = subprocess.Popen(command, shell=True) # , stdout=subprocess.PIPE
+    self.shortcutProcess = subprocess.Popen(' '.join(command), shell=True) # , stdout=subprocess.PIPE
     log(f"Ran process for shortcut {self.shortcut['name']} Id: {self.shortcut['id']}. Attempting to fetch status")
     status = self._getProcessStatus()
     log(f"Status for command was {status}. Name: {self.shortcut['name']} Id: {self.shortcut['id']}")
