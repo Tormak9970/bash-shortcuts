@@ -1,10 +1,10 @@
 import { createContext, FC, useContext, useEffect, useState } from "react";
-import { Shortcut } from "../lib/data-structures/Shortcut"
+import { Shortcut } from "../lib/data-structures/Shortcut";
 import { ReorderableEntry } from "decky-frontend-lib";
 
 type ShortcutsDictionary = {
-  [key: string]: Shortcut
-}
+  [key: string]: Shortcut;
+};
 
 interface PublicShortcutsState {
   shortcuts: ShortcutsDictionary;
@@ -34,13 +34,13 @@ export class ShortcutsState {
 
   getPublicState() {
     return {
-      "shortcuts": this.shortcuts,
-      "shortcutsList": this.shortcutsList,
-      "runningShortcuts": this.runningShortcuts,
-      "reorderableShortcuts": this.reorderableShortcuts,
-      "currentGame": this.currentGame,
-      "gameRunning": this.gameRunning
-    }
+      shortcuts: this.shortcuts,
+      shortcutsList: this.shortcutsList,
+      runningShortcuts: this.runningShortcuts,
+      reorderableShortcuts: this.reorderableShortcuts,
+      currentGame: this.currentGame,
+      gameRunning: this.gameRunning,
+    };
   }
 
   setIsRunning(shortcutId: string, value: boolean): void {
@@ -69,16 +69,18 @@ export class ShortcutsState {
 
   setShortcuts(shortcuts: ShortcutsDictionary): void {
     this.shortcuts = shortcuts;
-    this.shortcutsList = Object.values(this.shortcuts).sort((a, b) => a.position - b.position);
+    this.shortcutsList = Object.values(this.shortcuts).sort(
+      (a, b) => a.position - b.position,
+    );
     this.reorderableShortcuts = [];
 
     for (let i = 0; i < this.shortcutsList.length; i++) {
       const shortcut = this.shortcutsList[i];
       this.reorderableShortcuts[i] = {
-        "label": shortcut.name,
-        "data": shortcut,
-        "position": shortcut.position
-      }
+        label: shortcut.name,
+        data: shortcut,
+        position: shortcut.position,
+      };
     }
 
     this.reorderableShortcuts.sort((a, b) => a.position - b.position);
@@ -95,15 +97,15 @@ const ShortcutsContext = createContext<PublicShortcutsContext>(null as any);
 export const useShortcutsState = () => useContext(ShortcutsContext);
 
 interface ProviderProps {
-  shortcutsStateClass: ShortcutsState
+  shortcutsStateClass: ShortcutsState;
 }
 
 export const ShortcutsContextProvider: FC<ProviderProps> = ({
   children,
-  shortcutsStateClass
+  shortcutsStateClass,
 }) => {
   const [publicState, setPublicState] = useState<PublicShortcutsState>({
-    ...shortcutsStateClass.getPublicState()
+    ...shortcutsStateClass.getPublicState(),
   });
 
   useEffect(() => {
@@ -111,30 +113,28 @@ export const ShortcutsContextProvider: FC<ProviderProps> = ({
       setPublicState({ ...shortcutsStateClass.getPublicState() });
     }
 
-    shortcutsStateClass.eventBus
-      .addEventListener("stateUpdate", onUpdate);
+    shortcutsStateClass.eventBus.addEventListener("stateUpdate", onUpdate);
 
     return () => {
-      shortcutsStateClass.eventBus
-        .removeEventListener("stateUpdate", onUpdate);
-    }
+      shortcutsStateClass.eventBus.removeEventListener("stateUpdate", onUpdate);
+    };
   }, []);
 
   const setShortcuts = (shortcuts: ShortcutsDictionary) => {
     shortcutsStateClass.setShortcuts(shortcuts);
-  }
+  };
 
   const setIsRunning = (shortcutId: string, value: boolean) => {
     shortcutsStateClass.setIsRunning(shortcutId, value);
-  }
+  };
 
   const setCurrentGame = (overview: SteamAppOverview | null) => {
     shortcutsStateClass.setCurrentGame(overview);
-  }
+  };
 
   const setGameRunning = (isRunning: boolean) => {
     shortcutsStateClass.setGameRunning(isRunning);
-  }
+  };
 
   return (
     <ShortcutsContext.Provider
@@ -143,10 +143,10 @@ export const ShortcutsContextProvider: FC<ProviderProps> = ({
         setShortcuts,
         setIsRunning,
         setCurrentGame,
-        setGameRunning
+        setGameRunning,
       }}
     >
       {children}
     </ShortcutsContext.Provider>
-  )
-}
+  );
+};

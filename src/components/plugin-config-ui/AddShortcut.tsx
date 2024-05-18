@@ -1,5 +1,14 @@
-import { Field, PanelSection, PanelSectionRow, TextField, ButtonItem, quickAccessControlsClasses, ToggleField, DropdownOption } from "decky-frontend-lib"
-import { Fragment, useState, useEffect, VFC } from "react"
+import {
+  Field,
+  PanelSection,
+  PanelSectionRow,
+  TextField,
+  ButtonItem,
+  quickAccessControlsClasses,
+  ToggleField,
+  DropdownOption,
+} from "decky-frontend-lib";
+import { Fragment, useState, useEffect, VFC } from "react";
 import { PyInterop } from "../../PyInterop";
 import { Shortcut } from "../../lib/data-structures/Shortcut";
 
@@ -15,15 +24,23 @@ import { PluginController } from "../../lib/controllers/PluginController";
  */
 export const AddShortcut: VFC = () => {
   const { shortcuts, setShortcuts, shortcutsList } = useShortcutsState();
-  const [ ableToSave, setAbleToSave ] = useState(false);
-  const [ name, setName ] = useState<string>("");
-  const [ cmd, setCmd ] = useState<string>("");
-  const [ isApp, setIsApp ] = useState<boolean>(true);
-  const [ passFlags, setPassFlags ] = useState<boolean>(false);
-  const [ hooks, setHooks ] = useState<Hook[]>([]);
+  const [ableToSave, setAbleToSave] = useState(false);
+  const [name, setName] = useState<string>("");
+  const [cmd, setCmd] = useState<string>("");
+  const [isApp, setIsApp] = useState<boolean>(true);
+  const [passFlags, setPassFlags] = useState<boolean>(false);
+  const [hooks, setHooks] = useState<Hook[]>([]);
 
   function saveShortcut() {
-    const newShort = new Shortcut(uuidv4(), name, cmd, shortcutsList.length + 1, isApp, passFlags, hooks);
+    const newShort = new Shortcut(
+      uuidv4(),
+      name,
+      cmd,
+      shortcutsList.length + 1,
+      isApp,
+      passFlags,
+      hooks,
+    );
     PyInterop.addShortcut(newShort);
     PluginController.updateHooks(newShort);
     setName("");
@@ -37,7 +54,7 @@ export const AddShortcut: VFC = () => {
 
   useEffect(() => {
     setAbleToSave(name != "" && cmd != "");
-  }, [name, cmd])
+  }, [name, cmd]);
 
   return (
     <>
@@ -55,9 +72,11 @@ export const AddShortcut: VFC = () => {
               label="Shortcut Name"
               description={
                 <TextField
-                  label={'Name'}
+                  label={"Name"}
                   value={name}
-                  onChange={(e) => { setName(e?.target.value); }}
+                  onChange={(e) => {
+                    setName(e?.target.value);
+                  }}
                 />
               }
             />
@@ -67,9 +86,11 @@ export const AddShortcut: VFC = () => {
               label="Shortcut Command"
               description={
                 <TextField
-                  label={'Command'}
+                  label={"Command"}
                   value={cmd}
-                  onChange={(e) => { setCmd(e?.target.value); }}
+                  onChange={(e) => {
+                    setCmd(e?.target.value);
+                  }}
                 />
               }
             />
@@ -87,13 +108,15 @@ export const AddShortcut: VFC = () => {
           <PanelSectionRow>
             <ToggleField
               label="Does this shortcut use flags?"
-              onChange={(e) => { setPassFlags(e); }}
+              onChange={(e) => {
+                setPassFlags(e);
+              }}
               checked={passFlags}
               disabled={isApp}
             />
           </PanelSectionRow>
           <PanelSectionRow>
-            <Field 
+            <Field
               label="Hooks"
               highlightOnFocus={false}
               description={
@@ -101,13 +124,20 @@ export const AddShortcut: VFC = () => {
                   label="Select a hook"
                   options={hookAsOptions}
                   selected={[]}
-                  onChange={(selected:DropdownOption[]) => { setHooks(selected.map((s) => s.label as Hook)); }}
+                  onChange={(selected: DropdownOption[]) => {
+                    setHooks(selected.map((s) => s.label as Hook));
+                  }}
                 />
               }
             />
           </PanelSectionRow>
           <PanelSectionRow>
-            <ButtonItem layout="below" onClick={saveShortcut} disabled={!ableToSave} bottomSeparator='none'>
+            <ButtonItem
+              layout="below"
+              onClick={saveShortcut}
+              disabled={!ableToSave}
+              bottomSeparator="none"
+            >
               Save
             </ButtonItem>
           </PanelSectionRow>
@@ -115,4 +145,4 @@ export const AddShortcut: VFC = () => {
       </div>
     </>
   );
-}
+};

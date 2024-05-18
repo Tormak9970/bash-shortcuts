@@ -22,7 +22,15 @@ export class Shortcut {
    * @param passFlags Whether the shortcut takes flags or not.
    * @param hooks The list of hooks for this shortcut.
    */
-  constructor(id: string, name: string, cmd: string, position: number, isApp: boolean, passFlags: boolean, hooks: Hook[]) {
+  constructor(
+    id: string,
+    name: string,
+    cmd: string,
+    position: number,
+    isApp: boolean,
+    passFlags: boolean,
+    hooks: Hook[],
+  ) {
     this.id = id;
     this.name = name;
     this.cmd = cmd;
@@ -38,6 +46,14 @@ export class Shortcut {
    * @returns A new Shortcut.
    */
   static fromJSON(json: any): Shortcut {
-    return new Shortcut(json.id, json.name, json.cmd, json.position, json.isApp, json.passFlags, json.hooks);
+    return new Shortcut(
+      json.id,
+      json.name,
+      json.cmd,
+      json.position,
+      json.isApp,
+      json.passFlags,
+      json.hooks,
+    );
   }
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import { PyInterop } from "../../../../PyInterop";
 
 /**
@@ -7,7 +7,10 @@ import { PyInterop } from "../../../../PyInterop";
  * @param def The default value of the setting.
  * @returns A React state for the setting.
  */
-export function useSetting<T>(key: string, def: T): [value: T, setValue: (value: T) => Promise<void>] {
+export function useSetting<T>(
+  key: string,
+  def: T,
+): [value: T, setValue: (value: T) => Promise<void>] {
   const [value, setValue] = useState(def);
 
   useEffect(() => {

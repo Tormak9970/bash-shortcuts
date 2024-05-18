@@ -1,4 +1,4 @@
-import { findModuleChild, sleep } from 'decky-frontend-lib';
+import { findModuleChild, sleep } from "decky-frontend-lib";
 
 /**
  * Waits for a condition to be true.
@@ -7,7 +7,11 @@ import { findModuleChild, sleep } from 'decky-frontend-lib';
  * @param check The condition to check.
  * @returns A promise resolving to true if the check was true on any attempt, or false if it failed each time.
  */
-export async function waitForCondition(retries: number, delay: number, check: () => (boolean | Promise<boolean>)): Promise<boolean> {
+export async function waitForCondition(
+  retries: number,
+  delay: number,
+  check: () => boolean | Promise<boolean>,
+): Promise<boolean> {
   const waitImpl = async (): Promise<boolean> => {
     try {
       let tries = retries + 1;
@@ -36,7 +40,7 @@ export async function waitForCondition(retries: number, delay: number, check: ()
 export const History = findModuleChild((m) => {
   if (typeof m !== "object") return undefined;
   for (let prop in m) {
-    if (m[prop]?.m_history) return m[prop].m_history
+    if (m[prop]?.m_history) return m[prop].m_history;
   }
 });
 
@@ -47,17 +51,18 @@ export const History = findModuleChild((m) => {
  * @param immediate Wether the function should run immediately.
  * @returns A debounced version of the function.
  */
-export function debounce(func:Function, wait:number, immediate?:boolean) {
-  let timeout:NodeJS.Timeout|null;
-  return function (this:any) {
-      const context = this, args = arguments;
-      const later = function () {
-          timeout = null;
-          if (!immediate) func.apply(context, args);
-      };
-      const callNow = immediate && !timeout;
-      clearTimeout(timeout as NodeJS.Timeout);
-      timeout = setTimeout(later, wait);
-      if (callNow) func.apply(context, args);
+export function debounce(func: Function, wait: number, immediate?: boolean) {
+  let timeout: NodeJS.Timeout | null;
+  return function (this: any) {
+    const context = this,
+      args = arguments;
+    const later = function () {
+      timeout = null;
+      if (!immediate) func.apply(context, args);
+    };
+    const callNow = immediate && !timeout;
+    clearTimeout(timeout as NodeJS.Timeout);
+    timeout = setTimeout(later, wait);
+    if (callNow) func.apply(context, args);
   };
-};
+}
