@@ -105,7 +105,7 @@ export class HookController {
    */
   updateHooks(shortcut: Shortcut) {
     const shortcutHooks = shortcut.hooks;
-    
+
     for (const h of Object.keys(this.shortcutHooks)) {
       const hook = h as Hook;
       const registeredHooks = this.shortcutHooks[hook];
@@ -150,7 +150,7 @@ export class HookController {
     PyInterop.log(`Unregistered hook: ${hook} for shortcut: ${shortcut.name} Id: ${shortcut.id}`);
   }
 
-  private async runShortcuts(hook: Hook, flags: { [flag: string ]: string }): Promise<void> {
+  private async runShortcuts(hook: Hook, flags: { [flag: string]: string }): Promise<void> {
     flags["h"] = hook;
 
     for (const shortcutId of this.shortcutHooks[hook].values()) {
@@ -172,13 +172,13 @@ export class HookController {
               }
             }
           }, flags);
-          
+
           if (!didLaunch) {
             PyInterop.log(`Failed to launch instance for shortcut { Id: ${shortcut.id}, Name: ${shortcut.name} } on hook: ${hook}`);
           } else {
             if (!shortcut.isApp) {
               PyInterop.log(`Registering for WebSocket messages of type: ${shortcut.id} on hook: ${hook}...`);
-    
+
               this.webSocketClient.on(shortcut.id, (data: any) => {
                 if (data.type == "end") {
                   if (data.status == 0) {
@@ -186,12 +186,12 @@ export class HookController {
                   } else {
                     PyInterop.toast(shortcut.name, "Shortcut execution was canceled.");
                   }
-    
+
                   this.setIsRunning(shortcut.id, false);
                 }
               });
             }
-            
+
             this.setIsRunning(shortcut.id, true);
           }
         } else {
@@ -209,7 +209,7 @@ export class HookController {
    */
   liten(): void {
     this.registeredHooks[Hook.LOG_IN] = this.steamController.registerForAuthStateChange(async (username: string) => {
-      this.runShortcuts(Hook.LOG_IN, { "u": username});
+      this.runShortcuts(Hook.LOG_IN, { "u": username });
     }, null, false);
 
     this.registeredHooks[Hook.LOG_OUT] = this.steamController.registerForAuthStateChange(null, async (username: string) => {
@@ -245,7 +245,7 @@ export class HookController {
     this.registeredHooks[Hook.GAME_UNINSTALL] = this.steamController.registerForGameUninstall((appData: SteamAppOverview) => {
       this.runShortcuts(Hook.GAME_UNINSTALL, { "i": appData.appid.toString(), "n": appData.display_name });
     });
-    
+
     this.registeredHooks[Hook.GAME_ACHIEVEMENT_UNLOCKED] = this.steamController.registerForGameAchievementNotification((data: AchievementNotification) => {
       const appId = data.unAppID;
       const app = collectionStore.localGamesCollection.apps.get(appId);
@@ -275,9 +275,13 @@ export class HookController {
    * Dismounts the HooksController.
    */
   dismount(): void {
-    for (const hook of Object.keys(this.registeredHooks)) {
-      this.registeredHooks[hook].unregister();
-      PyInterop.log(`Unregistered hook: ${hook}`);
+    for (const h of Object.keys(this.registeredHooks)) {
+      const hook = h as Hook;
+      const registeredHook = this.registeredHooks[hook];
+      if (registeredHook) {
+        this.registeredHooks[hook].unregister();
+        PyInterop.log(`Unregistered hook: ${hook}`);
+      }
     }
   }
 }
