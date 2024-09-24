@@ -1,3 +1,5 @@
+**IMPORTANT**: Bash Shortcuts has a new home with SDH Stewardship. You can find the repo [here](https://github.com/SDH-Stewardship/bash-shortcuts)
+
 # Bash Shortcuts Plugin
 
 A plugin for creating and managing shortcuts that can be launched from the Quick Access Menu! Uses bash under the hood to run commands, hence the name.
