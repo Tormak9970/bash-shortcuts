@@ -44,5 +44,8 @@ yalc.lock
 # Ignore output folder
 backend/out
 
+#Ignore built release
+build/
+
 # Custom ignores
 /py_backend

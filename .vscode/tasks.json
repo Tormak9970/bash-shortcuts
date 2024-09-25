@@ -100,6 +100,49 @@
                 "deployall"
             ],
             "problemMatcher": []
+        },
+        // PREPARE RELEASE
+        {
+            "label": "prepare release",
+            "detail": "Prepare release in ./build folder",
+            "type": "shell",
+            "dependsOn": [
+                "buildall"
+            ],
+            "dependsOrder": "sequence",
+            "command": "bash",
+            "args": [
+                "-c",
+                "chmod +x \"${workspaceFolder}/release.sh\" && \"${workspaceFolder}/release.sh\""
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "PLUGIN_FOLDER_NAME": "bash-shortcuts"
+                }
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "prepare release zip",
+            "detail": "Prepare zipped release in ./build folder",
+            "type": "shell",
+            "dependsOn": [
+                "buildall"
+            ],
+            "dependsOrder": "sequence",
+            "command": "bash",
+            "args": [
+                "-c",
+                "chmod +x \"${workspaceFolder}/release.sh\" && \"${workspaceFolder}/release.sh\" zip"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "PLUGIN_FOLDER_NAME": "bash-shortcuts"
+                }
+            },
+            "problemMatcher": []
         }
-    ]
+   ]
 }
