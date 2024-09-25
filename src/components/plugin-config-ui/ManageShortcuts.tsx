@@ -18,7 +18,7 @@ type ActionButtonProps<T> = {
  * @param props The props for this ActionButton.
  * @returns An ActionButton component.
  */
-const ActionButtion: VFC<ActionButtonProps<Shortcut>> = (props:ActionButtonProps<Shortcut>) => {
+const ActionButtion: VFC<ActionButtonProps<Shortcut>> = (props: ActionButtonProps<Shortcut>) => {
   const { shortcuts, setShortcuts } = useShortcutsState();
 
   function onAction(entryReference: ReorderableEntry<Shortcut>): void {
@@ -70,10 +70,10 @@ type InteractablesProps<T> = {
   entry: ReorderableEntry<T>
 }
 
-const Interactables: VFC<InteractablesProps<Shortcut>> = (props:InteractablesProps<Shortcut>) => {
+const Interactables: VFC<InteractablesProps<Shortcut>> = (props: InteractablesProps<Shortcut>) => {
   return (
     <>
-      <ActionButtion  entry={props.entry} />
+      <ActionButtion entry={props.entry} />
     </>
   );
 }
@@ -93,14 +93,16 @@ export const ManageShortcuts: VFC = () => {
   }
 
   function onSave(entries: ReorderableEntry<Shortcut>[]) {
-    const data = {};
+    const data: { [key: string]: Shortcut & { position: number } } = {};
 
     for (const entry of entries) {
-      data[entry.data!.id] = {...entry.data, "position": entry.position}
+      if (entry.data) {
+        data[entry.data.id] = { ...entry.data, "position": entry.position }
+      }
     }
 
     setShortcuts(data);
-    
+
     PyInterop.log("Reordered shortcuts.");
     PyInterop.setShortcuts(data as ShortcutsDictionary);
   }

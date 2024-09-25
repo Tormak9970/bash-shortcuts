@@ -136,6 +136,10 @@ export const ShortcutsContextProvider: FC<ProviderProps> = ({
     shortcutsStateClass.setGameRunning(isRunning);
   }
 
+  if (!shortcutsStateClass) {
+    return <div></div>
+  }
+
   return (
     <ShortcutsContext.Provider
       value={{

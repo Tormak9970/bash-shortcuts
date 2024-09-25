@@ -11,7 +11,7 @@ export class ShortcutsController {
    * Creates a new ShortcutsController.
    * @param steamController The SteamController used by this class.
    */
-  constructor(steamController:SteamController) {
+  constructor(steamController: SteamController) {
     this.steamController = steamController;
   }
 
@@ -36,7 +36,7 @@ export class ShortcutsController {
    * @param name The name of the shortcut to get.
    * @returns A promise resolving to the shortcut with the provided name, or null.
    */
-  async getShortcut(name:string): Promise<SteamAppDetails | null> {
+  async getShortcut(name: string): Promise<SteamAppDetails | null> {
     const res = await this.steamController.getShortcut(name);
 
     if (res) {
@@ -55,7 +55,7 @@ export class ShortcutsController {
     const shortcutsArr = await this.steamController.getShortcut(name) as SteamAppDetails[];
     return shortcutsArr.length > 0;
   }
-  
+
   /**
    * Checks if a shortcut exists.
    * @param appId The id of the shortcut to check for.
@@ -149,7 +149,8 @@ export class ShortcutsController {
    * @returns A promise resolving to true if the shortcut was successfully deleted.
    */
   async removeShortcut(name: string): Promise<boolean> {
-    const shortcut = await this.steamController.getShortcut(name)[0] as SteamAppDetails;
+    const shortcuts = await this.steamController.getShortcut(name);
+    const shortcut = shortcuts && shortcuts.length > 0 ? shortcuts[0] as SteamAppDetails : undefined;
     if (shortcut) {
       return await this.steamController.removeShortcut(shortcut.unAppID);
     } else {

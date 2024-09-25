@@ -62,7 +62,8 @@
     "peerDependencyRules": {
       "ignoreMissing": [
         "react",
-        "react-dom"
+        "react-dom",
+        "decky-frontend-lib"
       ]
     }
   }

@@ -6,12 +6,12 @@ import {
   PanelSection,
   PanelSectionRow,
   quickAccessControlsClasses,
+  quickAccessMenuClasses,
   ServerAPI,
   ServerResponse,
   SidebarNavigation,
-  staticClasses,
 } from "decky-frontend-lib";
-import { VFC, Fragment, useRef } from "react";
+import { VFC, Fragment, useRef, useState } from "react";
 import { IoApps, IoSettingsSharp } from "react-icons/io5";
 import { HiViewGridAdd } from "react-icons/hi";
 import { FaEdit } from "react-icons/fa";
@@ -35,16 +35,19 @@ declare global {
 }
 
 const Content: VFC<{ serverAPI: ServerAPI }> = ({ }) => {
-  const { shortcuts, setShortcuts, shortcutsList } = useShortcutsState();
+  const { setShortcuts, shortcutsList } = useShortcutsState();
+  const [isLoading, setLoading] = useState<Boolean>(true);
   const tries = useRef(0);
+  const triesMax = 10;
 
   async function reload(): Promise<void> {
     await PyInterop.getShortcuts().then((res) => {
       setShortcuts(res.result as ShortcutsDictionary);
+      setLoading(false);
     });
   }
 
-  if (Object.values(shortcuts as ShortcutsDictionary).length === 0 && tries.current < 10) {
+  if (isLoading && tries.current < triesMax) {
     reload();
     tries.current++;
   }
@@ -76,39 +79,43 @@ const Content: VFC<{ serverAPI: ServerAPI }> = ({ }) => {
         }
       `}</style>
       <div className="bash-shortcuts-scope">
-        <PanelSection>
-          <PanelSectionRow>
-            <ButtonItem layout="below" onClick={() => { Navigation.CloseSideMenus(); Navigation.Navigate("/bash-shortcuts-config"); }} >
-              Plugin Config
-            </ButtonItem>
-          </PanelSectionRow>
-          {
-            (shortcutsList.length == 0) ? (
-              <div style={{ textAlign: "center", margin: "14px 0px", padding: "0px 15px", fontSize: "18px" }}>No shortcuts found</div>
-            ) : (
-              <>
-                {
-                  shortcutsList.map((itm: Shortcut) => (
-                    <ShortcutLauncher shortcut={itm} />
-                  ))
-                }
-                <PanelSectionRow>
-                  <ButtonItem layout="below" onClick={reload} >
-                    Reload
-                  </ButtonItem>
-                </PanelSectionRow>
-              </>
-            )
-          }
-        </PanelSection>
+        {isLoading && tries.current < triesMax && <div>Loading...</div>}
+        {isLoading && tries.current >= triesMax && <div>Error while loading shortcuts</div>}
+        {!isLoading && (
+          <PanelSection>
+            <PanelSectionRow>
+              <ButtonItem layout="below" onClick={() => { Navigation.CloseSideMenus(); Navigation.Navigate("/bash-shortcuts-config"); }} >
+                Plugin Config
+              </ButtonItem>
+            </PanelSectionRow>
+            {
+              (shortcutsList.length == 0) ? (
+                <div style={{ textAlign: "center", margin: "14px 0px", padding: "0px 15px", fontSize: "18px" }}>No shortcuts found</div>
+              ) : (
+                <>
+                  {
+                    shortcutsList.map((itm: Shortcut) => (
+                      <ShortcutLauncher shortcut={itm} />
+                    ))
+                  }
+                  <PanelSectionRow>
+                    <ButtonItem layout="below" onClick={reload} >
+                      Reload
+                    </ButtonItem>
+                  </PanelSectionRow>
+                </>
+              )
+            }
+          </PanelSection>
+        )}
       </div>
     </>
   );
 };
 
 const ShortcutsManagerRouter: VFC<{ guides: GuidePages }> = ({ guides }) => {
-  const guidePages = {}
-  Object.entries(guides).map(([ guideName, guide ]) => {
+  const guidePages = {} as { [key: string]: { title: string; content: JSX.Element; route: string; icon: JSX.Element; hideTitle: boolean } };
+  Object.entries(guides).map(([guideName, guide]) => {
     guidePages[guideName] = {
       title: guideName,
       content: <GuidePage content={guide} />,
@@ -171,7 +178,7 @@ export default definePlugin((serverApi: ServerAPI) => {
   });
 
   return {
-    title: <div className={staticClasses.Title}>Bash Shortcuts</div>,
+    title: <div className={quickAccessMenuClasses.Title}>Bash Shortcuts</div>,
     content: (
       <ShortcutsContextProvider shortcutsStateClass={state}>
         <Content serverAPI={serverApi} />
